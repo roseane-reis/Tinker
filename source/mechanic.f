@@ -100,7 +100,7 @@ c
       if (use_mpole .or. use_polar .or.
      &    use_solv .or. use_rxnfld)  call kmpole
       if (use_mpole .or. use_polar .or. use_solv)  call kpolar
-      if (use_ewald)  call kewald
+      if (use_ewald .or. use_dewald)  call kewald
 c
 c     assign solvation, metal, pisystem and restraint parameters
 c
@@ -109,6 +109,7 @@ c
       if (use_orbit)  call korbit
       if (use_geom)  call kgeom
       if (use_extra)  call kextra
+      if (use_disp) call kdisp
 c
 c     set hybrid parameter values for free energy perturbation
 c

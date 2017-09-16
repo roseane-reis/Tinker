@@ -15,7 +15,11 @@ c
 c     nfft1      number of grid points along the a-axis direction
 c     nfft2      number of grid points along the b-axis direction
 c     nfft3      number of grid points along the c-axis direction
+c     ndfft1     number of dispersion grid points along the a-axis
+c     ndfft2     number of dispersion grid points along the b-axis
+c     ndfft3     number of dispersion grid points along the c-axis
 c     bsorder    order of the PME B-spline approximation
+c     dbsorder   order of the dispersion PME B-spline approximation
 c     igrid      initial Ewald charge grid values for B-spline
 c     bsmod1     B-spline moduli along the a-axis direction
 c     bsmod2     B-spline moduli along the b-axis direction
@@ -33,7 +37,11 @@ c
       integer nfft1
       integer nfft2
       integer nfft3
+      integer ndfft1
+      integer ndfft2
+      integer ndfft3
       integer bsorder
+      integer dbsorder
       integer, allocatable :: igrid(:,:)
       real*8, allocatable :: bsmod1(:)
       real*8, allocatable :: bsmod2(:)

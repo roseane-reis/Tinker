@@ -62,6 +62,7 @@ c
       elf = 0.0d0
       eg = 0.0d0
       ex = 0.0d0
+      edis = 0.0d0
 c
 c     perform dynamic allocation of some global arrays
 c
@@ -93,6 +94,7 @@ c
             deallocate (aelf)
             deallocate (aeg)
             deallocate (aex)
+            deallocate (aedis)
          end if
       end if
       if (.not. allocated(aesum)) then
@@ -122,6 +124,7 @@ c
          allocate (aelf(n))
          allocate (aeg(n))
          allocate (aex(n))
+         allocate (aedis(n))
       end if
 c
 c     zero out energy partitioning components for each atom
@@ -152,6 +155,7 @@ c
          aelf(i) = 0.0d0
          aeg(i) = 0.0d0
          aex(i) = 0.0d0
+         aedis(i) = 0.0d0
       end do
 c
 c     zero out the total intermolecular energy
@@ -221,12 +225,13 @@ c
       if (use_metal)  call emetal3
       if (use_geom)  call egeom3
       if (use_extra)  call extra3
+      if (use_disp) call edisp3
 c
 c     sum up to give the total potential energy
 c
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
-     &          + em + ep + er + es + elf + eg + ex
+     &          + em + ep + er + es + elf + eg + ex + edis
       energy = esum
 c
 c     sum up to give the total potential energy per atom
@@ -237,7 +242,7 @@ c
      &                 + aet(i) + aept(i) + aebt(i) + aeat(i) + aett(i)
      &                 + aev(i) + aec(i) + aecd(i) + aed(i) + aem(i)
      &                 + aep(i) + aer(i) + aes(i) + aelf(i) + aeg(i)
-     &                 + aex(i)
+     &                 + aex(i) + aedis(i)
       end do
 c
 c     check for an illegal value for the total energy

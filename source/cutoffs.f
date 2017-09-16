@@ -32,7 +32,7 @@ c
       integer limit
       real*8 big,value
       logical truncate
-      character*20 keyword
+      character*25 keyword
       character*240 record
       character*240 string
 c
@@ -52,6 +52,7 @@ c
          mpolecut = big
       end if
       ewaldcut = 7.0d0
+      dewaldcut = 7.0d0
       usolvcut = 4.5d0
 c
 c     set defaults for tapering, Hessian cutoff and neighbor buffers
@@ -67,6 +68,7 @@ c
 c     set defaults for Ewald sum, tapering style and neighbor method
 c
       use_ewald = .false.
+      use_dewald = .false.
       truncate = .false.
       use_lights = .false.
       use_list = .false.
@@ -92,8 +94,12 @@ c     get values related to use of Ewald summation
 c
          if (keyword(1:6) .eq. 'EWALD ') then
             use_ewald = .true.
+         else if (keyword(1:17) .eq. 'DISPERSION-EWALD') then
+            use_dewald = .true.
          else if (keyword(1:13) .eq. 'EWALD-CUTOFF ') then
             read (string,*,err=10,end=10)  ewaldcut
+         else if (keyword(1:24) .eq. 'DISPERSION-EWALD-CUTOFF ') then
+            read (string,*,err=10,end=10)  dewaldcut
 c
 c     get cutoff for preconditioner of dipole solver
 c
@@ -135,8 +141,10 @@ c
             vdwcut = value
             chgcut = value
             dplcut = value
+            dispcut = value
             mpolecut = value
             ewaldcut = value
+            dewaldcut = value
          else if (keyword(1:11) .eq. 'VDW-CUTOFF ') then
             read (string,*,err=10,end=10)  vdwcut
          else if (keyword(1:11) .eq. 'CHG-CUTOFF ') then
@@ -145,6 +153,8 @@ c
             read (string,*,err=10,end=10)  dplcut
          else if (keyword(1:13) .eq. 'MPOLE-CUTOFF ') then
             read (string,*,err=10,end=10)  mpolecut
+         else if (keyword(1:18) .eq. 'DISPERSION-CUTOFF ') then
+            read (string,*,err=10,end=10)  dispcut
 c
 c     get distance for initialization of energy switching
 c
@@ -183,6 +193,9 @@ c
       if (use_ewald) then
          chgcut = ewaldcut
          mpolecut = ewaldcut
+      end if
+      if (use_dewald) then
+         dispcut = dewaldcut
       end if
 c
 c     convert any tapering percentages to absolute distances

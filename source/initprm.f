@@ -21,6 +21,7 @@ c
       use angpot
       use bndpot
       use chgpot
+      use disppot
       use fields
       use kanang
       use kangs
@@ -268,6 +269,7 @@ c
 c     set default control parameters for van der Waals terms
 c
       vdwindex = 'CLASS'
+      dispindex = 'CLASS'
       vdwtyp = 'LENNARD-JONES'
       radrule = 'ARITHMETIC'
       radtyp = 'R-MIN'

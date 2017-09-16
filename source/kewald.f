@@ -37,9 +37,10 @@ c
       parameter (maxfft=864)
       integer i,k,next,minfft
       integer ifft1,ifft2,ifft3
+      integer dfft1,dfft2,dfft3
       integer multi(maxpower)
       real*8 delta,rmax,dens
-      character*20 keyword
+      character*25 keyword
       character*240 record
       character*240 string
 c
@@ -89,6 +90,12 @@ c
       ifft2 = int(ybox*dens-delta) + 1
       ifft3 = int(zbox*dens-delta) + 1
 c
+c     default grid size for dispersion pme
+c
+      dfft1 = int(xbox*dens-delta) + 1
+      dfft2 = int(ybox*dens-delta) + 1
+      dfft3 = int(zbox*dens-delta) + 1
+c
 c     search keywords for Ewald summation commands
 c
       do i = 1, nkey
@@ -101,6 +108,8 @@ c
             call getword (record,ffttyp,next)
          else if (keyword(1:12) .eq. 'EWALD-ALPHA ') then
             read (string,*,err=20)  aewald
+         else if (keyword(1:23) .eq. 'DISPERSION-EWALD-ALPHA ') then
+            read (string,*,err=20)  adewald
          else if (keyword(1:15) .eq. 'EWALD-BOUNDARY ') then
             boundary = 'VACUUM'
          else if (keyword(1:9) .eq. 'PME-GRID ') then
@@ -113,6 +122,16 @@ c
             if (ifft3 .eq. 0)  ifft3 = ifft1
          else if (keyword(1:10) .eq. 'PME-ORDER ') then
             read (string,*,err=20)  bsorder
+         else if (keyword(1:20) .eq. 'DISPERSION-PME-GRID ') then
+            dfft1 = 0
+            dfft2 = 0
+            dfft3 = 0
+            read (string,*,err=15,end=15)  dfft1,dfft2,dfft3
+ 15         continue
+            if (dfft2 .eq. 0)  dfft2 = dfft1
+            if (dfft3 .eq. 0)  dfft3 = dfft1
+         else if (keyword(1:21) .eq. 'DISPERSION-PME-ORDER ') then
+            read (string,*,err=20)  dbsorder
          end if
    20    continue
       end do
@@ -134,6 +153,24 @@ c
       if (nfft1 .lt. minfft)  nfft1 = minfft
       if (nfft2 .lt. minfft)  nfft2 = minfft
       if (nfft3 .lt. minfft)  nfft3 = minfft
+c
+c     check dispersion pme grid size
+c
+      ndfft1 = maxfft
+      ndfft2 = maxfft
+      ndfft3 = maxfft
+      do i = maxpower, 1, -1
+         k = multi(i)
+         if (k .le. maxfft) then
+            if (k .ge. dfft1)  ndfft1 = k
+            if (k .ge. dfft2)  ndfft2 = k
+            if (k .ge. dfft3)  ndfft3 = k
+         end if
+      end do
+      minfft = 16
+      if (ndfft1 .lt. minfft)  ndfft1 = minfft
+      if (ndfft2 .lt. minfft)  ndfft2 = minfft
+      if (ndfft3 .lt. minfft)  ndfft3 = minfft
 c
 c     set the number of chunks and grid points per chunk
 c
