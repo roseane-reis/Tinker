@@ -135,6 +135,8 @@ c
          end if
    20    continue
       end do
+      print *,"grid dimension",dfft1,dfft2,dfft3
+      print *,"order",dbsorder
 c
 c     grid size must be even, with prime factors of 2, 3 and 5
 c
@@ -513,6 +515,7 @@ c
 c
 c     fix for exponential Euler spline interpolation failure
 c
+ccccccccccccccccccccccccccccccccccc
       eps = 1.0d-7
       if (bsmod(1) .lt. eps)  bsmod(1) = 0.5d0 * bsmod(2)
       do i = 2, nfft-1
@@ -520,6 +523,7 @@ c
      &      bsmod(i) = 0.5d0 * (bsmod(i-1)+bsmod(i+1))
       end do
       if (bsmod(nfft) .lt. eps)  bsmod(nfft) = 0.5d0 * bsmod(nfft-1)
+ccccccccccccccccccccccccccccccccccccc
 c
 c     compute and apply the optimal zeta coefficient
 c

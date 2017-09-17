@@ -157,6 +157,7 @@ c
 c
 c     reopen the coordinates file and read the first structure
 c
+      print *,"here"
       frame = 0
       ixyz = freeunit ()
       xyzfile = filename

@@ -19,11 +19,11 @@ c
             pre = adewald**6/12.0d0
             edis = edis + pre*csix(i)*csix(i)
          end do
-         print *,"self",edis
          if (use_mlist) then
 c            call edisp0d
          else
-            call edisp0c
+c            call edisp0c
+            call edisprecip
          end if
       else
          if (use_mlist) then
@@ -99,11 +99,9 @@ c
 
 
 c
-c     compute the reciprocal space part of the Ewald summation
+c     compute the recipocal space part of the Ewald summation
 c
-c      call edisprecip
-
-
+      call edisprecip
 c
 c     compute the real space portion of the Ewald summation
 c
@@ -154,13 +152,11 @@ c
                   damp = 1.0d0
                   if (ralpha2 .lt. 50.0d0) then
                      expterm = exp(-ralpha2)
-                     print *,"expterm",expterm
                      term = 1.0d0 + ralpha2 + 0.5d0*ralpha2**2
                      damp = term*expterm
                   end if
                   e = -ci*ck*(damp + (disscale(k) - 1.0d0))/r6
                   edis = edis + e
-                  print *,"e",i,k,damp,e,edis
                end if
             end if
          end do
@@ -199,8 +195,9 @@ c
 c
       subroutine edisprecip
       use sizes
-      use bound
       use boxes
+      use bound
+      use disp
       use energi
       use ewald
       use math
@@ -213,17 +210,21 @@ c
       integer nff,npoint
       real*8 e,f,denom
       real*8 term,expterm
-      real*8 pterm,volterm
       real*8 hsq,struc2
       real*8 h1,h2,h3
       real*8 r1,r2,r3
+      real*8 h,hhh,b
+      real*8 term1
+      real*8 fac1,fac2,fac3,bfac
+      real*8 denom0
+      real*8 erfcterm
 c
 c
 c     zero out the particle mesh Ewald grid values
 c
-      do k = 1, nfft3
-         do j = 1, nfft2
-            do i = 1, nfft1
+      do k = 1, ndfft3
+         do j = 1, ndfft2
+            do i = 1, ndfft1
                qgrid(1,i,j,k) = 0.0d0
                qgrid(2,i,j,k) = 0.0d0
             end do
@@ -234,7 +235,7 @@ c     get B-spline coefficients and put charges onto grid
 c
       call bspline_fill
       call table_fill
-      call grid_pchg
+      call grid_csix
 c
 c     perform the 3-D FFT forward transformation
 c
@@ -242,25 +243,27 @@ c
 c
 c     use scalar sum to get the reciprocal space energy
 c
-      f = 0.5d0 * electric / dielec
-      npoint = nfft1 * nfft2 * nfft3
-      pterm = (pi/aewald)**2
-      volterm = pi * volbox
-      nff = nfft1 * nfft2
-      nf1 = (nfft1+1) / 2
-      nf2 = (nfft2+1) / 2
-      nf3 = (nfft3+1) / 2
+      npoint = ndfft1 * ndfft2 * ndfft3
+      nff = ndfft1 * ndfft2
+      nf1 = (ndfft1+1) / 2
+      nf2 = (ndfft2+1) / 2
+      nf3 = (ndfft3+1) / 2
+      bfac = pi / adewald
+      fac1 = 2.0d0*pi**(3.5d0)
+      fac2 = adewald**3
+      fac3 = -2.0d0*adewald*pi**2
+      denom0 = (6.0d0*volbox)/(pi**1.5d0)
       do i = 1, npoint-1
          k3 = i/nff + 1
          j = i - (k3-1)*nff
-         k2 = j/nfft1 + 1
-         k1 = j - (k2-1)*nfft1 + 1
+         k2 = j/ndfft1 + 1
+         k1 = j - (k2-1)*ndfft1 + 1
          m1 = k1 - 1
          m2 = k2 - 1
          m3 = k3 - 1
-         if (k1 .gt. nf1)  m1 = m1 - nfft1
-         if (k2 .gt. nf2)  m2 = m2 - nfft2
-         if (k3 .gt. nf3)  m3 = m3 - nfft3
+         if (k1 .gt. nf1)  m1 = m1 - ndfft1
+         if (k2 .gt. nf2)  m2 = m2 - ndfft2
+         if (k3 .gt. nf3)  m3 = m3 - ndfft3
          r1 = dble(m1)
          r2 = dble(m2)
          r3 = dble(m3)
@@ -268,29 +271,36 @@ c
          h2 = recip(2,1)*r1 + recip(2,2)*r2 + recip(2,3)*r3
          h3 = recip(3,1)*r1 + recip(3,2)*r2 + recip(3,3)*r3
          hsq = h1*h1 + h2*h2 + h3*h3
-         term = -pterm * hsq
+         h = sqrt(hsq)
+         b = h*bfac
+         hhh = h*hsq
+         term = -b*b
          expterm = 0.0d0
          if (term .gt. -50.0d0) then
-            denom = volterm*hsq*bsmod1(k1)*bsmod2(k2)*bsmod3(k3)
-            expterm = exp(term) / denom
+            denom = denom0*bsmod1(k1)*bsmod2(k2)*bsmod3(k3)
+            expterm = exp(term)
+            erfcterm = erfc(b)
             if (.not. use_bounds) then
                expterm = expterm * (1.0d0-cos(pi*xbox*sqrt(hsq)))
+               erfcterm = erfcterm * (1.0d0-cos(pi*xbox*sqrt(hsq)))
             else if (octahedron) then
                if (mod(m1+m2+m3,2) .ne. 0)  expterm = 0.0d0
+               if (mod(m1+m2+m3,2) .ne. 0)  erfcterm = 0.0d0
             end if
+            term1 = fac1*erfcterm*hhh + expterm*(fac2 + fac3*hsq)
             struc2 = qgrid(1,k1,k2,k3)**2 + qgrid(2,k1,k2,k3)**2
-            e = f * expterm * struc2
-            ec = ec + e
+            e = -(term1 / denom) * struc2
+            edis = edis + e
          end if
       end do
 c
-c     account for zeroth grid point for nonperiodic system
+c     account for zero point term
+c        
+      do i = 1, ndisp
+         do j = 1, ndisp
+            edis = edis - csix(i)*csix(j)*(adewald**3)/denom0
+         end do
+      end do
 c
-      if (.not. use_bounds) then
-         expterm = 0.5d0 * pi / xbox
-         struc2 = qgrid(1,1,1,1)**2 + qgrid(2,1,1,1)**2
-         e = f * expterm * struc2
-         ec = ec + e
-      end if
       return
       end
