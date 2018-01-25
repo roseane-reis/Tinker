@@ -29,8 +29,8 @@ c
          if (use_mlist) then
 c            call edisp1d
          else
-            call edisprecip1
-c            call edisp1c
+c            call edisprecip1
+            call edisp1c
          end if
       else
          if (use_mlist) then
@@ -74,10 +74,16 @@ c
       real*8 e,de
       real*8 dedx,dedy,dedz
       real*8 ci,ck
-      real*8 r2,r6,r8
+      real*8 r,r2,r6,r7,r8
       real*8 fgrp
       real*8 ralpha2,term,dterm,expterm
       real*8 damp,ddamp
+      real*8 alphai,alphak
+      real*8 dampi,dampk
+      real*8 expdampi,expdampk
+      real*8 termi,termk
+      real*8 damp3,damp5,damping
+      real*8 ddamping,dampingterm
       real*8 vxx,vyx,vzx
       real*8 vxy,vyy,vzy
       real*8 vxz,vyz,vzz
@@ -160,7 +166,9 @@ c
                call image (xr,yr,zr)
                r2 = xr*xr + yr*yr + zr*zr
                if (r2 .le. off2) then
+                  r = sqrt(r2)
                   r6 = r2**3
+                  r7 = r6*r
                   r8 = r6*r2
                   ralpha2 = r2 * adewald**2
                   damp = 1.0d0
@@ -170,10 +178,72 @@ c
                      damp = term*expterm
                   end if
                   e = -ci*ck*(damp + (disscale(k) - 1.0d0))/r6
+c
+c     apply dispersion damping
+c
+                  if (dispdamp) then
+c
+c     gordon damping
+c
+                     alphai = adisp(ii)
+                     alphak = adisp(kk)
+c                     print *,'alphas',alphai,alphak
+                     dampi = alphai*r
+                     dampk = alphak*r
+                     expdampi = exp(-dampi)
+                     expdampk = exp(-dampk) 
+                     if (alphai.ne.alphak) then
+                        termi = alphak**2/(alphak**2 - alphai**2)
+                        termk = alphai**2/(alphai**2 - alphak**2)
+                        damp3 = 1.0d0 - termi*(1.0d0 +dampi)*expdampi
+     &                       - termk*(1.0d0 + dampk)*expdampk
+                        damp5 = 1.0d0 - termi*(1.0d0 + dampi +
+     &                       (1.0d0/3.0d0)*dampi**2)*expdampi -
+     &                       termk*(1.0d0 + dampk +
+     &                       (1.0d0/3.0d0)*dampk**2)*expdampk
+                        damping = (3.0d0*damp5 - damp3)/2.0d0
+                        ddamping = r2*(termi*(alphai**3)*expdampi +
+     &                       termk*(alphak**3)*expdampk)/2.0d0
+c     print *,"damping",i,k,r,damp3,damp5,damping
+c     e = -(cik * damping**2) / r6
+                     else
+                        damp3 = 1.0d0 - (1.0d0+dampi+0.5d0*dampi**2)
+     &                       *expdampi
+                        damp5 = 1.0d0 - (1.0d0+dampi+0.5d0*dampi**2
+     &                       + (1.0d0/6.0d0)*dampi**3)*expdampi
+                        damping = (3.0d0*damp5 - damp3)/2.0d0
+                        ddamping = (dampi**2)*alphai*(dampi - 1.0d0)
+     &                       *expdampi/4.0d0
+c     print*,"damping",i,k,r,damp3,damp5,damping
+c     e = -(cik * damping**2) / r6
+                     end if
+c                     print *,"damping",damping
+                     e = -ci*ck*(damp +
+     &                    (disscale(k)*damping**2 - 1.0d0))/r6
+c
+c     insert gordon1 damping later
+c
+                  end if
+c
+c     accumulate dispersion energy
+c
                   edis = edis + e
-                  dterm = term + (ralpha2**3)/6.0d0
-                  ddamp = dterm*expterm
-                  de = ci*ck*6.0d0*(ddamp + (disscale(k) - 1.0d0))/r8
+c
+c     still need to put in forces for damping
+c
+cccccccccccc
+c     these are correct without damping
+c                  dterm = term + (ralpha2**3)/6.0d0
+c                  ddamp = dterm*expterm
+c                  de = ci*ck*6.0d0*(ddamp + (disscale(k) - 1.0d0))/r8
+ccccccccccc
+c
+c     terms for damping force component
+c
+                  ddamp = -(ralpha2**3)*expterm/r
+                  de = ci*ck*6.0d0*(damp + disscale(k)*damping**2 - 
+     &                 1.0d0)/r8 - ci*ck*ddamp/r7 - 
+     &                 ci*ck*disscale(k)*2.0d0*damping*ddamping/r7
                   dedx = de * xr
                   dedy = de * yr
                   dedz = de * zr

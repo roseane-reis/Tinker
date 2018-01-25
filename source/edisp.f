@@ -22,8 +22,8 @@ c
          if (use_mlist) then
 c            call edisp0d
          else
-c            call edisp0c
-            call edisprecip
+            call edisp0c
+c            call edisprecip
          end if
       else
          if (use_mlist) then
@@ -64,10 +64,15 @@ c
       real*8 xr,yr,zr
       real*8 e
       real*8 ci,ck
-      real*8 r2,r6
+      real*8 r,r2,r6
       real*8 fgrp
       real*8 ralpha2,term,expterm
       real*8 damp
+      real*8 alphai,alphak
+      real*8 dampi,dampk
+      real*8 expdampi,expdampk
+      real*8 termi,termk
+      real*8 damp3,damp5,damping
       real*8, allocatable :: disscale(:)
       logical proceed,usei,usek
       character*6 mode
@@ -146,8 +151,10 @@ c
                zr = zi - z(k)
                call image (xr,yr,zr)
                r2 = xr*xr + yr*yr + zr*zr
+c               print *,"r",r2,off2
                if (r2 .le. off2) then
                   r6 = r2**3
+                  r = sqrt(r2)
                   ralpha2 = r2 * adewald**2
                   damp = 1.0d0
                   if (ralpha2 .lt. 50.0d0) then
@@ -155,7 +162,53 @@ c
                      term = 1.0d0 + ralpha2 + 0.5d0*ralpha2**2
                      damp = term*expterm
                   end if
+c                  print *,"disscale",disscale(k)
                   e = -ci*ck*(damp + (disscale(k) - 1.0d0))/r6
+c
+c     apply dispersion damping
+c
+                  if (dispdamp) then
+c
+c     gordon damping
+c
+                     alphai = adisp(ii)
+                     alphak = adisp(kk)
+c                     print *,'alphas',alphai,alphak
+                     dampi = alphai*r
+                     dampk = alphak*r
+                     expdampi = exp(-dampi)
+                     expdampk = exp(-dampk) 
+                     if (alphai.ne.alphak) then
+                        termi = alphak**2/(alphak**2 - alphai**2)
+                        termk = alphai**2/(alphai**2 - alphak**2)
+                        damp3 = 1.0d0 - termi*(1.0d0 +dampi)*expdampi
+     &                       - termk*(1.0d0 + dampk)*expdampk
+                        damp5 = 1.0d0 - termi*(1.0d0 + dampi +
+     &                       (1.0d0/3.0d0)*dampi**2)*expdampi -
+     &                       termk*(1.0d0 + dampk +
+     &                       (1.0d0/3.0d0)*dampk**2)*expdampk
+                        damping = (3.0d0*damp5 - damp3)/2.0d0
+c     print *,"damping",i,k,r,damp3,damp5,damping
+c     e = -(cik * damping**2) / r6
+                     else
+                        damp3 = 1.0d0 - (1.0d0+dampi+0.5d0*dampi**2)
+     &                       *expdampi
+                        damp5 = 1.0d0 - (1.0d0+dampi+0.5d0*dampi**2
+     &                       + (1.0d0/6.0d0)*dampi**3)*expdampi
+                        damping = (3.0d0*damp5 - damp3)/2.0d0
+c     print*,"damping",i,k,r,damp3,damp5,damping
+c     e = -(cik * damping**2) / r6
+                     end if
+c                     print *,"damping",damping
+                     e = -ci*ck*(damp +
+     &                    (disscale(k)*damping**2 - 1.0d0))/r6
+c
+c     insert gordon1 damping later
+c
+                  end if
+c
+c     accumulate dispersion energy
+c
                   edis = edis + e
                end if
             end if
@@ -176,6 +229,7 @@ c
             disscale(i15(j,i)) = 1.0d0
          end do
       end do
+      print *,"edisp done",edis
 c
 c     for periodic boundary conditions with large cutoffs
 c     neighbors must be found by the replicates method
