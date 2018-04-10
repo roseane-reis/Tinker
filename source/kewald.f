@@ -135,8 +135,9 @@ c
          end if
    20    continue
       end do
-      print *,"grid dimension",dfft1,dfft2,dfft3
-      print *,"order",dbsorder
+c      print *,"multipole grid dimension",ifft1,ifft2,ifft3
+c      print *,"dispersion grid dimension",dfft1,dfft2,dfft3
+c      print *,"order",dbsorder
 c
 c     grid size must be even, with prime factors of 2, 3 and 5
 c

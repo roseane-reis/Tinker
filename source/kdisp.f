@@ -23,6 +23,7 @@ c
       real*8 tmp
       real*8 atmp
       logical header
+      logical aheader
       character*16 blank
       character*20 keyword
       character*240 record
@@ -32,6 +33,7 @@ c     process keywords containing dispersion parameters
 c
       blank = '        '
       header = .true.
+      aheader = .true.
       id = 0
       dispdamp = .false.
       do i = 1, nkey
@@ -82,28 +84,28 @@ c
             if (k.ge.1 .and. k.le.maxclass) then
                a = dispalpha(k)
                string = record(next:240)
-               read (string,*,err=10,end=10)  a
+               read (string,*,err=60,end=60)  a
  60            continue
-               if (header .and. .not.silent) then
-                  header = .false.
+               if (aheader .and. .not.silent) then
+                  aheader = .false.
                   if (dispindex .eq. 'CLASS') then
-                     write (iout,20)
+                     write (iout,70)
  70                  format (/,' Additional Dispersion Alpha '
-     &                    'Parameters: ', //,5x,'Atom Class',11x,'C6')
+     &                   'Parameters: ', //,5x,'Atom Class',10x,'Alpha')
                   else
-                     write (iout,30)
+                     write (iout,80)
  80                  format (/,' Additional Dispersion Alpha ',
-     &                    'Parameters: ', //,5x,'Atom Type',12x,'C6')
+     &                   'Parameters: ', //,5x,'Atom Type',11x,'Alpha')
                   end if
                end if
                dispalpha(k) = a
                if (.not. silent) then
-                  write (iout,40)  k,a
+                  write (iout,90)  k,a
  90               format (4x,i6,8x,f12.4)
                end if
                id = id + 1
             else if (k .gt. maxclass) then
-               write (iout,50)  maxclass
+               write (iout,100)  maxclass
  100            format (/,' KVDW  --  Only Atom Classes through',i4,
      &              ' are Allowed')
                abort = .true.
@@ -140,7 +142,6 @@ c
             tmp = dispsix(it)
             atmp = dispalpha(it)
          end if
-         print *,"tmp",tmp
          if (tmp .ne. 0.0d0) then 
             ndisp = ndisp + 1
             if (dispindex .eq. 'CLASS') then

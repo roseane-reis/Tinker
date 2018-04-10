@@ -22,11 +22,16 @@ c
       use cell
       implicit none
       real*8 xr,yr,zr
+      real*8 xr_temp
 c
 c
 c     for orthogonal lattice, find the desired image directly
 c
-      if (orthogonal) then
+      if (orthogonal) then         
+c         xr = xr - floor(xr/xcell + 0.5d0)*xcell
+c         yr = yr - floor(yr/ycell + 0.5d0)*ycell
+c         zr = zr - floor(zr/zcell + 0.5d0)*zcell
+c
          do while (abs(xr) .gt. xcell2)
             xr = xr - sign(xcell,xr)
          end do
