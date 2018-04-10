@@ -1723,6 +1723,7 @@ c     use scalar sum to get the reciprocal space energy
 c
       f = 0.5d0 * electric / dielec
       npoint = nfft1 * nfft2 * nfft3
+c      print *,"charge npoint",npoint
       pterm = (pi/aewald)**2
       volterm = pi * volbox
       nff = nfft1 * nfft2

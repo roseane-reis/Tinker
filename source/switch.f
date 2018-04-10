@@ -49,6 +49,9 @@ c
       else if (mode(1:5) .eq. 'EWALD') then
          off = ewaldcut
          cut = ewaldcut
+      else if (mode(1:6) .eq. 'DEWALD') then
+         off = dewaldcut
+         cut = dewaldcut
       else if (mode(1:6) .eq. 'USOLVE') then
          off = usolvcut
          cut = usolvcut

@@ -20,6 +20,7 @@ c
       use angpot
       use bndpot
       use chgpot
+      use disppot
       use fields
       use mplpot
       use polpot
@@ -172,6 +173,11 @@ c
          if (value .eq. 'ONLY')  call potoff
          use_extra = .true.
          if (value .eq. 'NONE')  use_extra = .false.
+      else if (keyword(1:15) .eq. 'DISPERSIONTERM ') then
+         call getword (record,value,next)
+         if (value .eq. 'ONLY')  call potoff
+         use_disp = .true.
+         if (value .eq. 'NONE')  use_disp = .false.
       end if
 c
 c     select the name of the force field parameter set
@@ -401,6 +407,24 @@ c
          read (string,*,err=10,end=10)  rfsize,rfbulkd,rfterms
       end if
 c
+c     set control parameters for dispersion potential
+c
+      if (keyword(1:9) .eq. 'DISPERSIONINDEX ') then
+         call getword (record,dispindex,next)
+      else if (keyword(1:20) .eq. 'DISPERSION-12-SCALE ') then
+         read (string,*,err=10,end=10)  dis2scale
+         if (dis2scale .gt. 1.0d0)  dis2scale = 1.0d0 / dis2scale
+      else if (keyword(1:20) .eq. 'DISPERSION-13-SCALE ') then
+         read (string,*,err=10,end=10)  dis3scale
+         if (dis3scale .gt. 1.0d0)  dis3scale = 1.0d0 / dis3scale
+      else if (keyword(1:20) .eq. 'DISPERSION-14-SCALE ') then
+         read (string,*,err=10,end=10)  dis4scale
+         if (dis4scale .gt. 1.0d0)  dis4scale = 1.0d0 / dis4scale
+      else if (keyword(1:20) .eq. 'DISPERSION-15-SCALE ') then
+         read (string,*,err=10,end=10)  dis5scale
+         if (dis5scale .gt. 1.0d0)  dis5scale = 1.0d0 / dis5scale
+      end if
+c
 c     jump directly to the end if any error was detected
 c
    10 continue
@@ -451,5 +475,6 @@ c
       use_metal = .false.
       use_geom = .false.
       use_extra = .false.
+      use_disp = .false.
       return
       end

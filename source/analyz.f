@@ -38,6 +38,7 @@ c     aes     solvation energy partitioned over atoms
 c     aelf    metal ligand field energy partitioned over atoms
 c     aeg     geometric restraint energy partitioned over atoms
 c     aex     extra energy term partitioned over atoms
+c     aedis   dispersion energy term partitioned over atoms
 c
 c
       module analyz
@@ -68,5 +69,6 @@ c
       real*8, allocatable :: aelf(:)
       real*8, allocatable :: aeg(:)
       real*8, allocatable :: aex(:)
+      real*8, allocatable :: aedis(:)
       save
       end

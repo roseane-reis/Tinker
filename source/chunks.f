@@ -31,6 +31,10 @@ c
       integer nchk1,nchk2,nchk3
       integer ngrd1,ngrd2,ngrd3
       integer nlpts,nrpts,grdoff
+      integer ndchk1,ndchk2,ndchk3
+      integer ndgrd1,ndgrd2,ndgrd3
+      integer ndlpts,ndrpts,dgrdoff
       integer, allocatable :: pmetable(:,:)
+      integer, allocatable :: dpmetable(:,:)
       save
       end

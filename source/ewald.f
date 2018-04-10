@@ -13,12 +13,14 @@ c     ################################################################
 c
 c
 c     aewald     Ewald convergence coefficient value (Ang-1)
+c     adewald    Dispersions Ewald convergence coefficient value (Ang-1)
 c     boundary   Ewald boundary condition; none, tinfoil or vacuum
 c
 c
       module ewald
       implicit none
       real*8 aewald
+      real*8 adewald
       character*7 boundary
       save
       end

@@ -26,8 +26,14 @@ c     update the vdw and electrostatic neighbor lists
 c
       if (use_vdw .and. use_vlist)  call vlist
       if ((use_charge.or.use_solv) .and. use_clist)  call clist
-      if ((use_mpole.or.use_polar.or.use_solv) .and. use_mlist)
-     &      call mlist
+      if ((use_mpole.or.use_polar.or.use_solv.or.use_disp) 
+     &     .and. use_mlist) then 
+c
+c     !!!take this out when i move to a single energy routine!!!
+c
+         if (.not.use_mpole) call kmpole
+         call mlist
+      end if
       if (use_polar .and. use_ulist)  call ulist
       return
       end
