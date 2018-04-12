@@ -2,6 +2,7 @@ c
 c
 c
 c
+c
       subroutine edisp
       use limits
       use ewald
@@ -622,8 +623,8 @@ c
      &                       + (1.0d0/6.0d0)*dampi**3)*expdampi
                         damping = (3.0d0*damp5 - damp3)/2.0d0
                      end if
-                     if ((r .gt. 4.0d0).and.(r .lt. 4.1d0)) 
-     &                    print *,"i,k",i,k,r,damping**2
+c                     if ((r .gt. 4.0d0).and.(r .lt. 4.1d0)) 
+c     &                    print *,"i,k",i,k,r,damping**2
                      e = -ci*ck*(damp +
      &                    (disscale(k)*damping**2 - 1.0d0))/r6
 c
@@ -653,7 +654,7 @@ c
             disscale(i15(j,i)) = 1.0d0
          end do
       end do
-      print *,"non-list ewald dispersion energy",edis
+c      print *,"non-list ewald dispersion energy",edis
 c
 c     for periodic boundary conditions with large cutoffs
 c     neighbors must be found by the replicates method

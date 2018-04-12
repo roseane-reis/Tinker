@@ -19,6 +19,7 @@ c
       subroutine kmpole
       use sizes
       use atoms
+      use atomid
       use couple
       use inform
       use iounit
@@ -29,10 +30,12 @@ c
       use polgrp
       use potent
       use units
+      use chgpen
       implicit none
       integer i,j,k,l,m
       integer ji,ki,li
       integer it,jt,kt,lt
+      integer ii
       integer imp,nmp
       integer size,next
       integer number
@@ -43,6 +46,8 @@ c
       integer, allocatable :: mpx(:)
       integer, allocatable :: mpy(:)
       real*8 mpl(13)
+      real*8 zi,ci
+      real*8 pen
       logical header,path
       character*4 pa,pb,pc,pd
       character*8 axt
@@ -213,12 +218,14 @@ c
       if (allocated(xaxis))  deallocate (xaxis)
       if (allocated(yaxis))  deallocate (yaxis)
       if (allocated(pole))  deallocate (pole)
+      if (allocated(monopole)) deallocate (monopole)
       if (allocated(rpole))  deallocate (rpole)
       if (allocated(polaxe))  deallocate (polaxe)
       if (allocated(np11))  deallocate (np11)
       if (allocated(np12))  deallocate (np12)
       if (allocated(np13))  deallocate (np13)
       if (allocated(np14))  deallocate (np14)
+      if (allocated(alphaele)) deallocate (alphaele)
       allocate (ipole(n))
       allocate (polsiz(n))
       allocate (pollist(n))
@@ -226,12 +233,14 @@ c
       allocate (xaxis(n))
       allocate (yaxis(n))
       allocate (pole(maxpole,n))
+      allocate (monopole(maxmono,n))
       allocate (rpole(maxpole,n))
       allocate (polaxe(n))
       allocate (np11(n))
       allocate (np12(n))
       allocate (np13(n))
       allocate (np14(n))
+      allocate (alphaele(n))
 c
 c     zero out local axes, multipoles and polarization attachments
 c
@@ -579,5 +588,109 @@ c     turn off the atomic multipole potential if it is not used
 c
          if (npole .eq. 0)  use_mpole = .false.
       end if
+c
+c     check for keywords indicating a global rule splitting the monopole
+c
+      do i = 1, nkey
+         next = 1
+         record = keyline(i)
+         call gettext (record,keyword,next)
+         call upcase (keyword)
+         string = record(next:120)
+         if (keyword(1:9) .eq. 'CORE-ELE ') then
+            read (string,*,err=220,end=220)  num_ele
+         end if
+ 220     continue
+      end do
+c
+c     read in number of valence electrons
+c
+      do i = 1, nkey
+         next = 1
+         record = keyline(i)
+         call gettext (record,keyword,next)
+         call upcase (keyword)
+         string = record(next:120)
+         if (keyword(1:12) .eq. 'VALENCE-ELE ') then
+            ii = 0
+            pen = 0.0d0
+            string = record(next:120)
+            read (string,*,err=230,end=230)  ii,pen
+ 230        continue
+            if (ii .ne. 0)  val_ele(ii) = pen
+         end if
+c
+c     read in charge penetration damping parameter
+c
+         if (keyword(1:11) .eq. 'ALPHA-PERM ') then
+            ii = 0
+            pen = 0.0d0
+            string = record(next:120)
+            read (string,*,err=240,end=240)  ii,pen
+ 240        continue
+            if (ii .ne. 0)  alpha_perm(ii) = pen
+         end if
+      end do
+c
+c     store atomic charge penetration damping parameters
+c
+      do i = 1, n
+         alphaele(i) = alpha_perm(class(i))
+      end do
+c
+c     apply global core-valence splitting rules
+c
+c
+c     set default as core equal to partial charge
+c
+      do i = 1, n
+         monopole(1,i) = pole(1,i)
+         monopole(2,i) = 0.0d0
+      end do
+c
+c     set core equal to nuclear charge
+c
+      if (num_ele .eq. 'ALL') then
+         do i = 1, n
+            zi = atomic(i)
+            ci = pole(1,i)
+            monopole(1,i) = zi
+            monopole(2,i) = ci - zi
+         end do
+      end if
+c
+c     set core equal to number of valence electrons
+c
+      if (num_ele .eq. 'VALENCE') then
+         do i = 1, n
+            ci = pole(1,i)
+c            zi = valence(i)
+            zi = atomic(i)
+            if (atomic(i) .gt. 2)  zi = zi - 2.0d0
+            if (atomic(i) .gt. 10)  zi = zi - 8.0d0
+            if (atomic(i) .gt. 18)  zi = zi - 8.0d0
+            if (atomic(i) .gt. 20)  zi = zi - 10.0d0
+            if (zi .eq. ci) then
+               if (atomic(i) .lt. 10) then
+                  zi = 2.0d0 + ci
+               else
+                  zi = 8.0d0 + ci
+               end if
+            end if
+            monopole(1,i) = zi
+            monopole(2,i) = ci - zi
+         end do
+c
+c     set core equal to val_ele plus partial charge
+c
+      else if (num_ele .eq. 'VARIABLE') then
+         do i = 1, n
+            ci = pole(1,i)
+            zi = ci + val_ele(class(i))
+            monopole(1,i) = zi
+            monopole(2,i) = ci - zi
+         end do
+      end if
+c
       return
       end

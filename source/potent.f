@@ -40,6 +40,8 @@ c     use_extra   logical flag governing use of extra potential term
 c     use_born    logical flag governing use of Born radii values
 c     use_orbit   logical flag governing use of pisystem computation
 c     use_disp    logical flag governing use of dispersion potential
+c     use_chgpen  logical flag governing use of charge penetration
+c     use_pauli   logical flag governing use of pauli repulsion term
 c
 c
       module potent
@@ -58,5 +60,6 @@ c
       logical use_metal,use_geom
       logical use_extra,use_born
       logical use_orbit,use_disp
+      logical use_chgpen,use_pauli
       save
       end

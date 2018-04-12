@@ -215,7 +215,8 @@ c
       if (use_charge)  call echarge3
       if (use_chgdpl)  call echgdpl3
       if (use_dipole)  call edipole3
-      if (use_mpole)  call empole3
+c      if (use_mpole)  call empole3
+      if (use_mpole)  call emoeba3
       if (use_polar)  call epolar3
       if (use_rxnfld)  call erxnfld3
 c

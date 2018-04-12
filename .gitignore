@@ -13,6 +13,5 @@ source/*.mod
 source/*.o
 source/*.x
 source/*.make
-source/*-*
 usage
-fftw
+fftw/*
