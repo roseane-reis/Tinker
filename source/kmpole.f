@@ -652,20 +652,19 @@ c     set core equal to nuclear charge
 c
       if (num_ele .eq. 'ALL') then
          do i = 1, n
-            zi = atomic(i)
+            zi = dble(atomic(i))
             ci = pole(1,i)
             monopole(1,i) = zi
             monopole(2,i) = ci - zi
          end do
       end if
 c
-c     set core equal to number of valence electrons
+c     set core equal to number of valence electrons + partial charge
 c
       if (num_ele .eq. 'VALENCE') then
          do i = 1, n
             ci = pole(1,i)
-c            zi = valence(i)
-            zi = atomic(i)
+            zi = dble(atomic(i))
             if (atomic(i) .gt. 2)  zi = zi - 2.0d0
             if (atomic(i) .gt. 10)  zi = zi - 8.0d0
             if (atomic(i) .gt. 18)  zi = zi - 8.0d0

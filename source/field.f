@@ -52,6 +52,7 @@ c
       use_geom = .true.
       use_extra = .true.
       use_disp = .true.
+      use_pauli = .true.
 c
 c     read the potential energy force field parameter file
 c

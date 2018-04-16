@@ -86,8 +86,8 @@ APBS_LIBS = -lapbsmainroutines -lapbs -lmaloc -lapbsblas
 
 F77 = gfortran
 F77FLAGS = -c
-OPTFLAGS = -Ofast -mssse3 -fopenmp
-#OPTFLAGS = -O0 -fcheck=bounds -fopenmp
+#OPTFLAGS = -Ofast -mssse3 -fopenmp
+OPTFLAGS = -O0 -fcheck=bounds -fopenmp
 LIBDIR = -L. -L$(TINKER_LIBDIR)/macos
 LIBS = 
 LIBFLAGS = -crusv
@@ -689,7 +689,10 @@ OBJS =	action.o \
 	emoeba.o \
 	emoeba1.o \
 	emoeba2.o \
-	emoeba3.o 
+	emoeba3.o \
+	pauli.o \
+	kpauli.o \
+	paulipot.o
 
 EXEFILES = alchemy.x \
 	    analyze.x \
@@ -1503,7 +1506,10 @@ libtinker.a: ${OBJS}
 	emoeba.o \
 	emoeba1.o \
 	emoeba2.o \
-	emoeba3.o
+	emoeba3.o \
+	pauli.o \
+	kpauli.o \
+	paulipot.o
 	${RANLIB} libtinker.a
 
 ###############################################################
@@ -1653,10 +1659,10 @@ emm3hb.o: atmlst.o atomid.o atoms.o bndstr.o bound.o boxes.o cell.o chgpot.o cou
 emm3hb1.o: atmlst.o atomid.o atoms.o bndstr.o bound.o boxes.o cell.o chgpot.o couple.o deriv.o energi.o group.o inter.o iounit.o light.o limits.o molcul.o neigh.o shunt.o sizes.o usage.o vdw.o vdwpot.o virial.o
 emm3hb2.o: atmlst.o atomid.o atoms.o bndstr.o bound.o cell.o chgpot.o couple.o group.o hessn.o shunt.o sizes.o vdw.o vdwpot.o
 emm3hb3.o: action.o analyz.o atmlst.o atomid.o atoms.o bndstr.o bound.o boxes.o cell.o chgpot.o couple.o energi.o group.o inform.o inter.o iounit.o light.o limits.o molcul.o neigh.o shunt.o sizes.o usage.o vdw.o vdwpot.o
-emoeba.o:
-emoeba1.o:
+emoeba.o: atoms.o bound.o boxes.o cell.o chgpen.o chgpot.o couple.o disp.o energi.o ewald.o group.o limits.o math.o mplpot.o mpole.o mrecip.o neigh.o pauli.o pme.o potent.o shunt.o sizes.o usage.o
+emoeba1.o: atoms.o bound.o boxes.o cell.o chgpen.o chgpot.o couple.o deriv.o disp.o energi.o ewald.o group.o inter.o limits.o math.o molcul.o mplpot.o mpole.o mrecip.o neigh.o pauli.o pme.o shunt.o sizes.o usage.o virial.o
 emoeba2.o:
-emoeba3.o: action.o analyz.o atomid.o atoms.o bound.o boxes.o cell.o chgpen.o chgpot.o couple.o energi.o ewald.o group.o inform.o inter.o iounit.o limits.o math.o molcul.o mplpot.o mpole.o neigh.o potent.o shunt.o sizes.o usage.o
+emoeba3.o: action.o analyz.o atomid.o atoms.o bound.o boxes.o cell.o chgpen.o chgpot.o couple.o disp.o energi.o ewald.o group.o inform.o inter.o iounit.o limits.o math.o molcul.o mplpot.o mpole.o neigh.o pauli.o potent.o shunt.o sizes.o usage.o
 empole.o: atoms.o bound.o boxes.o cell.o chgpot.o couple.o energi.o ewald.o group.o limits.o math.o mplpot.o mpole.o mrecip.o neigh.o pme.o potent.o shunt.o sizes.o usage.o
 empole1.o: atoms.o bound.o boxes.o cell.o chgpot.o couple.o deriv.o energi.o ewald.o group.o inter.o limits.o math.o molcul.o mplpot.o mpole.o mrecip.o neigh.o pme.o shunt.o sizes.o usage.o virial.o
 empole2.o: atoms.o bound.o boxes.o cell.o chgpot.o couple.o deriv.o group.o hessn.o limits.o molcul.o mplpot.o mpole.o neigh.o potent.o shunt.o sizes.o usage.o
@@ -1769,7 +1775,7 @@ inform.o:
 initatom.o: ptable.o
 initial-broken.o: align.o atoms.o bath.o bound.o boxes.o cell.o files.o group.o inform.o iounit.o keys.o linmin.o minima.o molcul.o mutant.o neigh.o openmp.o output.o params.o pdb.o precis.o rigid.o scales.o sequen.o sizes.o socket.o virial.o warp.o zclose.o
 initial.o: align.o atoms.o bath.o bound.o boxes.o cell.o files.o group.o inform.o iounit.o keys.o linmin.o minima.o molcul.o mutant.o neigh.o openmp.o output.o params.o pdb.o precis.o rigid.o scales.o sequen.o sizes.o socket.o virial.o warp.o zclose.o
-initprm.o: angpot.o bndpot.o chgpot.o disppot.o fields.o kanang.o kangs.o kantor.o katoms.o kbonds.o kchrge.o kdipol.o khbond.o kiprop.o kitors.o kmulti.o kopbnd.o kopdst.o korbs.o kpitor.o kpolr.o kstbnd.o ksttor.o ktorsn.o ktrtor.o kurybr.o kvdwpr.o kvdws.o math.o merck.o mplpot.o polpot.o rxnpot.o sizes.o solute.o torpot.o units.o urypot.o vdwpot.o
+initprm.o: angpot.o bndpot.o chgpot.o disppot.o fields.o kanang.o kangs.o kantor.o katoms.o kbonds.o kchrge.o kdipol.o khbond.o kiprop.o kitors.o kmulti.o kopbnd.o kopdst.o korbs.o kpitor.o kpolr.o kstbnd.o ksttor.o ktorsn.o ktrtor.o kurybr.o kvdwpr.o kvdws.o math.o merck.o mplpot.o paulipot.o polpot.o rxnpot.o sizes.o solute.o torpot.o units.o urypot.o vdwpot.o
 initres.o: resdue.o
 initrot.o: atoms.o couple.o group.o inform.o iounit.o math.o omega.o potent.o restrn.o rotbnd.o sizes.o usage.o zcoord.o
 insert.o: atomid.o atoms.o couple.o inform.o iounit.o sizes.o
@@ -1815,6 +1821,7 @@ kopdist.o: angbnd.o angpot.o atmlst.o atomid.o atoms.o couple.o inform.o iounit.
 kopdst.o:
 korbit.o: atomid.o atoms.o bndstr.o inform.o iounit.o keys.o korbs.o orbits.o piorbs.o pistuf.o sizes.o tors.o units.o
 korbs.o: sizes.o
+kpauli.o: atomid.o atoms.o inform.o iounit.o keys.o mpole.o pauli.o paulipot.o sizes.o
 kpitor.o:
 kpitors.o: atomid.o atoms.o bndstr.o couple.o inform.o iounit.o keys.o kpitor.o pitors.o potent.o sizes.o tors.o
 kpolar.o: atoms.o couple.o inform.o iounit.o keys.o kpolr.o mpole.o neigh.o polar.o polgrp.o polpot.o potent.o sizes.o usolve.o
@@ -1902,6 +1909,8 @@ overlap.o: units.o
 params.o:
 path.o: align.o atomid.o atoms.o files.o inform.o iounit.o linmin.o minima.o output.o paths.o sizes.o
 paths.o:
+pauli.o:
+paulipot.o:
 pbstuf.o:
 pdb.o:
 pdbxyz.o: atomid.o atoms.o couple.o fields.o files.o inform.o iounit.o katoms.o pdb.o resdue.o sequen.o sizes.o titles.o

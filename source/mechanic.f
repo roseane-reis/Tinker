@@ -110,6 +110,7 @@ c
       if (use_geom)  call kgeom
       if (use_extra)  call kextra
       if (use_disp) call kdisp
+      if (use_pauli) call kpauli
 c
 c     set hybrid parameter values for free energy perturbation
 c

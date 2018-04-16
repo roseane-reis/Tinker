@@ -178,6 +178,11 @@ c
          if (value .eq. 'ONLY')  call potoff
          use_disp = .true.
          if (value .eq. 'NONE')  use_disp = .false.
+      else if (keyword(1:10) .eq. 'PAULITERM ') then
+         call getword (record,value,next)
+         if (value .eq. 'ONLY')  call potoff
+         use_pauli = .true.
+         if (value .eq. 'NONE')  use_pauli = .false.
       end if
 c
 c     select the name of the force field parameter set
@@ -476,5 +481,6 @@ c
       use_geom = .false.
       use_extra = .false.
       use_disp = .false.
+      use_pauli = .false.
       return
       end

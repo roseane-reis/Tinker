@@ -1425,6 +1425,7 @@ c
          end if
          write (iout,fstr)  ed,ned
       end if
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if (use_mpole .and. (nem.ne.0.or.em.ne.0.0d0)) then
          if (abs(em) .lt. 1.0d10) then
             fstr = '('' Atomic Multipoles'',10x,'//form1//')'
@@ -1433,6 +1434,23 @@ c
          end if
          write (iout,fstr)  em,nem
       end if
+      if (use_disp .and. (nedis.ne.0.or.edis.ne.0.0d0)) then
+         if (abs(edis) .lt. 1.0d10) then
+            fstr = '('' Dispersion       '',10x,'//form1//')'
+         else
+            fstr = '('' Dispersion       '',10x,'//form2//')'
+         end if
+         write (iout,fstr)  edis,nedis
+      end if
+      if (use_pauli .and. (nepr.ne.0.or.epr.ne.0.0d0)) then
+         if (abs(epr) .lt. 1.0d10) then
+            fstr = '('' Pauli Repulsion  '',10x,'//form1//')'
+         else
+            fstr = '('' Pauli Repulsion  '',10x,'//form2//')'
+         end if
+         write (iout,fstr)  epr,nepr
+      end if
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       if (use_polar .and. (nep.ne.0.or.ep.ne.0.0d0)) then
          if (abs(ep) .lt. 1.0d10) then
             fstr = '('' Polarization'',15x,'//form1//')'
@@ -1595,7 +1613,7 @@ c
      &           /,15x,'EAT',13x,'ETT',13x,'EV',14x,'EC',
      &           /,15x,'ECD',13x,'ED',14x,'EM',14x,'EP',
      &           /,15x,'ER',14x,'ES',14x,'ELF',13x,'EG',
-     &           /,15x,'EX')
+     &           /,15x,'EX',14x,'EDIS',12x,'EPR')
       else if (digits .ge. 6) then
          write (iout,20)
    20    format (/,'  Atom',8x,'EB',12x,'EA',12x,'EBA',11x,'EUB',
@@ -1604,7 +1622,8 @@ c
      &              11x,'ET',
      &           /,14x,'EPT',11x,'EBT',11x,'EAT',11x,'ETT',11x,'EV',
      &           /,14x,'EC',12x,'ECD',11x,'ED',12x,'EM',12x,'EP',
-     &           /,14x,'ER',12x,'ES',12x,'ELF',11x,'EG',12x,'EX')
+     &           /,14x,'ER',12x,'ES',12x,'ELF',11x,'EG',12x,'EX'
+     &           /,14x,'EDIS',10x,'EPR')
       else
          write (iout,30)
    30    format (/,'  Atom',8x,'EB',10x,'EA',10x,'EBA',9x,'EUB',
@@ -1615,7 +1634,7 @@ c
      &              9x,'ED',
      &           /,14x,'EM',10x,'EP',10x,'ER',10x,'ES',10x,'ELF',
      &              9x,'EG',
-     &           /,14x,'EX')
+     &           /,14x,'EX',10x,'EDIS',8x,'EPR')
       end if
       if (digits .ge. 8) then
          fstr = '(/,i6,4f16.8,/,6x,4f16.8,/,6x,4f16.8,'//
@@ -1634,7 +1653,8 @@ c
      &                         aeopb(i),aeopd(i),aeid(i),aeit(i),aet(i),
      &                         aept(i),aebt(i),aeat(i),aett(i),aev(i),
      &                         aec(i),aecd(i),aed(i),aem(i),aep(i),
-     &                         aer(i),aes(i),aelf(i),aeg(i),aex(i)
+     &                         aer(i),aes(i),aelf(i),aeg(i),aex(i),
+     &                         aedis(i),aepr(i)
          end if
       end do
       return

@@ -33,6 +33,7 @@ c
       integer i
       real*8 energy
       real*8 cutoff
+      real*8 nrg
 c
 c
 c     zero out each of the potential energy components
@@ -63,6 +64,7 @@ c
       eg = 0.0d0
       ex = 0.0d0
       edis = 0.0d0
+      epr = 0.0d0
 c
 c     perform dynamic allocation of some global arrays
 c
@@ -125,6 +127,7 @@ c
          allocate (aeg(n))
          allocate (aex(n))
          allocate (aedis(n))
+         allocate (aepr(n))
       end if
 c
 c     zero out energy partitioning components for each atom
@@ -156,6 +159,7 @@ c
          aeg(i) = 0.0d0
          aex(i) = 0.0d0
          aedis(i) = 0.0d0
+         aepr(i) = 0.0d0
       end do
 c
 c     zero out the total intermolecular energy
@@ -215,8 +219,10 @@ c
       if (use_charge)  call echarge3
       if (use_chgdpl)  call echgdpl3
       if (use_dipole)  call edipole3
+c
 c      if (use_mpole)  call empole3
       if (use_mpole)  call emoeba3
+c
       if (use_polar)  call epolar3
       if (use_rxnfld)  call erxnfld3
 c
@@ -226,13 +232,16 @@ c
       if (use_metal)  call emetal3
       if (use_geom)  call egeom3
       if (use_extra)  call extra3
-      if (use_disp) call edisp3
+      if (use_disp) print *,"currently not using edisp3 in analysis"
+c      if (use_disp) call edisp3
+c
+      print *,"energies",em,edis,epr
 c
 c     sum up to give the total potential energy
 c
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
-     &          + em + ep + er + es + elf + eg + ex + edis
+     &          + em + ep + er + es + elf + eg + ex + edis + epr
       energy = esum
 c
 c     sum up to give the total potential energy per atom

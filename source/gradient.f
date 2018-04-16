@@ -64,6 +64,7 @@ c
       eg = 0.0d0
       ex = 0.0d0
       edis = 0.0d0
+      epr = 0.0d0
 c
 c     perform dynamic allocation of some global arrays
 c
@@ -96,6 +97,7 @@ c
             deallocate (deg)
             deallocate (dex)
             deallocate (dedis)
+            deallocate (depr)
          end if
       end if
       if (.not. allocated(desum)) then
@@ -126,6 +128,7 @@ c
          allocate (deg(3,n))
          allocate (dex(3,n))
          allocate (dedis(3,n))
+         allocate (depr(3,n))
       end if
 c
 c     zero out each of the first derivative components
@@ -158,6 +161,7 @@ c
             deg(j,i) = 0.0d0
             dex(j,i) = 0.0d0
             dedis(j,i) = 0.0d0
+            depr(j,i) = 0.0d0
          end do
       end do
 c
@@ -223,7 +227,8 @@ c
       if (use_charge)  call echarge1
       if (use_chgdpl)  call echgdpl1
       if (use_dipole)  call edipole1
-      if (use_mpole)  call empole1
+c      if (use_mpole)  call empole1
+      if (use_mpole) call emoeba1
       if (use_polar)  call epolar1
       if (use_rxnfld)  call erxnfld1
 c
@@ -233,13 +238,15 @@ c
       if (use_metal)  call emetal1
       if (use_geom)  call egeom1
       if (use_extra)  call extra1
-      if (use_disp) call edisp1
+c      if (use_disp) call edisp1
+      if (use_disp) print *,'not using edisp1 in gradient'
 c
 c     sum up to get the total energy and first derivatives
 c
+      print *,"gradient: em,edis,epr",em,edis,epr
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
-     &          + em + ep + er + es + elf + eg + ex + edis
+     &          + em + ep + er + es + elf + eg + ex + edis + epr
       energy = esum
       do i = 1, n
          do j = 1, 3
@@ -251,7 +258,7 @@ c
      &                      + dec(j,i) + decd(j,i) + ded(j,i)
      &                      + dem(j,i) + dep(j,i) + der(j,i)
      &                      + des(j,i) + delf(j,i) + deg(j,i)
-     &                      + dex(j,i) + dedis(j,i)
+     &                      + dex(j,i) + dedis(j,i) + depr(j,i)
             derivs(j,i) = desum(j,i)
          end do
       end do

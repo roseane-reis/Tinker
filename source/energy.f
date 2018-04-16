@@ -58,6 +58,7 @@ c
       eg = 0.0d0
       ex = 0.0d0
       edis = 0.0d0
+      epr = 0.0d0
 c
 c     maintain any periodic boundary conditions
 c
@@ -112,7 +113,8 @@ c
       if (use_charge)  call echarge
       if (use_chgdpl)  call echgdpl
       if (use_dipole)  call edipole
-      if (use_mpole)  call empole
+c      if (use_mpole)  call empole
+      if (use_mpole) call emoeba
       if (use_polar)  call epolar
       if (use_rxnfld)  call erxnfld
 c
@@ -122,14 +124,17 @@ c
       if (use_geom)  call egeom
       if (use_metal)  call emetal
       if (use_extra)  call extra
-      if (use_disp) call edisp
+c      if (use_disp) call edisp
+      if (use_disp) print *,"currently not using edisp in energy"
 c
 c     sum up to give the total potential energy
 c
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
-     &          + em + ep + er + es + elf + eg + ex + edis
+     &          + em + ep + er + es + elf + eg + ex + edis + epr
       energy = esum
+c
+      print *,"energy: em,edis,epr",em,edis,epr
 c
 c     check for an illegal value for the total energy
 c

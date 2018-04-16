@@ -39,6 +39,7 @@ c     delf    metal ligand field Cartesian coordinate derivatives
 c     deg     geometric restraint Cartesian coordinate derivatives
 c     dex     extra energy term Cartesian coordinate derivatives
 c     dedis   dispersion energy term Cartesian coordinate derivatives
+c     depr    pauli repulsion Cartesian coordinate derivatives
 c
 c
       module deriv
@@ -70,5 +71,6 @@ c
       real*8, allocatable :: deg(:,:)
       real*8, allocatable :: dex(:,:)
       real*8, allocatable :: dedis(:,:)
+      real*8, allocatable :: depr(:,:)
       save
       end

@@ -74,6 +74,8 @@ c
       use shunt
       use usage
       use chgpen
+      use disp
+      use pauli
       implicit none
       integer i,j,k
       integer ii,kk
@@ -82,11 +84,11 @@ c
       integer rorder
       real*8 e,f,fgrp
       real*8 ecc,ecv,evc,evv
-      real*8 e_ele
+      real*8 e_ele,e_disp,e_pauli
       real*8 xi,yi,zi
       real*8 xr,yr,zr
       real*8 r,r2,rr1,rr3
-      real*8 rr5,rr7,rr9
+      real*8 rr5,rr7,rr9,rr11
       real*8 alphai,alphak
       real*8 ci,dix,diy,diz
       real*8 qixx,qixy,qixz
@@ -108,6 +110,12 @@ c
       real*8 term4ik,term5ik
       real*8 term1i,term2i,term3i
       real*8 term1k,term2k,term3k
+      real*8 rr6
+      real*8 c6i,c6k,c6ik
+      real*8 displam
+      real*8 pvali,pvalk
+      real*8 overlapi,overlapk,oik
+      real*8 apauli,apaulk
       real*8, allocatable :: mscale(:)
       real*8, allocatable :: lambdai(:)
       real*8, allocatable :: lambdak(:)
@@ -121,9 +129,15 @@ c
 c     zero out total atomic multipole energy and partitioning
 c
       nem = 0
+      nedis = 0
+      nepr = 0
       em = 0.0d0
+      edis = 0.0d0
+      epr = 0.0d0
       do i = 1, n
          aem(i) = 0.0d0
+         aedis(i) = 0.0d0
+         aepr(i) = 0.0d0
       end do
       if (npole .eq. 0)  return
 c
@@ -191,6 +205,10 @@ c
          corei = monopole(1,i)
          vali = monopole(2,i)
          alphai = alphaele(i)
+         c6i = csix(i)
+         overlapi = overpauli(i)
+         apauli = alphapauli(i)
+         pvali = monopauli(i)
          ci = rpole(1,i)
          dix = rpole(2,i)
          diy = rpole(3,i)
@@ -238,6 +256,10 @@ c
                   corek = monopole(1,k)
                   valk = monopole(2,k)
                   alphak = alphaele(k)
+                  c6k = csix(k)
+                  overlapk = overpauli(k)
+                  apaulk = alphapauli(k)
+                  pvalk = monopauli(k)
                   ck = rpole(1,k)
                   dkx = rpole(2,k)
                   dky = rpole(3,k)
@@ -252,16 +274,11 @@ c
 c     get reciprocal distance terms for this interaction
 c
 c                  rr1 = f * mscale(kk) / r
-                  rr1 = 1 / r
+                  rr1 = 1.0d0 / r
                   rr3 = rr1 / r2
                   rr5 = 3.0d0 * rr3 / r2
                   rr7 = 5.0d0 * rr5 / r2
                   rr9 = 7.0d0 * rr7 / r2
-c
-c     get charge penetration scale factors
-c
-                  call damphlike(r,rorder,alphai,alphak,
-     &                 lambdai,lambdak,lambdaik)
 c
 c     intermediates involving moments and distance separation
 c
@@ -311,6 +328,13 @@ c     calculate core - core interaction intermediate terms
 c
                   term1 = corei*corek
 c
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c
+c     electrostatic interaction energy!
+c
+                  call damphlike(r,rorder,alphai,alphak,
+     &                 lambdai,lambdak,lambdaik)
+c
 c     compute the valence - valence energy contribution for this interaction
 c
                   evv = term1ik*rr1*lambdaik(1) + 
@@ -335,38 +359,114 @@ c
 c
 c     add together energy components for total damped energy
 c
-                  e = f * mscale(kk) * (evv + ecv + evc + ecc)
+                  e_ele = f * mscale(kk) * (evv + ecv + evc + ecc)
 c
-                  if (use_group)  e = e * fgrp
+                  if (use_group)  e_ele = e_ele * fgrp
+c
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c
+c     dispersion energy!
+c
+                  rr6 = rr3**2
+c
+c     c6 multiplicative combining rule
+c
+                  c6ik = c6i*c6k
+c
+c     dispersion damping factor
+c
+                  displam = 0.5d0*(3.0d0*lambdaik(5) - lambdaik(3))
+c
+c     compute damped 1/r^6 energy term
+c
+                  e_disp = -c6ik * rr6 * mscale(kk) * displam**2
+c
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c
+c     pauli repulsion energy!
+c
+                  call damppauli(r,r2,rr1,rr3,rr5,rr7,rr9,rr11,rorder,
+     &                 apauli,apaulk,lambdaik)                  
+c
+c     recompute terms with number of pauli valence electrons
+c
+                  term1ik = pvali*pvalk
+                  term2ik = pvalk*dri - pvali*drk + dik
+                  term3ik = pvali*qrrk + pvalk*qrri - dri*drk
+     &                       + 2.0d0*(dkqri-diqrk+qik)
+c
+c     compute valence - valence energy contribution for this interaction
+c     (pauli repulsion has no terms involving the core)
+c
+                  evv = term1ik*lambdaik(1) +
+     &                  term2ik*lambdaik(3) +
+     &                  term3ik*lambdaik(5) +
+     &                  term4ik*lambdaik(7) +
+     &                  term5ik*lambdaik(9)
+c
+c     combining rule for pauli repulsion prefactor
+c
+                  oik = overlapi*overlapk
+c
+c     total pauli repulsion energy
+c
+                  e_pauli = oik * mscale(kk) * evv * rr1
+c
+                  if (use_group)  e_pauli = e_pauli * fgrp
+c
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c
 c
 c     increment the overall multipole energy components
 c
-                  if (e .ne. 0.0d0) then
+                  if (e_ele .ne. 0.0d0) then
                      nem = nem + 1
-                     em = em + e
-                     aem(ii) = aem(ii) + 0.5d0*e
-                     aem(kk) = aem(kk) + 0.5d0*e
+                     em = em + e_ele
+                     aem(ii) = aem(ii) + 0.5d0*e_ele
+                     aem(kk) = aem(kk) + 0.5d0*e_ele
                      if (molcule(ii) .ne. molcule(kk))
-     &                  einter = einter + e
+     &                  einter = einter + e_ele
+                  end if
+c
+c     increment the overall dispersion energy components
+c
+                  if (e_disp .ne. 0.0d0) then
+                     nedis = nedis + 1
+                     edis = edis + e_disp
+                     aedis(ii) = aedis(ii) + 0.5d0*e_disp
+                     aedis(kk) = aedis(kk) + 0.5d0*e_disp
+                     if (molcule(ii) .ne. molcule(kk))
+     &                  einter = einter + e_disp
+                  end if
+c
+c     increment the overall pauli repulsion energy components
+c
+                  if (e_pauli .ne. 0.0d0) then
+                     nepr = nepr + 1
+                     epr = epr + e_pauli
+                     aepr(ii) = aepr(ii) + 0.5d0*e_pauli
+                     aepr(kk) = aepr(kk) + 0.5d0*e_pauli
+                     if (molcule(ii) .ne. molcule(kk))
+     &                  einter = einter + e_pauli
                   end if
 c
 c     print message if the energy of this interaction is large
 c
-                  huge = (abs(e) .gt. 100.0d0)
-                  if ((debug.and.e.ne.0.0d0)
-     &                  .or. (verbose.and.huge)) then
-                     if (header) then
-                        header = .false.
-                        write (iout,20)
-   20                   format (/,' Individual Atomic Multipole',
-     &                             ' Interactions :',
-     &                          //,' Type',14x,'Atom Names',
-     &                             15x,'Distance',8x,'Energy',/)
-                     end if
-                     write (iout,30)  ii,name(ii),kk,name(kk),r,e
-   30                format (' M-Pole',4x,2(i7,'-',a3),9x,
-     &                          f10.4,2x,f12.4)
-                  end if
+c                  huge = (abs(e) .gt. 100.0d0)
+c                  if ((debug.and.e.ne.0.0d0)
+c     &                  .or. (verbose.and.huge)) then
+c                     if (header) then
+c                        header = .false.
+c                        write (iout,20)
+c   20                   format (/,' Individual Atomic Multipole',
+c     &                             ' Interactions :',
+c     &                          //,' Type',14x,'Atom Names',
+c     &                             15x,'Distance',8x,'Energy',/)
+c                     end if
+c                     write (iout,30)  ii,name(ii),kk,name(kk),r,e
+c   30                format (' M-Pole',4x,2(i7,'-',a3),9x,
+c     &                          f10.4,2x,f12.4)
+c                  end if
                end if
             end if
          end do

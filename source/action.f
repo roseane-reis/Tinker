@@ -38,6 +38,8 @@ c     nes     number of solvation energy terms computed
 c     nelf    number of metal ligand field energy terms computed
 c     neg     number of geometric restraint energy terms computed
 c     nex     number of extra energy terms computed
+c     nedis   number of dispersion energy terms computed
+c     nepr   number of pauli repulsion terms computed
 c
 c
       module action
@@ -49,5 +51,6 @@ c
       integer nec,necd,ned,nem
       integer nep,new,ner,nes
       integer nelf,neg,nex
+      integer nedis,nepr
       save
       end
