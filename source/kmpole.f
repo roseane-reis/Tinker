@@ -221,6 +221,7 @@ c
       if (allocated(monopole)) deallocate (monopole)
       if (allocated(rpole))  deallocate (rpole)
       if (allocated(polaxe))  deallocate (polaxe)
+      if (allocated(permfield)) deallocate (permfield)
       if (allocated(np11))  deallocate (np11)
       if (allocated(np12))  deallocate (np12)
       if (allocated(np13))  deallocate (np13)
@@ -236,6 +237,7 @@ c
       allocate (monopole(maxmono,n))
       allocate (rpole(maxpole,n))
       allocate (polaxe(n))
+      allocate (permfield(3,n))
       allocate (np11(n))
       allocate (np12(n))
       allocate (np13(n))
@@ -244,6 +246,7 @@ c
 c
 c     zero out local axes, multipoles and polarization attachments
 c
+      savefield = .false.
       npole = n
       do i = 1, n
          ipole(i) = 0
@@ -255,6 +258,9 @@ c
          polaxe(i) = '        '
          do j = 1, 13
             pole(j,i) = 0.0d0
+         end do
+         do j = 1, 3
+            permfield(j,i) = 0.0d0
          end do
          np11(i) = 0
          np12(i) = 0

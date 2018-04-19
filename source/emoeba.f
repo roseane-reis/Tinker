@@ -109,6 +109,7 @@ c
       real*8 pvali,pvalk
       real*8 overlapi,overlapk,oik
       real*8 apauli,apaulk
+      real*8 fid(3),fkd(3)
       real*8, allocatable :: mscale(:)
       real*8, allocatable :: lambdai(:)
       real*8, allocatable :: lambdak(:)
@@ -122,6 +123,11 @@ c
       em = 0.0d0
       edis = 0.0d0
       epr = 0.0d0
+      do i = 1, n
+         do j = 1, 3
+            permfield(j,i) = 0.0d0
+         end do
+      end do
       if (npole .eq. 0)  return
 c
 c     set maximum power of 1/r for damping 
@@ -335,6 +341,35 @@ c
                   e_ele = f * mscale(kk) * (evv + ecv + evc + ecc)
 c
                   if (use_group)  e_ele = e_ele * fgrp
+c
+c     save permanent electric field for induced dipole calculation
+c
+               fid(1) = -xr*(rr3*corek + rr3*lambdak(3)*valk -
+     &              rr5*lambdak(5)*drk + rr7*lambdak(7)*qrrk)
+     &              - rr3*lambdak(3)*dkx + 2.0d0*rr5*lambdak(5)*qrkx
+               fid(2) = -yr*(rr3*corek + rr3*lambdak(3)*valk -
+     &              rr5*lambdak(5)*drk+rr7*lambdak(7)*qrrk)
+     &              - rr3*lambdak(3)*dky + 2.0d0*rr5*lambdak(5)*qrky
+               fid(3) = -zr*(rr3*corek + rr3*lambdak(3)*valk -
+     &              rr5*lambdak(5)*drk+rr7*lambdak(7)*qrrk)
+     &              - rr3*lambdak(3)*dkz + 2.0d0*rr5*lambdak(5)*qrkz
+               fkd(1) = xr*(rr3*corei + rr3*lambdai(3)*vali +
+     &              rr5*lambdai(5)*dri + rr7*lambdai(7)*qrri)
+     &              - rr3*lambdai(3)*dix - 2.0d0*rr5*lambdai(5)*qrix
+               fkd(2) = yr*(rr3*corei + rr3*lambdai(3)*vali +
+     &              rr5*lambdai(5)*dri + rr7*lambdai(7)*qrri)
+     &              - rr3*lambdai(3)*diy - 2.0d0*rr5*lambdai(5)*qriy
+               fkd(3) = zr*(rr3*corei + rr3*lambdai(3)*vali +
+     &              rr5*lambdai(5)*dri + rr7*lambdai(7)*qrri)
+     &              - rr3*lambdai(3)*diz - 2.0d0*rr5*lambdai(5)*qriz
+c
+c     increment electric field on both sites
+c
+
+               do j = 1, 3
+                  permfield(j,i) = permfield(j,i) + fid(j)*mscale(kk)
+                  permfield(j,k) = permfield(j,k) + fkd(j)*mscale(kk)
+               end do
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c

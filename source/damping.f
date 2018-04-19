@@ -320,6 +320,79 @@ c
       end
 c
 c
+c
+c
+c     ######################################################################
+c     ##                                                                  ##
+c     ##  subroutine udamphlike  --  generate gordon damping coefficents   ##
+c     ##                                                                  ##
+c     ######################################################################
+c
+c
+c     "udamphlike" generates the damping coefficients for hydrogen-like
+c     damping functional form that go with corresponding powers of r
+c
+c     one-site scale factors are used for nuclear-electron interactions
+c
+      subroutine udamphlike(r,alphai,alphak,
+     &                 lambdai,lambdak,lambdaik)
+      implicit none
+      real*8 r
+      real*8 alphai,alphak
+      real*8 dampi,dampk
+      real*8 expdampi,expdampk
+      real*8 termi,termk
+      real*8 lambdai(*),lambdak(*)
+      real*8 lambdaik(*)
+c
+c
+c     compute common factors for damping
+c
+      dampi = alphai*r
+      dampk = alphak*r
+      expdampi = exp(-dampi)
+      expdampk = exp(-dampk)
+c
+c     hydrogen-like damping model
+c     for charge-charge form see Gordon damping model 1
+c
+      lambdai(3) = 1.0d0 - (1.0d0 + dampi + 0.5d0*dampi**2)*expdampi
+      lambdak(3) = 1.0d0 - (1.0d0 + dampk + 0.5d0*dampk**2)*expdampk
+      lambdai(5) = 1.0d0 - (1.0d0 + dampi + 0.5d0*dampi**2 + 
+     &     (1.0d0/6.0d0)*dampi**3)*expdampi
+      lambdak(5) = 1.0d0 - (1.0d0 + dampk + 0.5d0*dampk**2 + 
+     &     (1.0d0/6.0d0)*dampk**3)*expdampk
+c
+      if (alphai .ne. alphak) then
+         termi = alphak**2/(alphak**2 - alphai**2)
+         termk = alphai**2/(alphai**2 - alphak**2)
+         lambdaik(3) = 1.0d0 - (termi**2)*(1.0d0 + dampi + 
+     &        0.5d0*dampi**2)*expdampi - 
+     &        (termk**2)*(1.0d0 + dampk + 0.5d0*dampk**2)*expdampk
+     &        - 2.0d0*(termi**2)*termk*(1.0d0 + dampi)*expdampi
+     &        - 2.0d0*(termk**2)*termi*(1.0d0 + dampk)*expdampk
+         lambdaik(5) = 1.0d0 - (termi**2)*
+     &        (1.0d0 + dampi + 0.5d0*dampi**2 + 
+     &        (1.0d0/6.0d0)*dampi**3)*expdampi - (termk**2)*
+     &        (1.0d0 + dampk + 0.5d0*dampk**2 + 
+     &        (1.0d0/6.0d0)*dampk**3)*expdampk - 
+     &        2.0d0*(termi**2)*termk*(1.0 + dampi + 
+     &        (1.0d0/3.0d0)*dampi**2)*expdampi - 
+     &        2.0d0*(termk**2)*termi*(1.0 + dampk +
+     &        (1.0d0/3.0d0)*dampk**2)*expdampk
+      else
+         lambdaik(3) = 1.0d0 - (1.0d0 + dampi + 0.5d0*dampi**2 + 
+     &        (7.0d0/48.0d0)*dampi**3 + (1.0d0/48.0d0)*dampi**4)
+     &        *expdampi
+         lambdaik(5) = 1.0d0 - (1.0d0 + dampi + 0.5d0*dampi**2 + 
+     &        (1.0d0/6.0d0)*dampi**3 + (1.0d0/24.0d0)*dampi**4 +
+     &        (1.0d0/144.0d0)*dampi**5)*expdampi
+      end if
+c     
+      return
+      end
+c
+c
 c     ######################################################################
 c     ##                                                                  ##
 c     ##  subroutine damppauli  --  generate gordon damping coefficents   ##

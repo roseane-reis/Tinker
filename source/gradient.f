@@ -243,7 +243,7 @@ c      if (use_disp) call edisp1
 c
 c     sum up to get the total energy and first derivatives
 c
-      print *,"gradient: em,edis,epr",em,edis,epr
+      print *,"gradient: em,ep,edis,epr",em,ep,edis,epr
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
      &          + em + ep + er + es + elf + eg + ex + edis + epr

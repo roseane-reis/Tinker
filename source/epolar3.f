@@ -24,7 +24,11 @@ c
 c
 c     choose the method for summing over polarization interactions
 c
-      pairwise = .true.
+c
+      print *,"using saved permanent field"
+      pairwise = .false.
+c      pairwise = .true.
+c
       if (pairwise) then
          if (use_ewald) then
             if (use_mlist) then

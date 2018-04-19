@@ -18,7 +18,12 @@ c
 c
       subroutine emoeba1
       use limits
+      use mpole
       implicit none
+c
+c     save permanent electric field
+c
+      savefield = .true.
 c
 c
 c     choose the method for summing over multipole interactions
@@ -139,6 +144,7 @@ c
       real*8 vxx,vyy,vzz
       real*8 vxy,vxz,vyz
       real*8 ttmi(3),ttmk(3)
+      real*8 fid(3),fkd(3)
       real*8 fix(3),fiy(3),fiz(3)
       real*8, allocatable :: mscale(:)
       real*8, allocatable :: tem(:,:)
@@ -160,6 +166,7 @@ c
             dem(j,i) = 0.0d0
             dedis(j,i) = 0.0d0
             depr(j,i) = 0.0d0
+            permfield(j,i) = 0.0d0
          end do
       end do
       if (npole .eq. 0)  return
@@ -310,17 +317,25 @@ c
                dkrx = dky*zr - dkz*yr
                dkry = dkz*xr - dkx*zr
                dkrz = dkx*yr - dky*xr
+c     same as dir in dfield0a
                dri = dix*xr + diy*yr + diz*zr
+c     same as dkr in dfield0a
                drk = dkx*xr + dky*yr + dkz*zr
+c
                dik = dix*dkx + diy*dky + diz*dkz
+c     same as qi* in dfield0a
                qrix = qixx*xr + qixy*yr + qixz*zr
                qriy = qixy*xr + qiyy*yr + qiyz*zr
                qriz = qixz*xr + qiyz*yr + qizz*zr
+c     same as qk* in dfield0a
                qrkx = qkxx*xr + qkxy*yr + qkxz*zr
                qrky = qkxy*xr + qkyy*yr + qkyz*zr
                qrkz = qkxz*xr + qkyz*yr + qkzz*zr
+c     same as qir in dfield0a
                qrri = qrix*xr + qriy*yr + qriz*zr
+c     same as qkr in dfield0a
                qrrk = qrkx*xr + qrky*yr + qrkz*zr
+c
                qrrik = qrix*qrkx + qriy*qrky + qriz*qrkz
                qik = 2.0d0*(qixy*qkxy+qixz*qkxz+qiyz*qkyz)
      &                  + qixx*qkxx + qiyy*qkyy + qizz*qkzz
@@ -470,6 +485,28 @@ c
      &                   + dterm3ik*(diqkz-dkqiz) + dterm4ik*qriz
      &                   + dterm5ik*qrkz + dterm6ik*(qikrz+qkirz)
 c
+c     save permanent electric field for induced dipole calculation
+c     note: this already has the core contribution
+c
+               fid(1) = -xr*(rr3*corek + rr3*lambdak(3)*valk - 
+     &              rr5*lambdak(5)*drk + rr7*lambdak(7)*qrrk)
+     &              - rr3*lambdak(3)*dkx + 2.0d0*rr5*lambdak(5)*qrkx
+               fid(2) = -yr*(rr3*corek + rr3*lambdak(3)*valk - 
+     &              rr5*lambdak(5)*drk+rr7*lambdak(7)*qrrk)
+     &              - rr3*lambdak(3)*dky + 2.0d0*rr5*lambdak(5)*qrky
+               fid(3) = -zr*(rr3*corek + rr3*lambdak(3)*valk - 
+     &              rr5*lambdak(5)*drk+rr7*lambdak(7)*qrrk)
+     &              - rr3*lambdak(3)*dkz + 2.0d0*rr5*lambdak(5)*qrkz
+               fkd(1) = xr*(rr3*corei + rr3*lambdai(3)*vali + 
+     &              rr5*lambdai(5)*dri + rr7*lambdai(7)*qrri)
+     &              - rr3*lambdai(3)*dix - 2.0d0*rr5*lambdai(5)*qrix
+               fkd(2) = yr*(rr3*corei + rr3*lambdai(3)*vali + 
+     &              rr5*lambdai(5)*dri + rr7*lambdai(7)*qrri)
+     &              - rr3*lambdai(3)*diy - 2.0d0*rr5*lambdai(5)*qriy
+               fkd(3) = zr*(rr3*corei + rr3*lambdai(3)*vali + 
+     &              rr5*lambdai(5)*dri + rr7*lambdai(7)*qrri)
+     &              - rr3*lambdai(3)*diz - 2.0d0*rr5*lambdai(5)*qriz
+c
 c     compute the torque components for this interaction
 c
                ttmi(1) = -rr3*lambdaik(3)*dikx + dterm1ik*dirx + 
@@ -578,6 +615,18 @@ c
                tem(1,k) = tem(1,k) + ttmk(1)
                tem(2,k) = tem(2,k) + ttmk(2)
                tem(3,k) = tem(3,k) + ttmk(3)
+c
+c     increment electric field on both sites
+c
+               do j = 1, 3
+                  permfield(j,i) = permfield(j,i) + fid(j)*mscale(kk)
+                  permfield(j,k) = permfield(j,k) + fkd(j)*mscale(kk)
+c
+c                  permfield(j,i) = permfield(j,i) + fid(j)*dscale(kk)
+c                  permfield(j,k) = permfield(j,k) + fkd(j)*dscale(kk)
+c                  permfieldp(j,i) = permfieldp(j,i) + fid(j)*pscale(kk)
+c                  permfieldp(j,k) = permfieldp(j,k) + fkd(j)*pscale(kk)
+               end do
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -703,9 +752,7 @@ c
                frcz = deik*zr + dterm1ik*diz + dterm2ik*dkz
      &              + dterm3ik*(diqkz-dkqiz) + dterm4ik*qriz
      &              + dterm5ik*qrkz + dterm6ik*(qikrz+qkirz)
-c               frcx = deik*xr*rr1
-c               frcy = deik*yr*rr1
-c               frcz = deik*zr*rr1
+c
                frcx = frcx*rr1
                frcy = frcy*rr1
                frcz = frcz*rr1
@@ -737,13 +784,6 @@ c
                ttmk(1) = ttmk(1)*rr1*oik*mscale(kk)
                ttmk(2) = ttmk(2)*rr1*oik*mscale(kk)
                ttmk(3) = ttmk(3)*rr1*oik*mscale(kk)
-c
-c               ttmi(1) = 0.0d0
-c               ttmi(2) = 0.0d0
-c               ttmi(3) = 0.0d0
-c               ttmk(1) = 0.0d0
-c               ttmk(2) = 0.0d0
-c               ttmk(3) = 0.0d0
 c
 c     now take chain rule terms of 1/r
 c
@@ -788,16 +828,6 @@ c
                tepr(3,k) = tepr(3,k) + ttmk(3)
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-
-
-
-
-
-
-
-
-
-
 c
 c     increment the virial due to pairwise Cartesian forces
 c
@@ -835,6 +865,7 @@ c
             mscale(i15(j,ii)) = 1.0d0
          end do
       end do
+c
 c
 c     for periodic boundary conditions with large cutoffs
 c     neighbors must be found by the replicates method

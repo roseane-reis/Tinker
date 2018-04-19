@@ -228,12 +228,18 @@ c
 c
 c     get the electrostatic field due to permanent multipoles
 c
-      if (use_ewald) then
-         call dfield0c (field,fieldp)
-      else if (use_mlist) then
-         call dfield0b (field,fieldp)
+      print *,"savefield",savefield
+      if (.not.savefield) then
+         if (use_ewald) then
+            call dfield0c (field,fieldp)
+         else if (use_mlist) then
+            call dfield0b (field,fieldp)
+         else
+            call dfield0a (field,fieldp)
+         end if
       else
-         call dfield0a (field,fieldp)
+         field = permfield
+         fieldp = permfield
       end if
 c
 c     set induced dipoles to polarizability times direct field
@@ -964,12 +970,14 @@ c
       use polgrp
       use polpot
       use shunt
+      use chgpen
       implicit none
       integer i,j,k,m
       integer ii,kk
       real*8 xr,yr,zr
       real*8 fgrp,r,r2
       real*8 rr3,rr5
+      real*8 alphai,alphak
       real*8 duix,duiy,duiz
       real*8 puix,puiy,puiz
       real*8 dukx,duky,dukz
@@ -981,6 +989,9 @@ c
       real*8 pdi,pti,pgamma
       real*8 fid(3),fkd(3)
       real*8 fip(3),fkp(3)
+      real*8 lambdai(5)
+      real*8 lambdak(5)
+      real*8 lambdaik(5)
       real*8, allocatable :: uscale(:)
       real*8 field(3,*)
       real*8 fieldp(3,*)
@@ -1018,6 +1029,7 @@ c
          ii = ipole(i)
          pdi = pdamp(i)
          pti = thole(i)
+         alphai = alphaele(i)
          duix = uind(1,i)
          duiy = uind(2,i)
          duiz = uind(3,i)
@@ -1048,24 +1060,31 @@ c
                r2 = xr*xr + yr* yr + zr*zr
                if (r2 .le. off2) then
                   r = sqrt(r2)
+                  alphak = alphaele(k)
                   dukx = uind(1,k)
                   duky = uind(2,k)
                   dukz = uind(3,k)
                   pukx = uinp(1,k)
                   puky = uinp(2,k)
                   pukz = uinp(3,k)
-                  scale3 = uscale(kk)
-                  scale5 = uscale(kk)
-                  damp = pdi * pdamp(k)
-                  if (damp .ne. 0.0d0) then
-                     pgamma = min(pti,thole(k))
-                     damp = -pgamma * (r/damp)**3
-                     if (damp .gt. -50.0d0) then
-                        expdamp = exp(damp)
-                        scale3 = scale3 * (1.0d0-expdamp)
-                        scale5 = scale5 * (1.0d0-expdamp*(1.0d0-damp))
-                     end if
-                  end if
+c                  scale3 = uscale(kk)
+c                  scale5 = uscale(kk)
+c                  damp = pdi * pdamp(k)
+c                  if (damp .ne. 0.0d0) then
+c                     pgamma = min(pti,thole(k))
+c                     damp = -pgamma * (r/damp)**3
+c                     if (damp .gt. -50.0d0) then
+c                        expdamp = exp(damp)
+c                        scale3 = scale3 * (1.0d0-expdamp)
+c                        scale5 = scale5 * (1.0d0-expdamp*(1.0d0-damp))
+c                     end if
+c                  end if
+c
+                  call udamphlike(r,alphai,alphak,
+     &                 lambdai,lambdak,lambdaik)
+                  scale3 = uscale(kk)*lambdaik(3)
+                  scale5 = uscale(kk)*lambdaik(5)
+c
                   rr3 = -scale3 / (r*r2)
                   rr5 = 3.0d0 * scale5 / (r*r2*r2)
                   duir = xr*duix + yr*duiy + zr*duiz

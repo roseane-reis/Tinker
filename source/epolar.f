@@ -1654,7 +1654,7 @@ c
       call induce
 c
 c     set the energy conversion factor
-c
+c     
       f = -0.5d0 * electric / dielec
 c
 c     OpenMP directives for the major loop structure
@@ -1712,6 +1712,7 @@ c
             ep = ep + e
          end if
       end if
+      print *,"final ep",ep
       return
       end
 c

@@ -24,10 +24,13 @@ c     yaxis     number of the y-axis defining atom for each site
 c     pole      multipole values for each site in the local frame
 c     rpole     multipoles rotated to the global coordinate system
 c     polaxe    local axis type for each multipole site
+c     permfield permanent field at each multipole site
+c     savefield logical flag for if electric field has been computed
 c
 c
       module mpole
       implicit none
+      logical savefield
       integer maxpole
       parameter (maxpole=13)
       integer npole
@@ -39,6 +42,7 @@ c
       integer, allocatable :: yaxis(:)
       real*8, allocatable :: pole(:,:)
       real*8, allocatable :: rpole(:,:)
+      real*8, allocatable :: permfield(:,:)
       character*8, allocatable :: polaxe(:)
       save
       end
