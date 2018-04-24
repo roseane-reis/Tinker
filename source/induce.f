@@ -228,7 +228,6 @@ c
 c
 c     get the electrostatic field due to permanent multipoles
 c
-      print *,"savefield",savefield
       if (.not.savefield) then
          if (use_ewald) then
             call dfield0c (field,fieldp)
@@ -551,8 +550,8 @@ c
             write (iout,40)
    40       format (/,' INDUCE  --  Warning, Induced Dipoles',
      &                 ' are not Converged')
-            call prterr
-            call fatal
+c            call prterr
+c            call fatal
          end if
       end if
 c
@@ -2841,6 +2840,13 @@ c
 c
 c     perform deallocation of some local arrays
 c
+c      do i = 1, 6
+c         do j = 1, n*maxelst
+c            if (tdipdip(i,j) .ne. 0.0d0) then
+c               print *,"udirect2b tdipdip",tdipdip(i,j)
+c            end if
+c         end do
+c      end do
       deallocate (toffset)
       deallocate (pscale)
       deallocate (dscale)

@@ -1712,7 +1712,6 @@ c
             ep = ep + e
          end if
       end if
-      print *,"final ep",ep
       return
       end
 c

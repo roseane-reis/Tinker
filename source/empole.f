@@ -1607,6 +1607,16 @@ c
       call fftback
       call fphi_mpole (fphi)
 c
+c     convert the field from fractional to cartesian
+c
+      call fphi_to_cphi (fphi,cphi)
+      do i = 1, npole
+         permfield(1,i) = permfield(1,i) - cphi(2,i)
+         permfield(2,i) = permfield(2,i) - cphi(3,i)
+         permfield(3,i) = permfield(3,i) - cphi(4,i)
+c         print *,"cphis",cphi(2,i),cphi(3,i),cphi(4,i)
+      end do
+c
 c     sum over multipoles and increment total multipole energy
 c
       e = 0.0d0

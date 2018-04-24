@@ -282,12 +282,14 @@ c
          allocate (xmold(n))
          allocate (ymold(n))
          allocate (zmold(n))
-         if (poltyp .ne. 'DIRECT') then
-            if (allocated(tindex))  deallocate (tindex)
-            if (allocated(tdipdip))  deallocate (tdipdip)
-            allocate (tindex(2,n*maxelst))
-            allocate (tdipdip(6,n*maxelst))
-         end if
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c         if (poltyp .ne. 'DIRECT') then
+         if (allocated(tindex))  deallocate (tindex)
+         if (allocated(tdipdip))  deallocate (tdipdip)
+         allocate (tindex(2,n*maxelst))
+         allocate (tdipdip(6,n*maxelst))
+c         end if
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       end if
       if (use_ulist) then
          if (allocated(nulst))  deallocate (nulst)

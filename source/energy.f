@@ -125,7 +125,7 @@ c
       if (use_metal)  call emetal
       if (use_extra)  call extra
 c      if (use_disp) call edisp
-      if (use_disp) print *,"currently not using edisp in energy"
+c      if (use_disp) print *,"currently not using edisp in energy"
 c
 c     sum up to give the total potential energy
 c
@@ -134,7 +134,7 @@ c
      &          + em + ep + er + es + elf + eg + ex + edis + epr
       energy = esum
 c
-      print *,"energy: em,edis,epr",em,edis,epr
+c      print *,"energy: em,ep,edis,epr",em,ep,edis,epr
 c
 c     check for an illegal value for the total energy
 c

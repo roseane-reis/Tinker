@@ -2910,6 +2910,14 @@ c
       end do
       call fphi_to_cphi (fphi,cphi)
 c
+c     save reciprocal part of permanent electric field
+c
+      do i = 1, npole
+         permfield(1,i) = permfield(1,i) - cphi(2,i)/f
+         permfield(2,i) = permfield(2,i) - cphi(3,i)/f
+         permfield(3,i) = permfield(3,i) - cphi(4,i)/f
+      end do
+c
 c     increment the permanent multipole energy and gradient
 c
       e = 0.0d0

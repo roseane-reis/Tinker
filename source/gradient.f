@@ -239,11 +239,11 @@ c
       if (use_geom)  call egeom1
       if (use_extra)  call extra1
 c      if (use_disp) call edisp1
-      if (use_disp) print *,'not using edisp1 in gradient'
+c      if (use_disp) print *,'not using edisp1 in gradient'
 c
 c     sum up to get the total energy and first derivatives
 c
-      print *,"gradient: em,ep,edis,epr",em,ep,edis,epr
+c      print *,"gradient: em,ep,edis,epr",em,ep,edis,epr
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
      &          + em + ep + er + es + elf + eg + ex + edis + epr
