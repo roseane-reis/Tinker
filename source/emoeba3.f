@@ -1743,6 +1743,7 @@ c
       use pauli
       use tarray
       use openmp
+      use polpot
       implicit none
       integer i,j,k,m
       integer ii,kk,kkk
@@ -1801,6 +1802,7 @@ c
       real*8 bn(0:4)
       real*8 lambdai(9),lambdak(9),lambdaik(9)
       real*8, allocatable :: mscale(:)
+      real*8, allocatable :: muscale(:)
       real*8, allocatable :: dlocal(:,:)
       logical header,huge
       character*6 mode
@@ -1829,12 +1831,14 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (mscale(n))
+      allocate (muscale(n))
       allocate (toffset(0:nthread-1))
 c
 c     initialize connected atom exclusion coefficients
 c
       do i = 1, n
          mscale(i) = 1.0d0
+         muscale(i) = 1.0d0
       end do
 c
 c     set conversion factor, cutoff and switching coefficients
@@ -1848,13 +1852,15 @@ c
 !$OMP PARALLEL default(private)
 !$OMP& shared(npole,ipole,x,y,z,monopole,alphaele,csix,overpauli,
 !$OMP& alphapauli,monopauli,rpole,n12,i12,n13,i13,n14,i14,n15,
-!$OMP& i15,m2scale,m3scale,m4scale,m5scale,nelst,elst,use_bounds,
+!$OMP& i15,m2scale,m3scale,m4scale,m5scale,
+!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,
+!$OMP& nelst,elst,use_bounds,
 !$OMP& f,off2,aewald,molcule,name,verbose,debug,header,iout,
 !$OMP& adewald,ntpair,tindex,                         
 !$OMP& tdipdip,toffset,maxlocal,maxelst,                     
 !$OMP& nthread,nchunk) 
-!$OMP& firstprivate(mscale,nlocal) shared (em,edis,epr,einter,
-!$OMP& nem,aem,permfield)
+!$OMP& firstprivate(mscale,muscale,nlocal) shared (em,edis,epr,
+!$OMP& einter,nem,aem,permfield)
 c
 c     perform dynamic allocation of some local arrays
 c
@@ -1890,15 +1896,19 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
+            muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
 c
 c     evaluate all sites within the cutoff distance
@@ -2137,8 +2147,8 @@ c     save dipole - dipole t matrix for mutual induction
 c
 c     INSERT MUTUAL EXCLUSION RULES HERE!!!!
 c
-               rr3ik = bn(1) - (1.0d0 - lambdaik(3))*rr3
-               rr5ik = bn(2) - (1.0d0 - lambdaik(5))*rr5
+               rr3ik = bn(1) - (1.0d0 - muscale(kk)*lambdaik(3))*rr3
+               rr5ik = bn(2) - (1.0d0 - muscale(kk)*lambdaik(5))*rr5
                nlocal = nlocal + 1
                ilocal(1,nlocal) = i
                ilocal(2,nlocal) = k
@@ -2252,15 +2262,19 @@ c     reset exclusion coefficients for connected atoms
 c
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = 1.0d0
+            muscale(i12(j,ii)) = 1.0d0
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = 1.0d0
+            muscale(i13(j,ii)) = 1.0d0
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = 1.0d0
+            muscale(i14(j,ii)) = 1.0d0
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = 1.0d0
+            muscale(i15(j,ii)) = 1.0d0
          end do
       end do
 c
@@ -2297,5 +2311,6 @@ c
 c     perform deallocation of some local arrays
 c
       deallocate (mscale)
+      deallocate (muscale)
       return
       end

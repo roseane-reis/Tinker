@@ -235,7 +235,7 @@ c
       if (use_disp) print *,"currently not using edisp3 in analysis"
 c      if (use_disp) call edisp3
 c
-      print *,"energies",em,edis,epr
+c      print *,"energies",em,edis,epr
 c
 c     sum up to give the total potential energy
 c

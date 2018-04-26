@@ -141,6 +141,7 @@ c
       real*8 fiy(3),fiz(3)
       real*8 lambdai(9),lambdak(9),lambdaik(9)
       real*8, allocatable :: pscale(:)
+      real*8, allocatable :: muscale(:)
       real*8, allocatable :: dscale(:)
       real*8, allocatable :: uscale(:)
       real*8, allocatable :: ufld(:,:)
@@ -173,6 +174,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (pscale(n))
+      allocate (muscale(n))
       allocate (dscale(n))
       allocate (uscale(n))
       allocate (ufld(3,n))
@@ -182,6 +184,7 @@ c     set exclusion coefficients and arrays to store fields
 c
       do i = 1, n
          pscale(i) = 1.0d0
+         muscale(i) = 1.0d0
          dscale(i) = 1.0d0
          uscale(i) = 1.0d0
          do j = 1, 3
@@ -228,12 +231,15 @@ c
          uizp = uinp(3,i)
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = p2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = p3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = p4scale
+            muscale(i14(j,ii)) = mu4scale
             do k = 1, np11(ii)
                 if (i14(j,ii) .eq. ip11(k,ii))
      &            pscale(i14(j,ii)) = p4scale * p41scale
@@ -241,6 +247,7 @@ c
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = p5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -715,9 +722,9 @@ c
      &                      + txyk*uixp + tyyk*uiyp + tyzk*uizp
                   depz = txzi*ukxp + tyzi*ukyp + tzzi*ukzp
      &                      + txzk*uixp + tyzk*uiyp + tzzk*uizp
-                  frcx = frcx + uscale(kk)*depx
-                  frcy = frcy + uscale(kk)*depy
-                  frcz = frcz + uscale(kk)*depz
+                  frcx = frcx + muscale(kk)*depx
+                  frcy = frcy + muscale(kk)*depy
+                  frcz = frcz + muscale(kk)*depz
 c                  print *,"new",txxi,tyyi,tzzi,txyi,txzi,tyzi
 c                  print *,"new",txxi,tyyi,tzzi,txyi,txzi,tyzi
 
@@ -896,15 +903,19 @@ c     reset exclusion coefficients for connected atoms
 c
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = 1.0d0
+            muscale(i12(j,ii)) = 1.0d0
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = 1.0d0
+            muscale(i13(j,ii)) = 1.0d0
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = 1.0d0
+            muscale(i14(j,ii)) = 1.0d0
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = 1.0d0
+            muscale(i15(j,ii)) = 1.0d0
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = 1.0d0
@@ -4134,6 +4145,7 @@ c
       real*8 bn(0:4)
       real*8 lambdai(9),lambdak(9),lambdaik(9)
       real*8, allocatable :: pscale(:)
+      real*8, allocatable :: muscale(:)
       real*8, allocatable :: dscale(:)
       real*8, allocatable :: uscale(:)
       real*8, allocatable :: ufld(:,:)
@@ -4145,6 +4157,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (pscale(n))
+      allocate (muscale(n))
       allocate (dscale(n))
       allocate (uscale(n))
       allocate (ufld(3,n))
@@ -4154,6 +4167,7 @@ c     set exclusion coefficients and arrays to store fields
 c
       do i = 1, n
          pscale(i) = 1.0d0
+         muscale(i) = 1.0d0
          dscale(i) = 1.0d0
          uscale(i) = 1.0d0
          do j = 1, 3
@@ -4177,10 +4191,11 @@ c
 !$OMP& permfield,n12,i12,n13,i13,n14,
 !$OMP& i14,n15,i15,np11,ip11,np12,ip12,np13,ip13,np14,ip14,p2scale,
 !$OMP& p3scale,p4scale,p41scale,p5scale,d1scale,d2scale,d3scale,
+!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,
 !$OMP& d4scale,u1scale,u2scale,u3scale,u4scale,nelst,elst,use_bounds,
 !$OMP& off2,f,aewald,molcule,coptmax,copm,uopt,uoptp,poltyp)
 !$OMP& shared (ep,einter,dep,vir,ufld,dufld)
-!$OMP& firstprivate(pscale,dscale,uscale)
+!$OMP& firstprivate(pscale,muscale,dscale,uscale)
 !$OMP DO reduction(+:ep,einter,dep,vir,ufld,dufld) schedule(guided)
 c
 c     compute the dipole polarization gradient components
@@ -4213,12 +4228,15 @@ c
          uizp = uinp(3,i)
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = p2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = p3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = p4scale
+            muscale(i14(j,ii)) = mu4scale
             do k = 1, np11(ii)
                 if (i14(j,ii) .eq. ip11(k,ii))
      &            pscale(i14(j,ii)) = p4scale * p41scale
@@ -4226,6 +4244,7 @@ c
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = p5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -4319,8 +4338,8 @@ c
                rr7k = bn(3) - (1.0d0 - dscale(kk)*lambdak(7))*rr7
                rr9k = bn(4) - (1.0d0 - dscale(kk)*lambdak(9))*rr9
 c
-               rr5ik = bn(2) - (1.0d0 - uscale(kk)*lambdaik(5))*rr5
-               rr7ik = bn(3) - (1.0d0 - uscale(kk)*lambdaik(7))*rr7
+               rr5ik = bn(2) - (1.0d0 - muscale(kk)*lambdaik(5))*rr5
+               rr7ik = bn(3) - (1.0d0 - muscale(kk)*lambdaik(7))*rr7
 c
 c     intermediates involving moments and distance separation
 c
@@ -4688,15 +4707,19 @@ c     reset exclusion coefficients for connected atoms
 c
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = 1.0d0
+            muscale(i12(j,ii)) = 1.0d0
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = 1.0d0
+            muscale(i13(j,ii)) = 1.0d0
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = 1.0d0
+            muscale(i14(j,ii)) = 1.0d0
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = 1.0d0
+            muscale(i15(j,ii)) = 1.0d0
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = 1.0d0

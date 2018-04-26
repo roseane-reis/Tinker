@@ -963,6 +963,7 @@ c
       use atoms
       use bound
       use cell
+      use couple
       use group
       use mpole
       use polar
@@ -992,6 +993,7 @@ c
       real*8 lambdak(5)
       real*8 lambdaik(5)
       real*8, allocatable :: uscale(:)
+      real*8, allocatable :: muscale(:)
       real*8 field(3,*)
       real*8 fieldp(3,*)
       logical proceed
@@ -1015,11 +1017,13 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (uscale(n))
+      allocate (muscale(n))
 c
 c     set array needed to scale connected atom interactions
 c
       do i = 1, n
          uscale(i) = 1.0d0
+         muscale(i) = 1.0d0
       end do
 c
 c     find the electrostatic field due to mutual induced dipoles
@@ -1046,6 +1050,18 @@ c
          end do
          do j = 1, np14(ii)
             uscale(ip14(j,ii)) = u4scale
+         end do
+         do j = 1, n12(ii)
+            muscale(i12(j,ii)) = mu2scale
+         end do
+         do j = 1, n13(ii)
+            muscale(i13(j,ii)) = mu3scale
+         end do
+         do j = 1, n14(ii)
+            muscale(i14(j,ii)) = mu4scale
+         end do
+         do j = 1, n15(ii)
+            muscale(i15(j,ii)) = mu5scale
          end do
          do k = i+1, npole
             kk = ipole(k)
@@ -1081,8 +1097,8 @@ c                  end if
 c
                   call udamphlike(r,alphai,alphak,
      &                 lambdai,lambdak,lambdaik)
-                  scale3 = uscale(kk)*lambdaik(3)
-                  scale5 = uscale(kk)*lambdaik(5)
+                  scale3 = muscale(kk)*lambdaik(3)
+                  scale5 = muscale(kk)*lambdaik(5)
 c
                   rr3 = -scale3 / (r*r2)
                   rr5 = 3.0d0 * scale5 / (r*r2*r2)
@@ -1114,6 +1130,18 @@ c
 c
 c     reset exclusion coefficients for connected atoms
 c
+         do j = 1, n12(ii)
+            muscale(i12(j,ii)) = 1.0d0
+         end do
+         do j = 1, n13(ii)
+            muscale(i13(j,ii)) = 1.0d0
+         end do
+         do j = 1, n14(ii)
+            muscale(i14(j,ii)) = 1.0d0
+         end do
+         do j = 1, n15(ii)
+            muscale(i15(j,ii)) = 1.0d0
+         end do
          do j = 1, np11(ii)
             uscale(ip11(j,ii)) = 1.0d0
          end do

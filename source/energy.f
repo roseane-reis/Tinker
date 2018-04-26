@@ -134,7 +134,7 @@ c
      &          + em + ep + er + es + elf + eg + ex + edis + epr
       energy = esum
 c
-c      print *,"energy: em,ep,edis,epr",em,ep,edis,epr
+c      print *,"energy: em,ep,edis,epr,ex",em,ep,edis,epr,ex
 c
 c     check for an illegal value for the total energy
 c

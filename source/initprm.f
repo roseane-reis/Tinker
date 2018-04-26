@@ -56,6 +56,7 @@ c
       use torpot
       use units
       use vdwpot
+      use xtrapot
       implicit none
       integer i,j
       character*3 blank3
@@ -272,6 +273,7 @@ c
       vdwindex = 'CLASS'
       dispindex = 'CLASS'
       pauliindex = 'CLASS'
+      ctindex = 'CLASS'
       vdwtyp = 'LENNARD-JONES'
       radrule = 'ARITHMETIC'
       radtyp = 'R-MIN'
@@ -313,6 +315,10 @@ c
       p4scale = 1.0d0
       p5scale = 1.0d0
       p41scale = 0.5d0
+      mu2scale = 0.0d0
+      mu3scale = 0.0d0
+      mu4scale = 1.0d0
+      mu5scale = 1.0d0
 c
 c     set default control parameters for induced dipoles
 c

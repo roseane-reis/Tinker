@@ -46,11 +46,14 @@ TINKER_LIBDIR = $(TINKERDIR)/lib
 BINDIR = $(TINKERDIR)/bin
 LINKDIR = /usr/local/bin
 
-FFTWDIR = $(TINKERDIR)/fftw
+#FFTWDIR = $(TINKERDIR)/fftw
 #FFTW_LIBDIR = -L$(FFTWDIR)/lib
 #FFTW_LIBS = -lfftw3_threads -lfftw3
-FFTW_LIBDIR = -L$(TINKERDIR)/source
-FFTW_LIBS = ~/tinker-git/source/libfftw3_threads.a-osx-gnu ~/tinker-git/source/libfftw3.a-osx-gnu
+#FFTW_LIBDIR = -L$(TINKERDIR)/source
+#FFTW_LIBS = ~/tinker-git/source/libfftw3_threads.a-osx-gnu ~/tinker-git/source/libfftw3.a-osx-gnu
+#FFTW_LIBDIR = $(TINKERDIR)/source
+#FFTW_LIBS = ~/tinker-git/source/libfftw3_threads.a-osx-intel ~/tinker-git/source/libfftw3.a-osx-intel
+FFTW_LIBS = libfftw3_threads.a libfftw3.a
 
 APBSDIR = $(TINKERDIR)/apbs
 APBS_INCDIR = -I$(APBSDIR)/include
@@ -84,16 +87,16 @@ APBS_LIBS = -lapbsmainroutines -lapbs -lmaloc -lapbsblas
 ##  Compiler:  GNU gfortran 6.2
 ##  Parallel:  OpenMP
 
-F77 = gfortran
-F77FLAGS = -c
-OPTFLAGS = -Ofast -mssse3 -fopenmp
-#OPTFLAGS = -O0 -fcheck=bounds -fopenmp
-LIBDIR = -L. -L$(TINKER_LIBDIR)/macos
-LIBS = 
-LIBFLAGS = -crusv
-RANLIB = ranlib -c
-LINKFLAGS = $(OPTFLAGS) -static-libgcc
-RENAME = rename_bin
+#F77 = gfortran
+#F77FLAGS = -c
+#OPTFLAGS = -Ofast -mssse3 -fopenmp
+##OPTFLAGS = -O0 -fcheck=bounds -fopenmp
+#LIBDIR = -L. -L$(TINKER_LIBDIR)/macos
+#LIBS = 
+#LIBFLAGS = -crusv
+#RANLIB = ranlib -c
+#LINKFLAGS = $(OPTFLAGS) -static-libgcc
+#RENAME = rename_bin
 
 ##  Build:     TINKER (no APBS or FFE Support)
 ##  OS Type:   Microsoft Windows 10
@@ -133,16 +136,16 @@ RENAME = rename_bin
 ##  Compiler:  Intel Fortran for MacOS 15.0
 ##  Parallel:  OpenMP
 
-#F77 = ifort
-#F77FLAGS = -c -axSSSE3
-#OPTFLAGS = -O3 -no-ipo -no-prec-div -mdynamic-no-pic -qopenmp
+F77 = ifort
+F77FLAGS = -c -axSSSE3
+OPTFLAGS = -O3 -no-ipo -no-prec-div -mdynamic-no-pic -qopenmp
 #LIBDIR = -L. -L$(TINKER_LIBDIR)/macos
-#LIBS = 
-#LIBFLAGS = -crusv
-#RANLIB = ranlib -c
-#LINKFLAGS = $(OPTFLAGS) -static-intel -mmacosx-version-min=10.6 \
-#		-Wl,-stack_size,0x10000000
-#RENAME = rename_bin
+LIBS = 
+LIBFLAGS = -crusv
+RANLIB = ranlib -c
+LINKFLAGS = $(OPTFLAGS) -static-intel -mmacosx-version-min=10.6 \
+		-Wl,-stack_size,0x10000000
+RENAME = rename_bin
 
 #################################################################
 ##  Should not be Necessary to Change Things Below this Point  ##

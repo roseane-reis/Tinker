@@ -26,6 +26,10 @@ c     u1scale   scale factor for intra-group mutual induction
 c     u2scale   scale factor for 1-2 group mutual induction
 c     u3scale   scale factor for 1-3 group mutual induction
 c     u4scale   scale factor for 1-4 group mutual induction
+c     mu2scale  scale factor for 1-2 induced dipole interactions
+c     mu3scale  scale factor for 1-3 induced dipole interactions
+c     mu4scale  scale factor for 1-4 induced dipole interactions
+c     mu5scale  scale factor for 1-5 induced dipole interactions
 c     udiag     acceleration factor for induced dipole SCF iterations
 c     politer   maximum number of induced dipole SCF iterations
 c     poltyp    type of polarization potential (direct or mutual)
@@ -41,6 +45,8 @@ c
       real*8 d3scale,d4scale
       real*8 u1scale,u2scale
       real*8 u3scale,u4scale
+      real*8 mu2scale,mu3scale
+      real*8 mu4scale,mu5scale
       real*8 udiag
       character*6 poltyp
       save

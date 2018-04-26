@@ -2745,6 +2745,7 @@ c
       use pauli
       use tarray
       use openmp
+      use polpot
       implicit none
       integer i,j,k,m
       integer ii,kk,kkk
@@ -2819,8 +2820,16 @@ c
       real*8 dterm1k,dterm2k,dterm3k,dterm5k
       real*8 frcx,frcy,frcz
       real*8 frc_elex,frc_eley,frc_elez
+      real*8 frc_dispx,frc_dispy,frc_dispz
+      real*8 frc_prx,frc_pry,frc_prz
       real*8 vxx,vyy,vzz
       real*8 vxy,vxz,vyz
+      real*8 vxx_ele,vyy_ele,vzz_ele
+      real*8 vxy_ele,vxz_ele,vyz_ele
+      real*8 vxx_disp,vyy_disp,vzz_disp
+      real*8 vxy_disp,vxz_disp,vyz_disp
+      real*8 vxx_pr,vyy_pr,vzz_pr
+      real*8 vxy_pr,vxz_pr,vyz_pr
       real*8 rr6
       real*8 c6i,c6k,c6ik
       real*8 displam
@@ -2832,9 +2841,12 @@ c
       real*8 fid(3),fkd(3)
       real*8 ttmi(3),ttmk(3)
       real*8 fix(3),fiy(3),fiz(3)
+      real*8 fixem(3),fiyem(3),fizem(3)
+      real*8 fixpr(3),fiypr(3),fizpr(3)
       real*8 bn(0:5)
       real*8 lambdai(11),lambdak(11),lambdaik(11)
       real*8, allocatable :: mscale(:)
+      real*8, allocatable :: muscale(:)
       real*8, allocatable :: tem(:,:)
       real*8, allocatable :: tepr(:,:)
       real*8, allocatable :: dlocal(:,:)
@@ -2853,6 +2865,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (mscale(n))
+      allocate (muscale(n))
       allocate (tem(3,n))
       allocate (tepr(3,n))
       allocate (toffset(0:nthread-1))
@@ -2861,6 +2874,7 @@ c     initialize connected atom scaling and torque arrays
 c
       do i = 1, n
          mscale(i) = 1.0d0
+         muscale(i) = 1.0d0
          do j = 1, 3
             tem(j,i) = 0.0d0
             tepr(j,i) = 0.0d0
@@ -2877,14 +2891,15 @@ c     OpenMP directives for the major loop structure
 c
 !$OMP PARALLEL default(private)
 !$OMP& shared(npole,ipole,x,y,z,rpole,n12,i12,n13,i13,n14,i14,
-!$OMP& n15,i15,m2scale,m3scale,m4scale,m5scale,nelst,elst,
+!$OMP& n15,i15,m2scale,m3scale,m4scale,m5scale,
+!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,nelst,elst,
 !$OMP& use_bounds,f,off2,aewald,molcule,xaxis,yaxis,zaxis,
 !$OMP& monopole,alphaele,csix,overpauli,alphapauli,monopauli,
 !$OMP& adewald,
 !$OMP& ntpair,tindex,                         
 !$OMP& tdipdip,toffset,maxlocal,maxelst,                     
 !$OMP& nthread,nchunk)
-!$OMP& firstprivate(mscale,nlocal) shared (em,
+!$OMP& firstprivate(mscale,muscale,nlocal) shared (em,
 !$OMP& dem,tem,vir,permfield,edis,dedis,epr,depr,tepr)
 c
 c     perform dynamic allocation of some local arrays
@@ -2920,15 +2935,19 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
+            muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
 c
 c     evaluate all sites within the cutoff distance
@@ -3309,8 +3328,8 @@ c     save diple - dipole t matrix for mutual induction
 c
 c     INSERT MUTUAL EXCLUSION RULES HERE!!!
 c
-               urr3ik = bn(1) - (1.0d0 - lambdaik(3))*rr3
-               urr5ik = bn(2) - (1.0d0 - lambdaik(5))*rr5
+               urr3ik = bn(1) - (1.0d0 - muscale(kk)*lambdaik(3))*rr3
+               urr5ik = bn(2) - (1.0d0 - muscale(kk)*lambdaik(5))*rr5
                nlocal = nlocal + 1
                ilocal(1,nlocal) = i
                ilocal(2,nlocal) = k
@@ -3356,21 +3375,21 @@ c
      &              1.0d0)/r8 - c6ik*ddamp/r7 - 
      &              c6ik*mscale(kk)*2.0d0*displam*lambdaik(10)/r7
 c
-               frcx = de * xr
-               frcy = de * yr
-               frcz = de * zr
+               frc_dispx = de * xr
+               frc_dispy = de * yr
+               frc_dispz = de * zr
 c
 c     increment force-based gradient on first site 
 c
-               dedis(1,ii) = dedis(1,ii) - frcx
-               dedis(2,ii) = dedis(2,ii) - frcy
-               dedis(3,ii) = dedis(3,ii) - frcz
+               dedis(1,ii) = dedis(1,ii) - frc_dispx
+               dedis(2,ii) = dedis(2,ii) - frc_dispy
+               dedis(3,ii) = dedis(3,ii) - frc_dispz
 c
 c     increment force-based gradient on second site 
 c
-               dedis(1,kk) = dedis(1,kk) + frcx
-               dedis(2,kk) = dedis(2,kk) + frcy
-               dedis(3,kk) = dedis(3,kk) + frcz
+               dedis(1,kk) = dedis(1,kk) + frc_dispx
+               dedis(2,kk) = dedis(2,kk) + frc_dispy
+               dedis(3,kk) = dedis(3,kk) + frc_dispz
 c
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
@@ -3433,19 +3452,19 @@ c
 c     
 c     compute the force components for this interaction
 c     
-               frcx = deik*xr + dterm1ik*dix + dterm2ik*dkx
+               frc_prx = deik*xr + dterm1ik*dix + dterm2ik*dkx
      &              + dterm3ik*(diqkx-dkqix) + dterm4ik*qrix
      &              + dterm5ik*qrkx + dterm6ik*(qikrx+qkirx)
-               frcy = deik*yr + dterm1ik*diy + dterm2ik*dky
+               frc_pry = deik*yr + dterm1ik*diy + dterm2ik*dky
      &              + dterm3ik*(diqky-dkqiy) + dterm4ik*qriy
      &              + dterm5ik*qrky + dterm6ik*(qikry+qkiry)
-               frcz = deik*zr + dterm1ik*diz + dterm2ik*dkz
+               frc_prz = deik*zr + dterm1ik*diz + dterm2ik*dkz
      &              + dterm3ik*(diqkz-dkqiz) + dterm4ik*qriz
      &              + dterm5ik*qrkz + dterm6ik*(qikrz+qkirz)
 c
-               frcx = frcx*rr1
-               frcy = frcy*rr1
-               frcz = frcz*rr1
+               frc_prx = frc_prx*rr1
+               frc_pry = frc_pry*rr1
+               frc_prz = frc_prz*rr1
 c
 c     compute the torque components for this interaction
 c
@@ -3478,30 +3497,30 @@ c
 c     now take chain rule terms of 1/r
 c     note: there are no torques for chain rule terms?
 c
-               frcx = frcx + evv*rr3*xr
-               frcy = frcy + evv*rr3*yr
-               frcz = frcz + evv*rr3*zr
+               frc_prx = frc_prx + evv*rr3*xr
+               frc_pry = frc_pry + evv*rr3*yr
+               frc_prz = frc_prz + evv*rr3*zr
 c
 c     multiply by overlap prefactor
 c
-               frcx = oik*mscale(kk)*frcx
-               frcy = oik*mscale(kk)*frcy
-               frcz = oik*mscale(kk)*frcz
+               frc_prx = oik*mscale(kk)*frc_prx
+               frc_pry = oik*mscale(kk)*frc_pry
+               frc_prz = oik*mscale(kk)*frc_prz
 c
 c     increment force-based gradient and torque on first site
 c
-               depr(1,ii) = depr(1,ii) + frcx
-               depr(2,ii) = depr(2,ii) + frcy
-               depr(3,ii) = depr(3,ii) + frcz
+               depr(1,ii) = depr(1,ii) + frc_prx
+               depr(2,ii) = depr(2,ii) + frc_pry
+               depr(3,ii) = depr(3,ii) + frc_prz
                tepr(1,i) = tepr(1,i) + ttmi(1)
                tepr(2,i) = tepr(2,i) + ttmi(2)
                tepr(3,i) = tepr(3,i) + ttmi(3)
 c
 c     increment force-based gradient and torque on second site
 c
-               depr(1,kk) = depr(1,kk) - frcx
-               depr(2,kk) = depr(2,kk) - frcy
-               depr(3,kk) = depr(3,kk) - frcz
+               depr(1,kk) = depr(1,kk) - frc_prx
+               depr(2,kk) = depr(2,kk) - frc_pry
+               depr(3,kk) = depr(3,kk) - frc_prz
                tepr(1,k) = tepr(1,k) + ttmk(1)
                tepr(2,k) = tepr(2,k) + ttmk(2)
                tepr(3,k) = tepr(3,k) + ttmk(3)
@@ -3510,21 +3529,36 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c     increment the virial due to pairwise Cartesian forces
 c
-               vxx = -xr * f * frc_elex
-               vxy = -yr * f * frc_elex
-               vxz = -zr * f * frc_elex
-               vyy = -yr * f * frc_eley
-               vyz = -zr * f * frc_eley
-               vzz = -zr * f * frc_elez
-               vir(1,1) = vir(1,1) + vxx
-               vir(2,1) = vir(2,1) + vxy
-               vir(3,1) = vir(3,1) + vxz
-               vir(1,2) = vir(1,2) + vxy
-               vir(2,2) = vir(2,2) + vyy
-               vir(3,2) = vir(3,2) + vyz
-               vir(1,3) = vir(1,3) + vxz
-               vir(2,3) = vir(2,3) + vyz
-               vir(3,3) = vir(3,3) + vzz
+               vxx_ele = -xr * f * frc_elex
+               vxy_ele = -yr * f * frc_elex
+               vxz_ele = -zr * f * frc_elex
+               vyy_ele = -yr * f * frc_eley
+               vyz_ele = -zr * f * frc_eley
+               vzz_ele = -zr * f * frc_elez
+c
+               vxx_disp = xr * frc_dispx
+               vxy_disp = yr * frc_dispx
+               vxz_disp = zr * frc_dispx
+               vyy_disp = yr * frc_dispy
+               vyz_disp = zr * frc_dispy
+               vzz_disp = zr * frc_dispz
+c
+               vxx_pr = -xr * frc_prx
+               vxy_pr = -yr * frc_prx
+               vxz_pr = -zr * frc_prx
+               vyy_pr = -yr * frc_pry
+               vyz_pr = -zr * frc_pry
+               vzz_pr = -zr * frc_prz
+c
+               vir(1,1) = vir(1,1) + vxx_ele + vxx_disp + vxx_pr 
+               vir(2,1) = vir(2,1) + vxy_ele + vxy_disp + vxy_pr
+               vir(3,1) = vir(3,1) + vxz_ele + vxz_disp + vxz_pr
+               vir(1,2) = vir(1,2) + vxy_ele + vxy_disp + vxy_pr
+               vir(2,2) = vir(2,2) + vyy_ele + vyy_disp + vyy_pr
+               vir(3,2) = vir(3,2) + vyz_ele + vyz_disp + vyz_pr
+               vir(1,3) = vir(1,3) + vxz_ele + vxz_disp + vxz_pr
+               vir(2,3) = vir(2,3) + vyz_ele + vyz_disp + vyz_pr
+               vir(3,3) = vir(3,3) + vzz_ele + vzz_disp + vzz_pr
             end if
          end do
 c
@@ -3532,15 +3566,19 @@ c     reset exclusion coefficients for connected atoms
 c
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = 1.0d0
+            muscale(i12(j,ii)) = 1.0d0
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = 1.0d0
+            muscale(i13(j,ii)) = 1.0d0
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = 1.0d0
+            muscale(i14(j,ii)) = 1.0d0
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = 1.0d0
+            muscale(i15(j,ii)) = 1.0d0
          end do
       end do
 c
@@ -3578,9 +3616,20 @@ c     resolve site torques then increment forces and virial
 c
       do i = 1, npole
 c
-         call torque (i,tepr(1,i),fix,fiy,fiz,depr)
+c     torques from paulir repulsion
 c
-         call torque (i,tem(1,i),fix,fiy,fiz,dem)
+         call torque (i,tepr(1,i),fixpr,fiypr,fizpr,depr)
+c
+c     torques from electrostatics
+c
+         call torque (i,tem(1,i),fixem,fiyem,fizem,dem)
+c
+c     add together electrostatic and pauli repulsion torques
+c
+         fix = fixpr + fixem
+         fiy = fiypr + fiyem
+         fiz = fizpr + fizem
+c
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)
@@ -3625,6 +3674,7 @@ c
 c     perform deallocation of some local arrays
 c
       deallocate (mscale)
+      deallocate (muscale)
       deallocate (tem)
       deallocate (tepr)
 c

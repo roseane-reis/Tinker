@@ -405,6 +405,18 @@ c
       else if (keyword(1:16) .eq. 'MUTUAL-14-SCALE ') then
          read (string,*,err=10,end=10)  u4scale
          if (u4scale .gt. 1.0d0)  u4scale = 1.0d0 / u4scale
+      else if (keyword(1:16) .eq. 'DIPOLE-12-SCALE ') then
+         read (string,*,err=10,end=10)  mu2scale
+         if (mu2scale .gt. 1.0d0)  mu2scale = 1.0d0 / mu2scale
+      else if (keyword(1:16) .eq. 'DIPOLE-13-SCALE ') then
+         read (string,*,err=10,end=10)  mu3scale
+         if (mu3scale .gt. 1.0d0)  mu3scale = 1.0d0 / mu3scale
+      else if (keyword(1:16) .eq. 'DIPOLE-14-SCALE ') then
+         read (string,*,err=10,end=10)  mu4scale
+         if (mu4scale .gt. 1.0d0)  mu4scale = 1.0d0 / mu4scale
+      else if (keyword(1:16) .eq. 'DIPOLE-15-SCALE ') then
+         read (string,*,err=10,end=10)  mu5scale
+         if (mu5scale .gt. 1.0d0)  mu5scale = 1.0d0 / mu5scale
 c
 c     set control parameters for reaction field potentials
 c

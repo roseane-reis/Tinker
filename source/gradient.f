@@ -243,7 +243,7 @@ c      if (use_disp) print *,'not using edisp1 in gradient'
 c
 c     sum up to get the total energy and first derivatives
 c
-c      print *,"gradient: em,ep,edis,epr",em,ep,edis,epr
+c      print *,"gradient: em,ep,edis,epr,ex",em,ep,edis,epr,ex
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
      &          + em + ep + er + es + elf + eg + ex + edis + epr
