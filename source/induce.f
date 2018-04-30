@@ -550,8 +550,8 @@ c
             write (iout,40)
    40       format (/,' INDUCE  --  Warning, Induced Dipoles',
      &                 ' are not Converged')
-c            call prterr
-c            call fatal
+            call prterr
+            call fatal
          end if
       end if
 c
