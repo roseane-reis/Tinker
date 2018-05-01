@@ -1,0 +1,77 @@
+
+     ######################################################################
+   ##########################################################################
+  ###                                                                      ###
+ ###            TINKER  ---  Software Tools for Molecular Design            ###
+ ##                                                                          ##
+ ##                        Version 8.4  February 2018                        ##
+ ##                                                                          ##
+ ##               Copyright (c)  Jay William Ponder  1990-2018               ##
+ ###                           All Rights Reserved                          ###
+  ###                                                                      ###
+   ##########################################################################
+     ######################################################################
+
+
+ Additional Atomic Dipole Polarizability Parameters :
+
+     Atom Type           Alpha        Damp     Group Atom Types
+
+       441               0.783       0.390         442
+       442               0.359       0.390         441
+
+ Smooth Particle Mesh Ewald Parameters :
+
+    Ewald Coefficient       PME Grid Dimensions       B-Spline Order
+
+          0.3000               64    64    64                5
+
+ Additional CT-Charge Parameters :
+
+     Atom Class           C6
+        34           1000.0000
+        35            100.0000
+
+ Additional CT Damping Parameters: 
+
+     Atom Class          Alpha
+        34              4.0000
+        35              3.5000
+
+ Additional C6 Dispersion Parameters :
+
+     Atom Class           C6
+        34             21.2904
+        35              4.4414
+
+ Additional Pauli Size Parameters :
+
+     Atom Class           C6
+        34              4.2397
+        35              1.4295
+
+ Additional Pauli Damping Parameters: 
+
+     Atom Class          Alpha
+        34              4.6712
+        35              4.2841
+
+ Additional Pauli Valence Electron Parameters: 
+
+     Atom Class          Val
+        34              1.6558
+ using saved permanent field
+ currently not using edisp3 in analysis
+
+ Total Potential Energy :               -5.839659 Kcal/mole
+
+ Energy Component Breakdown :           Kcal/mole        Interactions
+
+ Bond Stretching                         0.025695                4
+ Angle Bending                           0.746078                2
+ Urey-Bradley                           -0.028794                2
+ Atomic Multipoles                      -8.047254               15
+ Dispersion                             -2.437302                0
+ Pauli Repulsion                         6.283506                0
+ Polarization                           -1.141119                6
+ Extra Energy Terms                     -1.240469                0

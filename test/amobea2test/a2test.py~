@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+
+import os
+from glob import glob
+import subprocess
+import sys
+import numpy as np
+from termcolor import cprint
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+CSI = "\x1B["
+PASS = CSI + "32;1m" + "PASSED" + CSI + "0m"
+FAIL = CSI + "31;1m" + "FAILED" + CSI + "0m"
+POOP = u'\U0001F4A9'
+BEER = u'\U0001F37A'
+
+def make_green(s):
+    return CSI + "32;1m" + s + CSI + "0m"
+
+def make_red(s):
+    return CSI + "31;1m" + s + CSI + "0m"
+
+print "Testing Tinker..."
+my_bin = str("../../source/")
+
+print "Testing binaries located at %s" % ''.join(my_bin)
+
+# Find this script's directory and go there, to allow execution from any location
+scriptpath = os.path.dirname(os.path.realpath(__file__))
+os.chdir(scriptpath)
+print "Running from %s" % scriptpath
+
+def run_test(testname,my_exec,keyfile,xyzfile,options):
+    outfile = open("%s.out"%testname, 'w')
+    do_me = [my_bin + my_exec,'-k', keyfile, xyzfile, options]
+    process = subprocess.Popen(do_me, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+    stdout,stderr = process.communicate()
+    # Echo stdout
+    outfile.write(stdout)
+    # Echo stderr
+    outfile.write(stderr + "\n")
+    outfile.close()
+
+def get_energy(component,type,testname):
+    if type == "reference":
+        file = testname + ".out"
+    elif type == "test":
+        file = testname + ".ref"
+    else:
+        print "must input reference or test"
+# get multipole energy from file
+    for line in open(file, 'r'):
+        if component in line:
+            line_s = line.split("              ")
+            energy = float(line_s[1])
+    return energy
+
+def test_energy(component,method):
+    name = "pairwise_energy"
+    run_test(name,"analyze.x","a2-pair.key","dimer01.xyz","e")
+    ref_ene = get_energy("Multipole","reference",name) 
+    test_ene = get_energy("Multipole","test",name)
+    print ref_ene, test_ene
+    if np.allclose(ref_ene,test_ene):
+#        print bcolors.OKGREEN + method + ' ' + component + ' Energy         PASSED'
+        cprint(method + ' ' + component + ' Energy         PASSED' ) 
+    else:
+        print method + ' ' + component + ' Energy         FAILED'
+
+
+
+test_energy("Multipole","pairwise")
