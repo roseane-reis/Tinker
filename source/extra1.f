@@ -231,6 +231,7 @@ c
       use xtrapot
       use mpole
       use mplpot
+      use virial
       implicit none
       integer i,j,k
       integer ii,kk,kkk
@@ -244,6 +245,8 @@ c
       real*8 transferi,transferk
       real*8 exptermi,exptermk
       real*8 frcx,frcy,frcz
+      real*8 vxx,vyy,vzz
+      real*8 vxy,vxz,vyz
       real*8, allocatable :: mscale(:)
       logical proceed,usei,usek
       character*6 mode
@@ -278,8 +281,8 @@ c
 !$OMP& shared(npole,ipole,x,y,z,chgct,alphact,n12,i12,n13,i13,
 !$OMP& n14,i14,n15,i15,m2scale,m3scale,m4scale,m5scale,
 !$OMP& nelst,elst,use_bounds,off2)
-!$OMP& firstprivate(mscale) shared (ex,dex)
-!$OMP DO reduction(+:ex,dex) schedule(guided)
+!$OMP& firstprivate(mscale) shared (ex,dex,vir)
+!$OMP DO reduction(+:ex,dex,vir) schedule(guided)
 c
 c     compute the charge transfer energy
 c
@@ -344,6 +347,24 @@ c
                dex(1,kk) = dex(1,kk) + frcx
                dex(2,kk) = dex(2,kk) + frcy
                dex(3,kk) = dex(3,kk) + frcz
+c
+c     increment the virial due to pairwise Cartesian forces
+c
+               vxx = xr * frcx
+               vxy = yr * frcx
+               vxz = zr * frcx
+               vyy = yr * frcy
+               vyz = zr * frcy
+               vzz = zr * frcz
+               vir(1,1) = vir(1,1) + vxx
+               vir(2,1) = vir(2,1) + vxy
+               vir(3,1) = vir(3,1) + vxz
+               vir(1,2) = vir(1,2) + vxy
+               vir(2,2) = vir(2,2) + vyy
+               vir(3,2) = vir(3,2) + vyz
+               vir(1,3) = vir(1,3) + vxz
+               vir(2,3) = vir(2,3) + vyz
+               vir(3,3) = vir(3,3) + vzz
             end if
          end do
 c
