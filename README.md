@@ -1,7 +1,8 @@
 # tinker
 TINKER Software Tools for Molecular Design
 
-This "amoeba2" branch of Tinker contains energy and gradient routines to implement the improved functional form of AMOEBA 2.0
+This "amoeba2" branch of Tinker contains energy and gradient routines to implement the improved functional form of AMOEBA 2.0.
+
 The major changes are:
   1. Addition of Hydrogen-like Electrostatic Potential for Electrostatic and Polarization interactions
   2. Damped Dispersion PME 
