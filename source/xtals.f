@@ -23,6 +23,7 @@ c     vary         atom numbers involved in potential parameters
 c     e0_lattice   ideal lattice energy for the current crystal
 c     vartyp       type of each potential parameter to be optimized
 c     rsdtyp       experimental variable for each of the residuals
+c     rotate       rotational degrees of freedom in fit
 c
 c
       module xtals
@@ -37,5 +38,6 @@ c
       real*8 e0_lattice
       character*16 vartyp(maxlsq)
       character*16 rsdtyp(maxrsd)
+      character*10 rotate
       save
       end

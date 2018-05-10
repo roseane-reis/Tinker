@@ -28,6 +28,10 @@ def make_green(s):
 def make_red(s):
     return CSI + "31;1m" + s + CSI + "0m"
 
+# remove all previous test output files
+for filename in glob('*.out'):
+    os.remove(filename)
+
 print "Testing Tinker..."
 my_bin = str("../../source/")
 

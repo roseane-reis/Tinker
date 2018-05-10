@@ -1719,7 +1719,7 @@ eurey3.o: action.o analyz.o atomid.o atoms.o bound.o energi.o group.o inform.o i
 evcorr.o: atoms.o bound.o boxes.o limits.o math.o mutant.o shunt.o sizes.o vdw.o vdwpot.o
 ewald.o:
 extra.o: atoms.o bound.o cell.o couple.o energi.o group.o limits.o mplpot.o mpole.o neigh.o shunt.o sizes.o usage.o xtrapot.o
-extra1.o: atoms.o bound.o cell.o couple.o deriv.o energi.o group.o limits.o mplpot.o mpole.o neigh.o shunt.o sizes.o usage.o xtrapot.o
+extra1.o: atoms.o bound.o cell.o couple.o deriv.o energi.o group.o limits.o mplpot.o mpole.o neigh.o shunt.o sizes.o usage.o virial.o xtrapot.o
 extra2.o: atoms.o hessn.o sizes.o
 extra3.o: analyz.o atoms.o bound.o cell.o couple.o energi.o group.o limits.o mplpot.o mpole.o neigh.o shunt.o sizes.o usage.o xtrapot.o
 faces.o:
@@ -2055,7 +2055,7 @@ vibs.o:
 virial.o:
 volume.o: atoms.o iounit.o math.o sizes.o
 warp.o:
-xtalfit.o: atomid.o atoms.o bound.o boxes.o charge.o dipole.o energi.o files.o fracs.o inform.o iounit.o kvdws.o limits.o math.o molcul.o mpole.o polar.o potent.o sizes.o vdw.o vdwpot.o xtals.o
+xtalfit.o: atomid.o atoms.o bound.o boxes.o charge.o dipole.o disp.o energi.o files.o fracs.o group.o inform.o iounit.o kvdws.o limits.o math.o molcul.o mpole.o pauli.o polar.o potent.o rigid.o sizes.o vdw.o vdwpot.o xtals.o xtrapot.o
 xtalmin.o: atoms.o boxes.o files.o inform.o iounit.o keys.o math.o scales.o sizes.o
 xtals.o:
 xtrapot.o:
