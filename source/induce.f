@@ -961,6 +961,7 @@ c
       subroutine ufield0a (field,fieldp)
       use sizes
       use atoms
+      use atomid
       use bound
       use cell
       use couple
@@ -1052,16 +1053,16 @@ c
             uscale(ip14(j,ii)) = u4scale
          end do
          do j = 1, n12(ii)
-            muscale(i12(j,ii)) = mu2scale
+            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
-            muscale(i13(j,ii)) = mu3scale
+            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
-            muscale(i14(j,ii)) = mu4scale
+            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
-            muscale(i15(j,ii)) = mu5scale
+            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
          end do
          do k = i+1, npole
             kk = ipole(k)

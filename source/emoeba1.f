@@ -70,6 +70,8 @@ c
       use molcul
       use mplpot
       use mpole
+      use polgrp
+      use polpot
       use shunt
       use usage
       use virial
@@ -147,6 +149,7 @@ c
       real*8 fid(3),fkd(3)
       real*8 fix(3),fiy(3),fiz(3)
       real*8, allocatable :: mscale(:)
+      real*8, allocatable :: dscale(:)
       real*8, allocatable :: tem(:,:)
       real*8, allocatable :: tepr(:,:)
       real*8, allocatable :: lambdai(:)
@@ -187,6 +190,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (mscale(n))
+      allocate (dscale(n))
       allocate (tem(3,n))
       allocate (tepr(3,n))
       allocate (lambdai(rorder))
@@ -197,6 +201,7 @@ c     initialize connected atom scaling and torque arrays
 c
       do i = 1, n
          mscale(i) = 1.0d0
+         dscale(i) = 1.0d0
          do j = 1, 3
             tem(j,i) = 0.0d0
             tepr(j,i) = 0.0d0
@@ -256,6 +261,18 @@ c
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = d1scale
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = d2scale
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = d3scale
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = d4scale
          end do
 c
 c     evaluate all sites within the cutoff distance
@@ -617,8 +634,8 @@ c
 c     increment electric field on both sites
 c
                do j = 1, 3
-                  permfield(j,i) = permfield(j,i) + fid(j)*mscale(kk)
-                  permfield(j,k) = permfield(j,k) + fkd(j)*mscale(kk)
+                  permfield(j,i) = permfield(j,i) + fid(j)*dscale(kk)
+                  permfield(j,k) = permfield(j,k) + fkd(j)*dscale(kk)
 c
 c                  permfield(j,i) = permfield(j,i) + fid(j)*dscale(kk)
 c                  permfield(j,k) = permfield(j,k) + fkd(j)*dscale(kk)
@@ -859,6 +876,18 @@ c
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = 1.0d0
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = 1.0d0
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = 1.0d0
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = 1.0d0
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = 1.0d0
          end do
       end do
 c
@@ -2726,6 +2755,7 @@ c
       subroutine emoebareal1d
       use sizes
       use atoms
+      use atomid
       use bound
       use chgpot
       use couple
@@ -2738,6 +2768,8 @@ c
       use mplpot
       use mpole
       use neigh
+      use polgrp
+      use polpot
       use shunt
       use virial
       use chgpen
@@ -2745,7 +2777,6 @@ c
       use pauli
       use tarray
       use openmp
-      use polpot
       implicit none
       integer i,j,k,m
       integer ii,kk,kkk
@@ -2846,6 +2877,7 @@ c
       real*8 bn(0:5)
       real*8 lambdai(11),lambdak(11),lambdaik(11)
       real*8, allocatable :: mscale(:)
+      real*8, allocatable :: dscale(:)
       real*8, allocatable :: muscale(:)
       real*8, allocatable :: tem(:,:)
       real*8, allocatable :: tepr(:,:)
@@ -2865,6 +2897,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (mscale(n))
+      allocate (dscale(n))
       allocate (muscale(n))
       allocate (tem(3,n))
       allocate (tepr(3,n))
@@ -2874,6 +2907,7 @@ c     initialize connected atom scaling and torque arrays
 c
       do i = 1, n
          mscale(i) = 1.0d0
+         dscale(i) = 1.0d0
          muscale(i) = 1.0d0
          do j = 1, 3
             tem(j,i) = 0.0d0
@@ -2891,7 +2925,9 @@ c     OpenMP directives for the major loop structure
 c
 !$OMP PARALLEL default(private)
 !$OMP& shared(npole,ipole,x,y,z,rpole,n12,i12,n13,i13,n14,i14,
-!$OMP& n15,i15,m2scale,m3scale,m4scale,m5scale,
+!$OMP& np11,np12,np13,np14,ip11,ip12,ip13,ip14,
+!$OMP& n15,i15,m2scale,m3scale,m4scale,m5scale,atomic,
+!$OMP& d1scale,d2scale,d3scale,d4scale,
 !$OMP& mu2scale,mu3scale,mu4scale,mu5scale,nelst,elst,
 !$OMP& use_bounds,f,off2,aewald,molcule,xaxis,yaxis,zaxis,
 !$OMP& monopole,alphaele,csix,overpauli,alphapauli,monopauli,
@@ -2899,7 +2935,7 @@ c
 !$OMP& ntpair,tindex,                         
 !$OMP& tdipdip,toffset,maxlocal,maxelst,                     
 !$OMP& nthread,nchunk)
-!$OMP& firstprivate(mscale,muscale,nlocal) shared (em,
+!$OMP& firstprivate(mscale,dscale,muscale,nlocal) shared (em,
 !$OMP& dem,tem,vir,permfield,edis,dedis,epr,depr,tepr)
 c
 c     perform dynamic allocation of some local arrays
@@ -2935,19 +2971,31 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
-            muscale(i12(j,ii)) = mu2scale
+            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
-            muscale(i13(j,ii)) = mu3scale
+            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
-            muscale(i14(j,ii)) = mu4scale
+            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
-            muscale(i15(j,ii)) = mu5scale
+            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = d1scale
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = d2scale
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = d3scale
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = d4scale
          end do
 c
 c     evaluate all sites within the cutoff distance
@@ -3209,35 +3257,6 @@ c
      &                   + dterm3ik*(diqkz-dkqiz) + dterm4ik*qriz
      &                   + dterm5ik*qrkz + dterm6ik*(qikrz+qkirz)
 c
-c     save permanent electric field for induced dipole calculation
-c     note: this already has the core contribution
-c
-               fid(1) = -xr*(rr3core*corek + rr3k*valk -
-     &              rr5k*drk + rr7k*qrrk)
-     &              - rr3k*dkx + 2.0d0*rr5k*qrkx
-               fid(2) = -yr*(rr3core*corek + rr3k*valk -
-     &              rr5k*drk+rr7k*qrrk)
-     &              - rr3k*dky + 2.0d0*rr5k*qrky
-               fid(3) = -zr*(rr3core*corek + rr3k*valk -
-     &              rr5k*drk+rr7k*qrrk)
-     &              - rr3k*dkz + 2.0d0*rr5k*qrkz
-               fkd(1) = xr*(rr3core*corei + rr3i*vali +
-     &              rr5i*dri + rr7i*qrri)
-     &              - rr3i*dix - 2.0d0*rr5i*qrix
-               fkd(2) = yr*(rr3core*corei + rr3i*vali +
-     &              rr5i*dri + rr7i*qrri)
-     &              - rr3i*diy - 2.0d0*rr5i*qriy
-               fkd(3) = zr*(rr3core*corei + rr3i*vali +
-     &              rr5i*dri + rr7i*qrri)
-     &              - rr3i*diz - 2.0d0*rr5i*qriz
-c
-c     increment electric field on both sites
-c
-               do j = 1, 3
-                  permfield(j,i) = permfield(j,i) + fid(j)
-                  permfield(j,k) = permfield(j,k) + fkd(j)
-               end do
-c
 c     compute the torque components for this interaction
 c
                ttmi(1) = -rr3ik*dikx + dterm1ik*dirx + 
@@ -3323,6 +3342,49 @@ c
                tem(1,k) = tem(1,k) + ttmk(1) * f 
                tem(2,k) = tem(2,k) + ttmk(2) * f 
                tem(3,k) = tem(3,k) + ttmk(3) * f
+c
+c
+c     save permanent electric field for induced dipole calculation
+c     note: this already has the core contribution
+c
+               rr1core = bn(0) - (1.0d0 - dscale(kk))*rr1
+               rr3core = bn(1) - (1.0d0 - dscale(kk))*rr3
+c
+               rr1i = bn(0) - (1.0d0 - dscale(kk)*lambdai(1))*rr1
+               rr3i = bn(1) - (1.0d0 - dscale(kk)*lambdai(3))*rr3
+               rr5i = bn(2) - (1.0d0 - dscale(kk)*lambdai(5))*rr5
+               rr7i = bn(3) - (1.0d0 - dscale(kk)*lambdai(7))*rr7
+c
+               rr1k = bn(0) - (1.0d0 - dscale(kk)*lambdak(1))*rr1
+               rr3k = bn(1) - (1.0d0 - dscale(kk)*lambdak(3))*rr3
+               rr5k = bn(2) - (1.0d0 - dscale(kk)*lambdak(5))*rr5
+               rr7k = bn(3) - (1.0d0 - dscale(kk)*lambdak(7))*rr7
+c
+               fid(1) = -xr*(rr3core*corek + rr3k*valk -
+     &              rr5k*drk + rr7k*qrrk)
+     &              - rr3k*dkx + 2.0d0*rr5k*qrkx
+               fid(2) = -yr*(rr3core*corek + rr3k*valk -
+     &              rr5k*drk+rr7k*qrrk)
+     &              - rr3k*dky + 2.0d0*rr5k*qrky
+               fid(3) = -zr*(rr3core*corek + rr3k*valk -
+     &              rr5k*drk+rr7k*qrrk)
+     &              - rr3k*dkz + 2.0d0*rr5k*qrkz
+               fkd(1) = xr*(rr3core*corei + rr3i*vali +
+     &              rr5i*dri + rr7i*qrri)
+     &              - rr3i*dix - 2.0d0*rr5i*qrix
+               fkd(2) = yr*(rr3core*corei + rr3i*vali +
+     &              rr5i*dri + rr7i*qrri)
+     &              - rr3i*diy - 2.0d0*rr5i*qriy
+               fkd(3) = zr*(rr3core*corei + rr3i*vali +
+     &              rr5i*dri + rr7i*qrri)
+     &              - rr3i*diz - 2.0d0*rr5i*qriz
+c
+c     increment electric field on both sites
+c
+               do j = 1, 3
+                  permfield(j,i) = permfield(j,i) + fid(j)
+                  permfield(j,k) = permfield(j,k) + fkd(j)
+               end do
 c
 c     save diple - dipole t matrix for mutual induction
 c
@@ -3579,6 +3641,18 @@ c
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = 1.0d0
             muscale(i15(j,ii)) = 1.0d0
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = 1.0d0
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = 1.0d0
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = 1.0d0
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = 1.0d0
          end do
       end do
 c

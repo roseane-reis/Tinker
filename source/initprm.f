@@ -315,8 +315,8 @@ c
       p4scale = 1.0d0
       p5scale = 1.0d0
       p41scale = 0.5d0
-      mu2scale = 0.0d0
-      mu3scale = 0.0d0
+      mu2scale = 1.0d0
+      mu3scale = 1.0d0
       mu4scale = 1.0d0
       mu5scale = 1.0d0
 c

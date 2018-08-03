@@ -75,6 +75,8 @@ c
       use molcul
       use mplpot
       use mpole
+      use polgrp
+      use polpot
       use potent
       use shunt
       use usage
@@ -123,6 +125,7 @@ c
       real*8 apauli,apaulk
       real*8 fid(3),fkd(3)
       real*8, allocatable :: mscale(:)
+      real*8, allocatable :: dscale(:)
       real*8, allocatable :: lambdai(:)
       real*8, allocatable :: lambdak(:)
       real*8, allocatable :: lambdaik(:)
@@ -177,6 +180,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (mscale(n))
+      allocate (dscale(n))
       allocate (lambdai(rorder))
       allocate (lambdak(rorder))
       allocate (lambdaik(rorder))
@@ -185,6 +189,7 @@ c     initialize connected atom exclusion coefficients
 c
       do i = 1, n
          mscale(i) = 1.0d0
+         dscale(i) = 1.0d0
       end do
 c
 c     initialize charge penetration scale factors
@@ -240,6 +245,18 @@ c
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = d1scale
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = d2scale
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = d3scale
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = d4scale
          end do
 c
 c     evaluate all sites within the cutoff distance
@@ -396,8 +413,8 @@ c
 c     increment electric field on both sites
 c
                do j = 1, 3
-                  permfield(j,i) = permfield(j,i) + fid(j)*mscale(kk)
-                  permfield(j,k) = permfield(j,k) + fkd(j)*mscale(kk)
+                  permfield(j,i) = permfield(j,i) + fid(j)*dscale(kk)
+                  permfield(j,k) = permfield(j,k) + fkd(j)*dscale(kk)
                end do
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -487,7 +504,7 @@ c
      &                  einter = einter + e_pauli
                   end if
 c
-c     print message if the energy of this interaction is large
+c     print message if the energy of multipole interaction is large
 c
                   huge = (abs(e_ele) .gt. 100.0d0)
                   if ((debug.and.e_ele.ne.0.0d0)
@@ -503,6 +520,42 @@ c
                      write (iout,30)  ii,name(ii),kk,name(kk),r,e_ele
    30                format (' M-Pole',4x,2(i7,'-',a3),9x,
      &                          f10.4,2x,f12.4)
+                  end if
+c
+c     print message if the energy of the dispersion interaction is large
+c     
+                  huge = (abs(e_disp) .gt. 100.0d0)
+                  if ((debug.and.e_disp.ne.0.0d0)
+     &                 .or. (verbose.and.huge)) then
+                     if (header) then
+                        header = .false.
+                        write (iout,21)
+ 21                     format (/,' Individual Dispersion',
+     &                       ' Interactions :',
+     &                       //,' Type',14x,'Atom Names',
+     &                       15x,'Distance',8x,'Energy',/)
+                     end if
+                     write (iout,31)  ii,name(ii),kk,name(kk),r,e_disp
+ 31                  format (' Disp  ',4x,2(i7,'-',a3),9x,
+     &                    f10.4,2x,f12.4)
+                  end if
+c
+c     print message if the energy of the repulsion interaction is large 
+c
+                  huge = (abs(e_pauli) .gt. 100.0d0)
+                  if ((debug.and.e_pauli.ne.0.0d0)
+     &                  .or. (verbose.and.huge)) then
+                     if (header) then
+                        header = .false.
+                        write (iout,22)
+ 22                     format (/,' Individual Pauli Repulsion',
+     &                       ' Interactions :',
+     &                       //,' Type',14x,'Atom Names',
+     &                       15x,'Distance',8x,'Energy',/)
+                     end if
+                     write (iout,32)  ii,name(ii),kk,name(kk),r,e_pauli
+ 32                  format (' Repulsion',1x,2(i7,'-',a3),9x,
+     &                    f10.4,2x,f12.4)
                   end if
                end if
             end if
@@ -1736,6 +1789,8 @@ c
       use mplpot
       use mpole
       use neigh
+      use polgrp
+      use polpot
       use potent
       use shunt
       use chgpen
@@ -1743,7 +1798,6 @@ c
       use pauli
       use tarray
       use openmp
-      use polpot
       implicit none
       integer i,j,k,m
       integer ii,kk,kkk
@@ -1802,6 +1856,7 @@ c
       real*8 bn(0:4)
       real*8 lambdai(9),lambdak(9),lambdaik(9)
       real*8, allocatable :: mscale(:)
+      real*8, allocatable :: dscale(:)
       real*8, allocatable :: muscale(:)
       real*8, allocatable :: dlocal(:,:)
       logical header,huge
@@ -1831,6 +1886,7 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (mscale(n))
+      allocate (dscale(n))
       allocate (muscale(n))
       allocate (toffset(0:nthread-1))
 c
@@ -1838,6 +1894,7 @@ c     initialize connected atom exclusion coefficients
 c
       do i = 1, n
          mscale(i) = 1.0d0
+         dscale(i) = 1.0d0
          muscale(i) = 1.0d0
       end do
 c
@@ -1852,14 +1909,16 @@ c
 !$OMP PARALLEL default(private)
 !$OMP& shared(npole,ipole,x,y,z,monopole,alphaele,csix,overpauli,
 !$OMP& alphapauli,monopauli,rpole,n12,i12,n13,i13,n14,i14,n15,
+!$OMP& np11,np12,np13,np14,ip11,ip12,ip13,ip14, 
 !$OMP& i15,m2scale,m3scale,m4scale,m5scale,
-!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,
+!$OMP& d1scale,d2scale,d3scale,d4scale,
+!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,atomic,
 !$OMP& nelst,elst,use_bounds,
 !$OMP& f,off2,aewald,molcule,name,verbose,debug,header,iout,
 !$OMP& adewald,ntpair,tindex,                         
 !$OMP& tdipdip,toffset,maxlocal,maxelst,                     
 !$OMP& nthread,nchunk) 
-!$OMP& firstprivate(mscale,muscale,nlocal) shared (em,edis,epr,
+!$OMP& firstprivate(mscale,dscale,muscale,nlocal) shared (em,edis,epr,
 !$OMP& einter,nem,aem,permfield)
 c
 c     perform dynamic allocation of some local arrays
@@ -1896,19 +1955,31 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
-            muscale(i12(j,ii)) = mu2scale
+            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
-            muscale(i13(j,ii)) = mu3scale
+            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
-            muscale(i14(j,ii)) = mu4scale
+            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
-            muscale(i15(j,ii)) = mu5scale
+            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = d1scale
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = d2scale
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = d3scale
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = d4scale
          end do
 c
 c     evaluate all sites within the cutoff distance
@@ -2117,6 +2188,19 @@ c
 c
 c     save permanent electric field for induced dipole calculation
 c
+               rr1core = bn(0) - (1.0d0 - dscale(kk))*rr1
+               rr3core = bn(1) - (1.0d0 - dscale(kk))*rr3
+c
+               rr1i = bn(0) - (1.0d0 - dscale(kk)*lambdai(1))*rr1
+               rr3i = bn(1) - (1.0d0 - dscale(kk)*lambdai(3))*rr3
+               rr5i = bn(2) - (1.0d0 - dscale(kk)*lambdai(5))*rr5
+               rr7i = bn(3) - (1.0d0 - dscale(kk)*lambdai(7))*rr7
+c
+               rr1k = bn(0) - (1.0d0 - dscale(kk)*lambdak(1))*rr1
+               rr3k = bn(1) - (1.0d0 - dscale(kk)*lambdak(3))*rr3
+               rr5k = bn(2) - (1.0d0 - dscale(kk)*lambdak(5))*rr5
+               rr7k = bn(3) - (1.0d0 - dscale(kk)*lambdak(7))*rr7
+c
                fid(1) = -xr*(rr3core*corek + rr3k*valk -
      &              rr5k*drk + rr7k*qrrk)
      &              - rr3k*dkx + 2.0d0*rr5k*qrkx
@@ -2275,6 +2359,18 @@ c
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = 1.0d0
             muscale(i15(j,ii)) = 1.0d0
+         end do
+         do j = 1, np11(ii)
+            dscale(ip11(j,ii)) = 1.0d0
+         end do
+         do j = 1, np12(ii)
+            dscale(ip12(j,ii)) = 1.0d0
+         end do
+         do j = 1, np13(ii)
+            dscale(ip13(j,ii)) = 1.0d0
+         end do
+         do j = 1, np14(ii)
+            dscale(ip14(j,ii)) = 1.0d0
          end do
       end do
 c

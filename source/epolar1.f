@@ -55,6 +55,7 @@ c
       subroutine epolar1a
       use sizes
       use atoms
+      use atomid
       use bound
       use cell
       use chgpot
@@ -231,15 +232,15 @@ c
          uizp = uinp(3,i)
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = p2scale
-            muscale(i12(j,ii)) = mu2scale
+            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = p3scale
-            muscale(i13(j,ii)) = mu3scale
+            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = p4scale
-            muscale(i14(j,ii)) = mu4scale
+            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
             do k = 1, np11(ii)
                 if (i14(j,ii) .eq. ip11(k,ii))
      &            pscale(i14(j,ii)) = p4scale * p41scale
@@ -247,7 +248,7 @@ c
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = p5scale
-            muscale(i15(j,ii)) = mu5scale
+            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -265,6 +266,10 @@ c
             dscale(ip14(j,ii)) = d4scale
             uscale(ip14(j,ii)) = u4scale
          end do
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+         print *,"Hacker Warning! forcing pscale to equal dscale"
+         pscale = dscale
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c     evaluate all sites within the cutoff distance
 c
@@ -4043,6 +4048,7 @@ c
       subroutine epreal1d
       use sizes
       use atoms
+      use atomid
       use bound
       use chgpot
       use couple
@@ -4191,7 +4197,7 @@ c
 !$OMP& permfield,n12,i12,n13,i13,n14,
 !$OMP& i14,n15,i15,np11,ip11,np12,ip12,np13,ip13,np14,ip14,p2scale,
 !$OMP& p3scale,p4scale,p41scale,p5scale,d1scale,d2scale,d3scale,
-!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,
+!$OMP& mu2scale,mu3scale,mu4scale,mu5scale,atomic,
 !$OMP& d4scale,u1scale,u2scale,u3scale,u4scale,nelst,elst,use_bounds,
 !$OMP& off2,f,aewald,molcule,coptmax,copm,uopt,uoptp,poltyp)
 !$OMP& shared (ep,einter,dep,vir,ufld,dufld)
@@ -4228,15 +4234,15 @@ c
          uizp = uinp(3,i)
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = p2scale
-            muscale(i12(j,ii)) = mu2scale
+            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = p3scale
-            muscale(i13(j,ii)) = mu3scale
+            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = p4scale
-            muscale(i14(j,ii)) = mu4scale
+            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
             do k = 1, np11(ii)
                 if (i14(j,ii) .eq. ip11(k,ii))
      &            pscale(i14(j,ii)) = p4scale * p41scale
@@ -4244,7 +4250,7 @@ c
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = p5scale
-            muscale(i15(j,ii)) = mu5scale
+            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -4262,6 +4268,10 @@ c
             dscale(ip14(j,ii)) = d4scale
             uscale(ip14(j,ii)) = u4scale
          end do
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+c         print *,"hacker warning! setting pscale = dscale"
+c         pscale = dscale
+ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c     evaluate all sites within the cutoff distance
 c
