@@ -466,6 +466,30 @@ c     total pauli repulsion energy
 c
                   e_pauli = oik * mscale(kk) * evv * rr1
 c
+c     print components
+c
+c                  if (debug .and. (e_pauli.ne.0.0d0)) then
+c                     print *,"Repulsion Components for:",ii,name(ii),
+c     &                    kk,name(kk),r,e_pauli
+c                     print *,"Monopole-Monople",
+c     &                    oik*mscale(kk)*rr1*term1ik*lambdaik(1)
+c                     print *,"Order3",
+c     &                    oik*mscale(kk)*rr1*term2ik*lambdaik(3)
+c                     print *,"Order5",
+c     &                    oik*mscale(kk)*rr1*term3ik*lambdaik(5)
+c                     print *,"Charge-Quadrupole",
+c     &                    oik*mscale(kk)*rr1*(pvali*qrrk + pvalk*qrri)*
+c     &                    lambdaik(5)
+cc                     if ((ii .eq.2).and.(kk .eq. 4)) then
+c                        print *,"quaddollarsign",oik*mscale(kk)*rr1*
+c     &                       (pvali*qrrk)*lambdaik(5)
+cc                     end if
+c                     print *,"Order7",
+c     &                    oik*mscale(kk)*rr1*term4ik*lambdaik(7)
+c                     print *,"Quadrupole-Quadrupole",
+c     &                    oik*mscale(kk)*rr1*term5ik*lambdaik(9)
+c                  end if
+c
                   if (use_group)  e_pauli = e_pauli * fgrp
 c
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc

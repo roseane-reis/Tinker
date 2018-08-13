@@ -515,10 +515,10 @@ c     check for several consecutive maximum steps taken
 c
       else if (bigstp) then
          nbigstp = nbigstp + 1
-         if (nbigstp .eq. 50) then
+         if (nbigstp .eq. 1000) then
             done = .true.
             write (iout,150)
-  150       format (/,' SQUARE  --  Fifty Consecutive Maximum',
+  150       format (/,' SQUARE  --  One Thousand Consecutive Maximum',
      &                 ' Length Steps',
      &              //,' Either the function is unbounded below,',
      &                 ' or has a finite',

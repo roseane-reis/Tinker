@@ -59,6 +59,8 @@ c
       use xtrapot
       use mpole
       use mplpot
+      use molcul
+      use inter
       implicit none
       integer i,j,k
       integer ii,kk
@@ -151,6 +153,8 @@ c
                   e = -transferi * exp(-alphak*r) - 
      &                 transferk * exp(-alphai*r) 
                   ex = ex + e*mscale(kk)
+                  if (molcule(ii) .ne. molcule(kk))
+     &                  einter = einter + e*mscale(kk)
                end if
             end if
          end do

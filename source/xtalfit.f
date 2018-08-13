@@ -749,7 +749,7 @@ c
       do ixtal = 1, nxtal
          call xtalprm ('RESET',ixtal,xx)
          e = energy ()
-         e0 = ev + ec + ecd + ed + em + ep + epr + edis
+         e0 = ev + ec + ecd + ed + em + ep + epr + edis + ex
 c
 c     perturb crystal lattice parameters and compute energies
 c
@@ -758,37 +758,37 @@ c
             xbox = xbox + eps
             call xtalmove
             e = energy ()
-            e1 = ev + ec + ecd + ed + em + ep + epr + edis
+            e1 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             xbox = temp
             temp = ybox
             ybox = ybox + eps
             call xtalmove
             e = energy ()
-            e2 = ev + ec + ecd + ed + em + ep + epr + edis
+            e2 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             ybox = temp
             temp = zbox
             zbox = zbox + eps
             call xtalmove
             e = energy ()
-            e3 = ev + ec + ecd + ed + em + ep + epr + edis
+            e3 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             zbox = temp
             temp = alpha
             alpha = alpha + radian*eps
             call xtalmove
             e = energy ()
-            e4 = ev + ec + ecd + ed + em + ep + epr + edis
+            e4 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             alpha = temp
             temp = beta
             beta = beta + radian*eps
             call xtalmove
             e = energy ()
-            e5 = ev + ec + ecd + ed + em + ep + epr + edis
+            e5 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             beta = temp
             temp = gamma
             gamma = gamma + radian*eps
             call xtalmove
             e = energy ()
-            e6 = ev + ec + ecd + ed + em + ep + epr + edis
+            e6 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             gamma = temp
             call xtalmove
 c
@@ -835,7 +835,7 @@ c
                x(k) = x(k) + eps
             end do
             e = energy ()
-            e1 = ev + ec + ecd + ed + em + ep + epr + edis
+            e1 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             do i = imol(1,1), imol(2,1)
                k = kmol(i)
                x(k) = x(k) - eps
@@ -845,7 +845,7 @@ c
                y(k) = y(k) + eps
             end do
             e = energy ()
-            e2 = ev + ec + ecd + ed + em + ep + epr + edis
+            e2 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             do i = imol(1,1), imol(2,1)
                k = kmol(i)
                y(k) = y(k) - eps
@@ -855,7 +855,7 @@ c
                z(k) = z(k) + eps
             end do
             e = energy ()
-            e3 = ev + ec + ecd + ed + em + ep + epr + edis
+            e3 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             do i = imol(1,1), imol(2,1)
                k = kmol(i)
                z(k) = z(k) - eps
@@ -866,7 +866,7 @@ c            do i = imol(1,1), imol(2,1)
                x(k) = x(k) + eps
             end do
             e = energy ()
-            e4 = ev + ec + ecd + ed + em + ep + epr + edis
+            e4 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             do i = imol(1,2), imol(2,2)
                k = kmol(i)
                x(k) = x(k) - eps
@@ -876,7 +876,7 @@ c            do i = imol(1,1), imol(2,1)
                y(k) = y(k) + eps
             end do
             e = energy ()
-            e5 = ev + ec + ecd + ed + em + ep + epr + edis
+            e5 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             do i = imol(1,2), imol(2,2)
                k = kmol(i)
                y(k) = y(k) - eps
@@ -886,7 +886,7 @@ c            do i = imol(1,1), imol(2,1)
                z(k) = z(k) + eps
             end do
             e = energy ()
-            e6 = ev + ec + ecd + ed + em + ep + epr + edis
+            e6 = ev + ec + ecd + ed + em + ep + epr + edis + ex
             do i = imol(1,2), imol(2,2)
                k = kmol(i)
                z(k) = z(k) - eps
@@ -958,7 +958,7 @@ c
 c     compute the intermolecular or crystal lattice energy
 c
             e = energy ()
-            e_monomer = ev + ec + ecd + ed + em + ep + epr + edis
+            e_monomer = ev + ec + ecd + ed + em + ep + epr + edis + ex
             dmol = dble(nmol)
             e_lattice = (e0 - dmol*e_monomer) / dmol
          else
