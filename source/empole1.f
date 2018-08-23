@@ -476,7 +476,7 @@ c
             proceed = .true.
             if (proceed)  proceed = (usei .or. usek)
             if (.not. proceed)  goto 20
-            do jcell = 1, ncell
+            do jcell = 2, ncell
             xr = x(kk) - xi
             yr = y(kk) - yi
             zr = z(kk) - zi
@@ -1236,7 +1236,7 @@ c
       real*8 qiyy,qiyz,qizz
       real*8 xdfield,ydfield
       real*8 zdfield
-      real*8 trq(3),frcx(3)
+      real*8 tem(3),frcx(3)
       real*8 frcy(3),frcz(3)
 c
 c
@@ -1317,10 +1317,10 @@ c
          ydfield = -2.0d0 * term * yd
          zdfield = -2.0d0 * term * zd
          do i = 1, npole
-            trq(1) = rpole(3,i)*zdfield - rpole(4,i)*ydfield
-            trq(2) = rpole(4,i)*xdfield - rpole(2,i)*zdfield
-            trq(3) = rpole(2,i)*ydfield - rpole(3,i)*xdfield
-            call torque (i,trq,frcx,frcy,frcz,dem)
+            tem(1) = rpole(3,i)*zdfield - rpole(4,i)*ydfield
+            tem(2) = rpole(4,i)*xdfield - rpole(2,i)*zdfield
+            tem(3) = rpole(2,i)*ydfield - rpole(3,i)*xdfield
+            call torque (i,tem,frcx,frcy,frcz,dem)
          end do
 c
 c     boundary correction to virial due to overall cell dipole
@@ -1776,7 +1776,7 @@ c     evaluate all sites within the cutoff distance
 c
          do k = i, npole
             kk = ipole(k)
-            do jcell = 1, ncell
+            do jcell = 2, ncell
             xr = x(kk) - xi
             yr = y(kk) - yi
             zr = z(kk) - zi
@@ -2118,7 +2118,7 @@ c
       real*8 qiyy,qiyz,qizz
       real*8 xdfield,ydfield
       real*8 zdfield
-      real*8 trq(3),frcx(3)
+      real*8 tem(3),frcx(3)
       real*8 frcy(3),frcz(3)
 c
 c
@@ -2199,10 +2199,10 @@ c
          ydfield = -2.0d0 * term * yd
          zdfield = -2.0d0 * term * zd
          do i = 1, npole
-            trq(1) = rpole(3,i)*zdfield - rpole(4,i)*ydfield
-            trq(2) = rpole(4,i)*xdfield - rpole(2,i)*zdfield
-            trq(3) = rpole(2,i)*ydfield - rpole(3,i)*xdfield
-            call torque (i,trq,frcx,frcy,frcz,dem)
+            tem(1) = rpole(3,i)*zdfield - rpole(4,i)*ydfield
+            tem(2) = rpole(4,i)*xdfield - rpole(2,i)*zdfield
+            tem(3) = rpole(2,i)*ydfield - rpole(3,i)*xdfield
+            call torque (i,tem,frcx,frcy,frcz,dem)
          end do
 c
 c     boundary correction to virial due to overall cell dipole
@@ -2746,7 +2746,7 @@ c
       real*8 hsq,expterm
       real*8 term,pterm
       real*8 vterm,struc2
-      real*8 trq(3),fix(3)
+      real*8 tem(3),fix(3)
       real*8 fiy(3),fiz(3)
 c
 c     indices into the electrostatic field array
@@ -2763,20 +2763,18 @@ c
 c
 c     perform dynamic allocation of some global arrays
 c
-      if (allocated(cmp)) then
-         if (size(cmp) .lt. 10*npole) then
-            deallocate (cmp)
-            deallocate (fmp)
-            deallocate (cphi)
-            deallocate (fphi)
-         end if
-      end if
-      if (.not. allocated(cmp)) then
-         allocate (cmp(10,npole))
-         allocate (fmp(10,npole))
-         allocate (cphi(10,npole))
-         allocate (fphi(20,npole))
-      end if
+      if (allocated(cmp) .and. size(cmp).lt.10*npole)
+     &   deallocate (cmp)
+      if (allocated(fmp) .and. size(fmp).lt.10*npole)
+     &   deallocate (fmp)
+      if (allocated(cphi) .and. size(cphi).lt.10*npole)
+     &   deallocate (cphi)
+      if (allocated(fphi) .and. size(fphi).lt.20*npole)
+     &   deallocate (fphi)
+      if (.not. allocated(cmp))  allocate (cmp(10,npole))
+      if (.not. allocated(fmp))  allocate (fmp(10,npole))
+      if (.not. allocated(cphi))  allocate (cphi(10,npole))
+      if (.not. allocated(fphi))  allocate (fphi(20,npole))
 c
 c     zero out the temporary virial accumulation variables
 c
@@ -2855,7 +2853,7 @@ c
                if (mod(m1+m2+m3,2) .ne. 0)  expterm = 0.0d0
             end if
             struc2 = qgrid(1,k1,k2,k3)**2 + qgrid(2,k1,k2,k3)**2
-            eterm = 0.5d0 * electric * expterm * struc2
+            eterm = 0.5d0 * f * expterm * struc2
             vterm = (2.0d0/hsq) * (1.0d0-term) * eterm
             vxx = vxx + h1*h1*vterm - eterm
             vxy = vxy + h1*h2*vterm
@@ -2971,19 +2969,19 @@ c
 c     resolve site torques then increment forces and virial
 c
       do i = 1, npole
-         trq(1) = cmp(4,i)*cphi(3,i) - cmp(3,i)*cphi(4,i)
+         tem(1) = cmp(4,i)*cphi(3,i) - cmp(3,i)*cphi(4,i)
      &               + 2.0d0*(cmp(7,i)-cmp(6,i))*cphi(10,i)
      &               + cmp(9,i)*cphi(8,i) + cmp(10,i)*cphi(6,i)
      &               - cmp(8,i)*cphi(9,i) - cmp(10,i)*cphi(7,i)
-         trq(2) = cmp(2,i)*cphi(4,i) - cmp(4,i)*cphi(2,i)
+         tem(2) = cmp(2,i)*cphi(4,i) - cmp(4,i)*cphi(2,i)
      &               + 2.0d0*(cmp(5,i)-cmp(7,i))*cphi(9,i)
      &               + cmp(8,i)*cphi(10,i) + cmp(9,i)*cphi(7,i)
      &               - cmp(9,i)*cphi(5,i) - cmp(10,i)*cphi(8,i)
-         trq(3) = cmp(3,i)*cphi(2,i) - cmp(2,i)*cphi(3,i)
+         tem(3) = cmp(3,i)*cphi(2,i) - cmp(2,i)*cphi(3,i)
      &               + 2.0d0*(cmp(6,i)-cmp(5,i))*cphi(8,i)
      &               + cmp(8,i)*cphi(5,i) + cmp(10,i)*cphi(9,i)
      &               - cmp(8,i)*cphi(6,i) - cmp(9,i)*cphi(10,i)
-         call torque (i,trq,fix,fiy,fiz,dem)
+         call torque (i,tem,fix,fiy,fiz,dem)
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)

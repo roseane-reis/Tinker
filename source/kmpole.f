@@ -25,6 +25,7 @@ c
       use iounit
       use keys
       use kmulti
+      use math
       use mpole
       use polar
       use polgrp
@@ -220,6 +221,8 @@ c
       if (allocated(pole))  deallocate (pole)
       if (allocated(monopole)) deallocate (monopole)
       if (allocated(rpole))  deallocate (rpole)
+      if (allocated(spole))  deallocate (spole)
+      if (allocated(srpole))  deallocate (srpole)
       if (allocated(polaxe))  deallocate (polaxe)
       if (allocated(permfield)) deallocate (permfield)
       if (allocated(np11))  deallocate (np11)
@@ -236,6 +239,8 @@ c
       allocate (pole(maxpole,n))
       allocate (monopole(maxmono,n))
       allocate (rpole(maxpole,n))
+      allocate (spole(maxpole,n))
+      allocate (srpole(maxpole,n))
       allocate (polaxe(n))
       allocate (permfield(3,n))
       allocate (np11(n))
@@ -526,6 +531,22 @@ c
          do k = 5, 13
             pole(k,i) = pole(k,i) * bohr**2 / 3.0d0
          end do
+      end do
+c
+c     compute and store the multipoles in spherical harmonics
+c     (q -> Q_00, z -> Q_10, x -> Q_11c, y -> Q_11s, zz -> Q_20,
+c     xz -> Q_21c, xz -> Q_21c, xx-yy -> Q_22c, xy -> Q_22s)
+c
+      do i = 1, n
+         spole(1,i) = pole(1,i)
+         spole(2,i) = pole(4,i)
+         spole(3,i) = pole(2,i)
+         spole(4,i) = pole(3,i)
+         spole(5,i) = pole(13,i)
+         spole(6,i) = 2.0d0 * sqrtthree * pole(7,i)
+         spole(7,i) = 2.0d0 * sqrtthree * pole(10,i)
+         spole(8,i) = sqrtthree * (pole(5,i)-pole(9,i))
+         spole(9,i) = 2.0d0 * sqrtthree * pole(6,i)
       end do
 c
 c     get the order of the multipole expansion at each site

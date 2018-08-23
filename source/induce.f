@@ -838,7 +838,7 @@ c
                qkyy = rpole(9,k)
                qkyz = rpole(10,k)
                qkzz = rpole(13,k)
-               do m = 1, ncell
+               do m = 2, ncell
                   xr = x(kk) - x(ii)
                   yr = y(kk) - y(ii)
                   zr = z(kk) - z(ii)
@@ -1194,7 +1194,7 @@ c
                puky = uinp(2,k)
                pukz = uinp(3,k)
                proceed = .true.
-               do m = 1, ncell
+               do m = 2, ncell
                   xr = x(kk) - x(ii)
                   yr = y(kk) - y(ii)
                   zr = z(kk) - z(ii)
@@ -2338,7 +2338,7 @@ c
                qkyy = rpole(9,k)
                qkyz = rpole(10,k)
                qkzz = rpole(13,k)
-               do m = 1, ncell
+               do m = 2, ncell
                   xr = x(kk) - x(ii)
                   yr = y(kk) - y(ii)
                   zr = z(kk) - z(ii)
@@ -3248,7 +3248,7 @@ c
                pukx = uinp(1,k)
                puky = uinp(2,k)
                pukz = uinp(3,k)
-               do m = 1, ncell
+               do m = 2, ncell
                   xr = x(kk) - x(ii)
                   yr = y(kk) - y(ii)
                   zr = z(kk) - z(ii)

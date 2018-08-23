@@ -138,7 +138,7 @@ c
       real*8 vxx,vyy,vzz
       real*8 vxy,vxz,vyz
       real*8 rc3(3),rc5(3),rc7(3)
-      real*8 trq(3),fix(3)
+      real*8 tep(3),fix(3)
       real*8 fiy(3),fiz(3)
       real*8 lambdai(9),lambdak(9),lambdaik(9)
       real*8, allocatable :: pscale(:)
@@ -1007,7 +1007,7 @@ c     evaluate all sites within the cutoff distance
 c
          do k = i, npole
             kk = ipole(k)
-            do jcell = 1, ncell
+            do jcell = 2, ncell
             xr = x(kk) - xi
             yr = y(kk) - yi
             zr = z(kk) - zi
@@ -1462,19 +1462,19 @@ c
          qiyy = rpole(9,i)
          qiyz = rpole(10,i)
          qizz = rpole(13,i)
-         trq(1) = diz*ufld(2,i) - diy*ufld(3,i)
+         tep(1) = diz*ufld(2,i) - diy*ufld(3,i)
      &               + qixz*dufld(2,i) - qixy*dufld(4,i)
      &               + 2.0d0*qiyz*(dufld(3,i)-dufld(6,i))
      &               + (qizz-qiyy)*dufld(5,i)
-         trq(2) = dix*ufld(3,i) - diz*ufld(1,i)
+         tep(2) = dix*ufld(3,i) - diz*ufld(1,i)
      &               - qiyz*dufld(2,i) + qixy*dufld(5,i)
      &               + 2.0d0*qixz*(dufld(6,i)-dufld(1,i))
      &               + (qixx-qizz)*dufld(4,i)
-         trq(3) = diy*ufld(1,i) - dix*ufld(2,i)
+         tep(3) = diy*ufld(1,i) - dix*ufld(2,i)
      &               + qiyz*dufld(4,i) - qixz*dufld(5,i)
      &               + 2.0d0*qixy*(dufld(1,i)-dufld(3,i))
      &               + (qiyy-qixx)*dufld(2,i)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         call torque (i,tep,fix,fiy,fiz,dep)
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)
@@ -1604,7 +1604,7 @@ c
       real*8 vxx,vyy,vzz
       real*8 vxy,vxz,vyz
       real*8 rc3(3),rc5(3),rc7(3)
-      real*8 trq(3),fix(3)
+      real*8 tep(3),fix(3)
       real*8 fiy(3),fiz(3)
       real*8, allocatable :: pscale(:)
       real*8, allocatable :: dscale(:)
@@ -2174,19 +2174,19 @@ c
          qiyy = rpole(9,i)
          qiyz = rpole(10,i)
          qizz = rpole(13,i)
-         trq(1) = diz*ufld(2,i) - diy*ufld(3,i)
+         tep(1) = diz*ufld(2,i) - diy*ufld(3,i)
      &               + qixz*dufld(2,i) - qixy*dufld(4,i)
      &               + 2.0d0*qiyz*(dufld(3,i)-dufld(6,i))
      &               + (qizz-qiyy)*dufld(5,i)
-         trq(2) = dix*ufld(3,i) - diz*ufld(1,i)
+         tep(2) = dix*ufld(3,i) - diz*ufld(1,i)
      &               - qiyz*dufld(2,i) + qixy*dufld(5,i)
      &               + 2.0d0*qixz*(dufld(6,i)-dufld(1,i))
      &               + (qixx-qizz)*dufld(4,i)
-         trq(3) = diy*ufld(1,i) - dix*ufld(2,i)
+         tep(3) = diy*ufld(1,i) - dix*ufld(2,i)
      &               + qiyz*dufld(4,i) - qixz*dufld(5,i)
      &               + 2.0d0*qixy*(dufld(1,i)-dufld(3,i))
      &               + (qiyy-qixx)*dufld(2,i)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         call torque (i,tep,fix,fiy,fiz,dep)
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)
@@ -2267,6 +2267,7 @@ c
       use virial
       implicit none
       integer i,j,ii
+      integer iax,iay,iaz
       real*8 e,f,term,fterm
       real*8 dix,diy,diz
       real*8 uix,uiy,uiz,uii
@@ -2277,8 +2278,13 @@ c
       real*8 xv,yv,zv,vterm
       real*8 xufield,yufield
       real*8 zufield
+      real*8 xix,yix,zix
+      real*8 xiy,yiy,ziy
+      real*8 xiz,yiz,ziz
+      real*8 vxx,vyy,vzz
+      real*8 vxy,vxz,vyz
       real*8 fix(3),fiy(3),fiz(3)
-      real*8 trq(3)
+      real*8 tep(3)
 c
 c
 c     zero out the polarization energy and derivatives
@@ -2341,10 +2347,44 @@ c
          uix = 0.5d0 * (uind(1,i)+uinp(1,i))
          uiy = 0.5d0 * (uind(2,i)+uinp(2,i))
          uiz = 0.5d0 * (uind(3,i)+uinp(3,i))
-         trq(1) = term * (diy*uiz-diz*uiy)
-         trq(2) = term * (diz*uix-dix*uiz)
-         trq(3) = term * (dix*uiy-diy*uix)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         tep(1) = term * (diy*uiz-diz*uiy)
+         tep(2) = term * (diz*uix-dix*uiz)
+         tep(3) = term * (dix*uiy-diy*uix)
+         call torque (i,tep,fix,fiy,fiz,dep)
+         ii = ipole(i)
+         iaz = zaxis(i)
+         iax = xaxis(i)
+         iay = yaxis(i)
+         if (iaz .eq. 0)  iaz = ii
+         if (iax .eq. 0)  iax = ii
+         if (iay .eq. 0)  iay = ii
+         xiz = x(iaz) - x(ii)
+         yiz = y(iaz) - y(ii)
+         ziz = z(iaz) - z(ii)
+         xix = x(iax) - x(ii)
+         yix = y(iax) - y(ii)
+         zix = z(iax) - z(ii)
+         xiy = x(iay) - x(ii)
+         yiy = y(iay) - y(ii)
+         ziy = z(iay) - z(ii)
+         vxx = xix*fix(1) + xiy*fiy(1) + xiz*fiz(1)
+         vxy = 0.5d0 * (yix*fix(1) + yiy*fiy(1) + yiz*fiz(1)
+     &                    + xix*fix(2) + xiy*fiy(2) + xiz*fiz(2))
+         vxz = 0.5d0 * (zix*fix(1) + ziy*fiy(1) + ziz*fiz(1)
+     &                    + xix*fix(3) + xiy*fiy(3) + xiz*fiz(3))
+         vyy = yix*fix(2) + yiy*fiy(2) + yiz*fiz(2)
+         vyz = 0.5d0 * (zix*fix(2) + ziy*fiy(2) + ziz*fiz(2)
+     &                    + yix*fix(3) + yiy*fiy(3) + yiz*fiz(3))
+         vzz = zix*fix(3) + ziy*fiy(3) + ziz*fiz(3)
+         vir(1,1) = vir(1,1) + vxx
+         vir(2,1) = vir(2,1) + vxy
+         vir(3,1) = vir(3,1) + vxz
+         vir(1,2) = vir(1,2) + vxy
+         vir(2,2) = vir(2,2) + vyy
+         vir(3,2) = vir(3,2) + vyz
+         vir(1,3) = vir(1,3) + vxz
+         vir(2,3) = vir(2,3) + vyz
+         vir(3,3) = vir(3,3) + vzz
       end do
 c
 c     compute the cell dipole boundary correction term
@@ -2383,10 +2423,10 @@ c
          yufield = -term * (yu+yup)
          zufield = -term * (zu+zup)
          do i = 1, npole
-            trq(1) = rpole(3,i)*zufield - rpole(4,i)*yufield
-            trq(2) = rpole(4,i)*xufield - rpole(2,i)*zufield
-            trq(3) = rpole(2,i)*yufield - rpole(3,i)*xufield
-            call torque (i,trq,fix,fiy,fiz,dep)
+            tep(1) = rpole(3,i)*zufield - rpole(4,i)*yufield
+            tep(2) = rpole(4,i)*xufield - rpole(2,i)*zufield
+            tep(3) = rpole(2,i)*yufield - rpole(3,i)*xufield
+            call torque (i,tep,fix,fiy,fiz,dep)
          end do
 c
 c     boundary correction to virial due to overall cell dipole
@@ -2526,7 +2566,7 @@ c
       real*8 prc3(3),prc5(3),prc7(3)
       real*8 drc3(3),drc5(3),drc7(3)
       real*8 urc3(3),urc5(3)
-      real*8 trq(3),fix(3)
+      real*8 tep(3),fix(3)
       real*8 fiy(3),fiz(3)
       real*8 bn(0:4)
       real*8, allocatable :: pscale(:)
@@ -3220,7 +3260,7 @@ c     evaluate all sites within the cutoff distance
 c
          do k = i, npole
             kk = ipole(k)
-            do jcell = 1, ncell
+            do jcell = 2, ncell
             xr = x(kk) - xi
             yr = y(kk) - yi
             zr = z(kk) - zi
@@ -3780,19 +3820,19 @@ c
          qiyy = rpole(9,i)
          qiyz = rpole(10,i)
          qizz = rpole(13,i)
-         trq(1) = diz*ufld(2,i) - diy*ufld(3,i)
+         tep(1) = diz*ufld(2,i) - diy*ufld(3,i)
      &               + qixz*dufld(2,i) - qixy*dufld(4,i)
      &               + 2.0d0*qiyz*(dufld(3,i)-dufld(6,i))
      &               + (qizz-qiyy)*dufld(5,i)
-         trq(2) = dix*ufld(3,i) - diz*ufld(1,i)
+         tep(2) = dix*ufld(3,i) - diz*ufld(1,i)
      &               - qiyz*dufld(2,i) + qixy*dufld(5,i)
      &               + 2.0d0*qixz*(dufld(6,i)-dufld(1,i))
      &               + (qixx-qizz)*dufld(4,i)
-         trq(3) = diy*ufld(1,i) - dix*ufld(2,i)
+         tep(3) = diy*ufld(1,i) - dix*ufld(2,i)
      &               + qiyz*dufld(4,i) - qixz*dufld(5,i)
      &               + 2.0d0*qixy*(dufld(1,i)-dufld(3,i))
      &               + (qiyy-qixx)*dufld(2,i)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         call torque (i,tep,fix,fiy,fiz,dep)
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)
@@ -3868,6 +3908,7 @@ c
       use virial
       implicit none
       integer i,j,ii
+      integer iax,iay,iaz
       real*8 e,f,term,fterm
       real*8 dix,diy,diz
       real*8 uix,uiy,uiz,uii
@@ -3878,8 +3919,13 @@ c
       real*8 xv,yv,zv,vterm
       real*8 xufield,yufield
       real*8 zufield
+      real*8 xix,yix,zix
+      real*8 xiy,yiy,ziy
+      real*8 xiz,yiz,ziz
+      real*8 vxx,vyy,vzz
+      real*8 vxy,vxz,vyz
       real*8 fix(3),fiy(3),fiz(3)
-      real*8 trq(3)
+      real*8 tep(3)
 c
 c
 c     zero out the polarization energy and derivatives
@@ -3942,10 +3988,44 @@ c
          uix = 0.5d0 * (uind(1,i)+uinp(1,i))
          uiy = 0.5d0 * (uind(2,i)+uinp(2,i))
          uiz = 0.5d0 * (uind(3,i)+uinp(3,i))
-         trq(1) = term * (diy*uiz-diz*uiy)
-         trq(2) = term * (diz*uix-dix*uiz)
-         trq(3) = term * (dix*uiy-diy*uix)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         tep(1) = term * (diy*uiz-diz*uiy)
+         tep(2) = term * (diz*uix-dix*uiz)
+         tep(3) = term * (dix*uiy-diy*uix)
+         call torque (i,tep,fix,fiy,fiz,dep)
+         ii = ipole(i)
+         iaz = zaxis(i)
+         iax = xaxis(i)
+         iay = yaxis(i)
+         if (iaz .eq. 0)  iaz = ii
+         if (iax .eq. 0)  iax = ii
+         if (iay .eq. 0)  iay = ii
+         xiz = x(iaz) - x(ii)
+         yiz = y(iaz) - y(ii)
+         ziz = z(iaz) - z(ii)
+         xix = x(iax) - x(ii)
+         yix = y(iax) - y(ii)
+         zix = z(iax) - z(ii)
+         xiy = x(iay) - x(ii)
+         yiy = y(iay) - y(ii)
+         ziy = z(iay) - z(ii)
+         vxx = xix*fix(1) + xiy*fiy(1) + xiz*fiz(1)
+         vxy = 0.5d0 * (yix*fix(1) + yiy*fiy(1) + yiz*fiz(1)
+     &                    + xix*fix(2) + xiy*fiy(2) + xiz*fiz(2))
+         vxz = 0.5d0 * (zix*fix(1) + ziy*fiy(1) + ziz*fiz(1)
+     &                    + xix*fix(3) + xiy*fiy(3) + xiz*fiz(3))
+         vyy = yix*fix(2) + yiy*fiy(2) + yiz*fiz(2)
+         vyz = 0.5d0 * (zix*fix(2) + ziy*fiy(2) + ziz*fiz(2)
+     &                    + yix*fix(3) + yiy*fiy(3) + yiz*fiz(3))
+         vzz = zix*fix(3) + ziy*fiy(3) + ziz*fiz(3)
+         vir(1,1) = vir(1,1) + vxx
+         vir(2,1) = vir(2,1) + vxy
+         vir(3,1) = vir(3,1) + vxz
+         vir(1,2) = vir(1,2) + vxy
+         vir(2,2) = vir(2,2) + vyy
+         vir(3,2) = vir(3,2) + vyz
+         vir(1,3) = vir(1,3) + vxz
+         vir(2,3) = vir(2,3) + vyz
+         vir(3,3) = vir(3,3) + vzz
       end do
 c
 c     compute the cell dipole boundary correction term
@@ -3984,10 +4064,10 @@ c         ep = ep + term*(xd*xu+yd*yu+zd*zu)
          yufield = -term * (yu+yup)
          zufield = -term * (zu+zup)
          do i = 1, npole
-            trq(1) = rpole(3,i)*zufield - rpole(4,i)*yufield
-            trq(2) = rpole(4,i)*xufield - rpole(2,i)*zufield
-            trq(3) = rpole(2,i)*yufield - rpole(3,i)*xufield
-            call torque (i,trq,fix,fiy,fiz,dep)
+            tep(1) = rpole(3,i)*zufield - rpole(4,i)*yufield
+            tep(2) = rpole(4,i)*xufield - rpole(2,i)*zufield
+            tep(3) = rpole(2,i)*yufield - rpole(3,i)*xufield
+            call torque (i,tep,fix,fiy,fiz,dep)
          end do
 c
 c     boundary correction to virial due to overall cell dipole
@@ -4146,7 +4226,7 @@ c
       real*8 prc3(3),prc5(3),prc7(3)
       real*8 drc3(3),drc5(3),drc7(3)
       real*8 urc3(3),urc5(3)
-      real*8 trq(3),fix(3)
+      real*8 tep(3),fix(3)
       real*8 fiy(3),fiz(3)
       real*8 bn(0:4)
       real*8 lambdai(9),lambdak(9),lambdaik(9)
@@ -4770,19 +4850,19 @@ c
          qiyy = rpole(9,i)
          qiyz = rpole(10,i)
          qizz = rpole(13,i)
-         trq(1) = diz*ufld(2,i) - diy*ufld(3,i)
+         tep(1) = diz*ufld(2,i) - diy*ufld(3,i)
      &               + qixz*dufld(2,i) - qixy*dufld(4,i)
      &               + 2.0d0*qiyz*(dufld(3,i)-dufld(6,i))
      &               + (qizz-qiyy)*dufld(5,i)
-         trq(2) = dix*ufld(3,i) - diz*ufld(1,i)
+         tep(2) = dix*ufld(3,i) - diz*ufld(1,i)
      &               - qiyz*dufld(2,i) + qixy*dufld(5,i)
      &               + 2.0d0*qixz*(dufld(6,i)-dufld(1,i))
      &               + (qixx-qizz)*dufld(4,i)
-         trq(3) = diy*ufld(1,i) - dix*ufld(2,i)
+         tep(3) = diy*ufld(1,i) - dix*ufld(2,i)
      &               + qiyz*dufld(4,i) - qixz*dufld(5,i)
      &               + 2.0d0*qixy*(dufld(1,i)-dufld(3,i))
      &               + (qiyy-qixx)*dufld(2,i)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         call torque (i,tep,fix,fiy,fiz,dep)
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)
@@ -4898,16 +4978,16 @@ c
       real*8 hsq,expterm
       real*8 term,pterm
       real*8 vterm,struc2
-      real*8 trq(3),fix(3)
+      real*8 tep(3),fix(3)
       real*8 fiy(3),fiz(3)
-      real*8 cphim(4),cphid(4)
-      real*8 cphip(4)
+      real*8 cphid(4),cphip(4)
       real*8 a(3,3),ftc(10,10)
       real*8, allocatable :: fuind(:,:)
       real*8, allocatable :: fuinp(:,:)
       real*8, allocatable :: fphid(:,:)
       real*8, allocatable :: fphip(:,:)
       real*8, allocatable :: fphidp(:,:)
+      real*8, allocatable :: cphidp(:,:)
       real*8, allocatable :: qgrip(:,:,:,:)
 c
 c     indices into the electrostatic field array
@@ -4924,20 +5004,18 @@ c
 c
 c     perform dynamic allocation of some global arrays
 c
-      if (allocated(cmp)) then
-         if (size(cmp) .lt. 10*npole) then
-            deallocate (cmp)
-            deallocate (fmp)
-            deallocate (cphi)
-            deallocate (fphi)
-         end if
-      end if
-      if (.not. allocated(cmp)) then
-         allocate (cmp(10,npole))
-         allocate (fmp(10,npole))
-         allocate (cphi(10,npole))
-         allocate (fphi(20,npole))
-      end if
+      if (allocated(cmp) .and. size(cmp).lt.10*npole)
+     &   deallocate (cmp)
+      if (allocated(fmp) .and. size(fmp).lt.10*npole)
+     &   deallocate (fmp)
+      if (allocated(cphi) .and. size(cphi).lt.10*npole)
+     &   deallocate (cphi)
+      if (allocated(fphi) .and. size(fphi).lt.20*npole)
+     &   deallocate (fphi)
+      if (.not. allocated(cmp))  allocate (cmp(10,npole))
+      if (.not. allocated(fmp))  allocate (fmp(10,npole))
+      if (.not. allocated(cphi))  allocate (cphi(10,npole))
+      if (.not. allocated(fphi))  allocate (fphi(20,npole))
 c
 c     zero out the temporary virial accumulation variables
 c
@@ -5080,6 +5158,7 @@ c
       allocate (fphid(10,npole))
       allocate (fphip(10,npole))
       allocate (fphidp(20,npole))
+      allocate (cphidp(10,npole))
 c
 c     convert Cartesian induced dipoles to fractional coordinates
 c
@@ -5153,21 +5232,12 @@ c
             j3 = deriv3(k+1)
             e = e + fuind(k,i)*fphi(k+1,i)
             f1 = f1 + (fuind(k,i)+fuinp(k,i))*fphi(j1,i)
-     &              + fuind(k,i)*fphip(j1,i)
-     &              + fuinp(k,i)*fphid(j1,i)
             f2 = f2 + (fuind(k,i)+fuinp(k,i))*fphi(j2,i)
-     &              + fuind(k,i)*fphip(j2,i)
-     &              + fuinp(k,i)*fphid(j2,i)
             f3 = f3 + (fuind(k,i)+fuinp(k,i))*fphi(j3,i)
-     &              + fuind(k,i)*fphip(j3,i)
-     &              + fuinp(k,i)*fphid(j3,i)
-            if (poltyp.eq.'DIRECT' .or. poltyp.eq.'OPT') then
-               f1 = f1 - fuind(k,i)*fphip(j1,i)
-     &                 - fuinp(k,i)*fphid(j1,i)
-               f2 = f2 - fuind(k,i)*fphip(j2,i)
-     &                 - fuinp(k,i)*fphid(j2,i)
-               f3 = f3 - fuind(k,i)*fphip(j3,i)
-     &                 - fuinp(k,i)*fphid(j3,i)
+            if (poltyp .eq. 'MUTUAL') then
+               f1 = f1 + fuind(k,i)*fphip(j1,i) + fuinp(k,i)*fphid(j1,i)
+               f2 = f2 + fuind(k,i)*fphip(j2,i) + fuinp(k,i)*fphid(j2,i)
+               f3 = f3 + fuind(k,i)*fphip(j3,i) + fuinp(k,i)*fphid(j3,i)
             end if
          end do
          do k = 1, 10
@@ -5194,28 +5264,82 @@ c
 c     set the potential to be the induced dipole average
 c
       do i = 1, npole
-         do k = 1, 10
-            fphidp(k,i) = 0.5d0 * fphidp(k,i)
+         do j = 1, 10
+            fphidp(j,i) = 0.5d0 * fphidp(j,i)
          end do
       end do
-      call fphi_to_cphi (fphidp,cphi)
+      call fphi_to_cphi (fphidp,cphidp)
+c
+c     increment the dipole polarization virial contributions
+c
+      do i = 1, npole
+         do j = 2, 4
+            cphid(j) = 0.0d0
+            cphip(j) = 0.0d0
+            do k = 2, 4
+               cphid(j) = cphid(j) + ftc(j,k)*fphid(k,i)
+               cphip(j) = cphip(j) + ftc(j,k)*fphip(k,i)
+            end do
+         end do
+         vxx = vxx - cmp(2,i)*cphidp(2,i)
+     &            - 0.5d0*((uind(1,i)+uinp(1,i))*cphi(2,i))
+         vxy = vxy - 0.5d0*(cphidp(2,i)*cmp(3,i)+cphidp(3,i)*cmp(2,i))
+     &            - 0.25d0*((uind(2,i)+uinp(2,i))*cphi(2,i)
+     &                     +(uind(1,i)+uinp(1,i))*cphi(3,i))
+         vxz = vxz - 0.5d0*(cphidp(2,i)*cmp(4,i)+cphidp(4,i)*cmp(2,i))
+     &            - 0.25d0*((uind(3,i)+uinp(3,i))*cphi(2,i)
+     &                     +(uind(1,i)+uinp(1,i))*cphi(4,i))
+         vyy = vyy - cmp(3,i)*cphidp(3,i)
+     &            - 0.5d0*((uind(2,i)+uinp(2,i))*cphi(3,i))
+         vyz = vyz - 0.5d0*(cphidp(3,i)*cmp(4,i)+cphidp(4,i)*cmp(3,i))
+     &            - 0.25d0*((uind(3,i)+uinp(3,i))*cphi(3,i)
+     &                     +(uind(2,i)+uinp(2,i))*cphi(4,i))
+         vzz = vzz - cmp(4,i)*cphidp(4,i)
+     &            - 0.5d0*((uind(3,i)+uinp(3,i))*cphi(4,i))
+         vxx = vxx - 2.0d0*cmp(5,i)*cphidp(5,i)
+     &            - cmp(8,i)*cphidp(8,i) - cmp(9,i)*cphidp(9,i)
+         vxy = vxy - (cmp(5,i)+cmp(6,i))*cphidp(8,i)
+     &            - 0.5d0*(cmp(8,i)*(cphidp(6,i)+cphidp(5,i))
+     &                 +cmp(9,i)*cphidp(10,i)+cmp(10,i)*cphidp(9,i))
+         vxz = vxz - (cmp(5,i)+cmp(7,i))*cphidp(9,i)
+     &            - 0.5d0*(cmp(9,i)*(cphidp(5,i)+cphidp(7,i))
+     &                 +cmp(8,i)*cphidp(10,i)+cmp(10,i)*cphidp(8,i))
+         vyy = vyy - 2.0d0*cmp(6,i)*cphidp(6,i)
+     &            - cmp(8,i)*cphidp(8,i) - cmp(10,i)*cphidp(10,i)
+         vyz = vyz - (cmp(6,i)+cmp(7,i))*cphidp(10,i)
+     &            - 0.5d0*(cmp(10,i)*(cphidp(6,i)+cphidp(7,i))
+     &                 +cmp(8,i)*cphidp(9,i)+cmp(9,i)*cphidp(8,i))
+         vzz = vzz - 2.0d0*cmp(7,i)*cphidp(7,i)
+     &            - cmp(9,i)*cphidp(9,i) - cmp(10,i)*cphidp(10,i)
+         if (poltyp .eq. 'MUTUAL') then
+            vxx = vxx - 0.5d0*(cphid(2)*uinp(1,i)+cphip(2)*uind(1,i))
+            vxy = vxy - 0.25d0*(cphid(2)*uinp(2,i)+cphip(2)*uind(2,i)
+     &                         +cphid(3)*uinp(1,i)+cphip(3)*uind(1,i))
+            vxz = vxz - 0.25d0*(cphid(2)*uinp(3,i)+cphip(2)*uind(3,i)
+     &                         +cphid(4)*uinp(1,i)+cphip(4)*uind(1,i))
+            vyy = vyy - 0.5d0*(cphid(3)*uinp(2,i)+cphip(3)*uind(2,i))
+            vyz = vyz - 0.25d0*(cphid(3)*uinp(3,i)+cphip(3)*uind(3,i)
+     &                         +cphid(4)*uinp(2,i)+cphip(4)*uind(2,i))
+            vzz = vzz - 0.5d0*(cphid(4)*uinp(3,i)+cphip(4)*uind(3,i))
+         end if
+      end do
 c
 c     resolve site torques then increment forces and virial
 c
       do i = 1, npole
-         trq(1) = cmp(4,i)*cphi(3,i) - cmp(3,i)*cphi(4,i)
-     &               + 2.0d0*(cmp(7,i)-cmp(6,i))*cphi(10,i)
-     &               + cmp(9,i)*cphi(8,i) + cmp(10,i)*cphi(6,i)
-     &               - cmp(8,i)*cphi(9,i) - cmp(10,i)*cphi(7,i)
-         trq(2) = cmp(2,i)*cphi(4,i) - cmp(4,i)*cphi(2,i)
-     &               + 2.0d0*(cmp(5,i)-cmp(7,i))*cphi(9,i)
-     &               + cmp(8,i)*cphi(10,i) + cmp(9,i)*cphi(7,i)
-     &               - cmp(9,i)*cphi(5,i) - cmp(10,i)*cphi(8,i)
-         trq(3) = cmp(3,i)*cphi(2,i) - cmp(2,i)*cphi(3,i)
-     &               + 2.0d0*(cmp(6,i)-cmp(5,i))*cphi(8,i)
-     &               + cmp(8,i)*cphi(5,i) + cmp(10,i)*cphi(9,i)
-     &               - cmp(8,i)*cphi(6,i) - cmp(9,i)*cphi(10,i)
-         call torque (i,trq,fix,fiy,fiz,dep)
+         tep(1) = cmp(4,i)*cphidp(3,i) - cmp(3,i)*cphidp(4,i)
+     &               + 2.0d0*(cmp(7,i)-cmp(6,i))*cphidp(10,i)
+     &               + cmp(9,i)*cphidp(8,i) + cmp(10,i)*cphidp(6,i)
+     &               - cmp(8,i)*cphidp(9,i) - cmp(10,i)*cphidp(7,i)
+         tep(2) = cmp(2,i)*cphidp(4,i) - cmp(4,i)*cphidp(2,i)
+     &               + 2.0d0*(cmp(5,i)-cmp(7,i))*cphidp(9,i)
+     &               + cmp(8,i)*cphidp(10,i) + cmp(9,i)*cphidp(7,i)
+     &               - cmp(9,i)*cphidp(5,i) - cmp(10,i)*cphidp(8,i)
+         tep(3) = cmp(3,i)*cphidp(2,i) - cmp(2,i)*cphidp(3,i)
+     &               + 2.0d0*(cmp(6,i)-cmp(5,i))*cphidp(8,i)
+     &               + cmp(8,i)*cphidp(5,i) + cmp(10,i)*cphidp(9,i)
+     &               - cmp(8,i)*cphidp(6,i) - cmp(9,i)*cphidp(10,i)
+         call torque (i,tep,fix,fiy,fiz,dep)
          ii = ipole(i)
          iaz = zaxis(i)
          iax = xaxis(i)
@@ -5241,71 +5365,6 @@ c
          vyz = vyz + 0.5d0*(zix*fix(2) + ziy*fiy(2) + ziz*fiz(2)
      &                    + yix*fix(3) + yiy*fiy(3) + yiz*fiz(3))
          vzz = vzz + zix*fix(3) + ziy*fiy(3) + ziz*fiz(3)
-      end do
-c
-c     increment the dipole polarization virial contributions
-c
-      do i = 1, npole
-         do j = 2, 4
-            cphim(j) = 0.0d0
-            cphid(j) = 0.0d0
-            cphip(j) = 0.0d0
-            do k = 2, 4
-               cphim(j) = cphim(j) + ftc(j,k)*fphi(k,i)
-               cphid(j) = cphid(j) + ftc(j,k)*fphid(k,i)
-               cphip(j) = cphip(j) + ftc(j,k)*fphip(k,i)
-            end do
-         end do
-         vxx = vxx - cphi(2,i)*cmp(2,i)
-     &             - 0.5d0*(cphim(2)*(uind(1,i)+uinp(1,i))
-     &                     +cphid(2)*uinp(1,i)+cphip(2)*uind(1,i))
-         vxy = vxy - 0.5d0*(cphi(2,i)*cmp(3,i)+cphi(3,i)*cmp(2,i))
-     &             - 0.25d0*(cphim(2)*(uind(2,i)+uinp(2,i))
-     &                      +cphim(3)*(uind(1,i)+uinp(1,i))
-     &                      +cphid(2)*uinp(2,i)+cphip(2)*uind(2,i)
-     &                      +cphid(3)*uinp(1,i)+cphip(3)*uind(1,i))
-         vxz = vxz - 0.5d0*(cphi(2,i)*cmp(4,i)+cphi(4,i)*cmp(2,i))
-     &             - 0.25d0*(cphim(2)*(uind(3,i)+uinp(3,i))
-     &                      +cphim(4)*(uind(1,i)+uinp(1,i))
-     &                      +cphid(2)*uinp(3,i)+cphip(2)*uind(3,i)
-     &                      +cphid(4)*uinp(1,i)+cphip(4)*uind(1,i))
-         vyy = vyy - cphi(3,i)*cmp(3,i)
-     &             - 0.5d0*(cphim(3)*(uind(2,i)+uinp(2,i))
-     &                     +cphid(3)*uinp(2,i)+cphip(3)*uind(2,i))
-         vyz = vyz - 0.5d0*(cphi(3,i)*cmp(4,i)+cphi(4,i)*cmp(3,i))
-     &             - 0.25d0*(cphim(3)*(uind(3,i)+uinp(3,i))
-     &                      +cphim(4)*(uind(2,i)+uinp(2,i))
-     &                      +cphid(3)*uinp(3,i)+cphip(3)*uind(3,i)
-     &                      +cphid(4)*uinp(2,i)+cphip(4)*uind(2,i))
-         vzz = vzz - cphi(4,i)*cmp(4,i)
-     &             - 0.5d0*(cphim(4)*(uind(3,i)+uinp(3,i))
-     &                     +cphid(4)*uinp(3,i)+cphip(4)*uind(3,i))
-         vxx = vxx - 2.0d0*cmp(5,i)*cphi(5,i) - cmp(8,i)*cphi(8,i)
-     &             - cmp(9,i)*cphi(9,i)
-         vxy = vxy - (cmp(5,i)+cmp(6,i))*cphi(8,i)
-     &             - 0.5d0*(cmp(8,i)*(cphi(6,i)+cphi(5,i))
-     &                  +cmp(9,i)*cphi(10,i)+cmp(10,i)*cphi(9,i))
-         vxz = vxz - (cmp(5,i)+cmp(7,i))*cphi(9,i)
-     &             - 0.5d0*(cmp(9,i)*(cphi(5,i)+cphi(7,i))
-     &                  +cmp(8,i)*cphi(10,i)+cmp(10,i)*cphi(8,i))
-         vyy = vyy - 2.0d0*cmp(6,i)*cphi(6,i) - cmp(8,i)*cphi(8,i)
-     &             - cmp(10,i)*cphi(10,i)
-         vyz = vyz - (cmp(6,i)+cmp(7,i))*cphi(10,i)
-     &             - 0.5d0*(cmp(10,i)*(cphi(6,i)+cphi(7,i))
-     &                  +cmp(8,i)*cphi(9,i)+cmp(9,i)*cphi(8,i))
-         vzz = vzz - 2.0d0*cmp(7,i)*cphi(7,i) - cmp(9,i)*cphi(9,i)
-     &             - cmp(10,i)*cphi(10,i)
-         if (poltyp.eq.'DIRECT' .or. poltyp.eq.'OPT') then
-            vxx = vxx + 0.5d0*(cphid(2)*uinp(1,i)+cphip(2)*uind(1,i))
-            vxy = vxy + 0.25d0*(cphid(2)*uinp(2,i)+cphip(2)*uind(2,i)
-     &                        +cphid(3)*uinp(1,i)+cphip(3)*uind(1,i))
-            vxz = vxz + 0.25d0*(cphid(2)*uinp(3,i)+cphip(2)*uind(3,i)
-     &                        +cphid(4)*uinp(1,i)+cphip(4)*uind(1,i))
-            vyy = vyy + 0.5d0*(cphid(3)*uinp(2,i)+cphip(3)*uind(2,i))
-            vyz = vyz + 0.25d0*(cphid(3)*uinp(3,i)+cphip(3)*uind(3,i)
-     &                        +cphid(4)*uinp(2,i)+cphip(4)*uind(2,i))
-            vzz = vzz + 0.5d0*(cphid(4)*uinp(3,i)+cphip(4)*uind(3,i))
-         end if
       end do
 c
 c     account for dipole response terms in the OPT method
@@ -5388,6 +5447,7 @@ c
       deallocate (fphid)
       deallocate (fphip)
       deallocate (fphidp)
+      deallocate (cphidp)
 c
 c     perform dynamic allocation of some local arrays
 c

@@ -18,7 +18,6 @@ c
 c
       function energy ()
       use sizes
-      use bound
       use energi
       use iounit
       use limits
@@ -59,10 +58,6 @@ c
       ex = 0.0d0
       edis = 0.0d0
       epr = 0.0d0
-c
-c     maintain any periodic boundary conditions
-c
-      if (use_bounds .and. .not.use_rigid)  call bounds
 c
 c     update the pairwise interaction neighbor lists
 c

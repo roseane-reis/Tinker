@@ -23,6 +23,8 @@ c     xaxis     number of the x-axis defining atom for each site
 c     yaxis     number of the y-axis defining atom for each site
 c     pole      multipole values for each site in the local frame
 c     rpole     multipoles rotated to the global coordinate system
+c     spole     spherical harmonic multipoles in the local frame
+c     srpole    spherical harmonic multipoles in the global frame
 c     polaxe    local axis type for each multipole site
 c     permfield permanent field at each multipole site
 c     savefield logical flag for if electric field has been computed
@@ -43,6 +45,8 @@ c
       real*8, allocatable :: pole(:,:)
       real*8, allocatable :: rpole(:,:)
       real*8, allocatable :: permfield(:,:)
+      real*8, allocatable :: spole(:,:)
+      real*8, allocatable :: srpole(:,:)
       character*8, allocatable :: polaxe(:)
       save
       end

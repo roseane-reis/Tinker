@@ -122,18 +122,18 @@ c
             if (ifft3 .eq. 0)  ifft3 = ifft1
          else if (keyword(1:10) .eq. 'PME-ORDER ') then
             read (string,*,err=20)  bsorder
+   20       continue
          else if (keyword(1:20) .eq. 'DISPERSION-PME-GRID ') then
             dfft1 = 0
             dfft2 = 0
             dfft3 = 0
-            read (string,*,err=15,end=15)  dfft1,dfft2,dfft3
- 15         continue
+            read (string,*,err=21,end=21)  dfft1,dfft2,dfft3
+   21       continue
             if (dfft2 .eq. 0)  dfft2 = dfft1
             if (dfft3 .eq. 0)  dfft3 = dfft1
          else if (keyword(1:21) .eq. 'DISPERSION-PME-ORDER ') then
             read (string,*,err=20)  dbsorder
          end if
-   20    continue
       end do
 c      print *,"multipole grid dimension",ifft1,ifft2,ifft3
 c      print *,"dispersion grid dimension",dfft1,dfft2,dfft3
@@ -255,8 +255,8 @@ c
       external erfc
 c
 c
-c     set the tolerance value; use of 1.0d-8 results in large
-c     Ewald coefficients that ensure continuity in the gradient
+c     set the tolerance value; use of 1.0d-8 instead of 1.0d-6
+c     gives large coefficients that ensure gradient continuity
 c
       eps = 1.0d-8
 c
