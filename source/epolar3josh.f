@@ -1922,6 +1922,7 @@ c
       use polar
       use potent
       use units
+      use inter
       implicit none
       integer i,j,ii
       real*8 e,f,fi,term
@@ -2047,5 +2048,7 @@ c
             end do
          end if
       end if
+      print *,"WARNING! This is Einter only valid for 1 group molecules"
+      einter = einter + ep
       return
       end

@@ -228,12 +228,17 @@ c
 c
 c     get the electrostatic field due to permanent multipoles
 c
-      if (use_ewald) then
-         call dfield0c (field,fieldp)
-      else if (use_mlist) then
-         call dfield0b (field,fieldp)
+      if (.not.savefield) then
+         if (use_ewald) then
+            call dfield0c (field,fieldp)
+         else if (use_mlist) then
+            call dfield0b (field,fieldp)
+         else
+            call dfield0a (field,fieldp)
+         end if
       else
-         call dfield0a (field,fieldp)
+         field = permfield
+         fieldp = permfield
       end if
 c
 c     set induced dipoles to polarizability times direct field
@@ -956,20 +961,24 @@ c
       subroutine ufield0a (field,fieldp)
       use sizes
       use atoms
+      use atomid
       use bound
       use cell
+      use couple
       use group
       use mpole
       use polar
       use polgrp
       use polpot
       use shunt
+      use chgpen
       implicit none
       integer i,j,k,m
       integer ii,kk
       real*8 xr,yr,zr
       real*8 fgrp,r,r2
       real*8 rr3,rr5
+      real*8 alphai,alphak
       real*8 duix,duiy,duiz
       real*8 puix,puiy,puiz
       real*8 dukx,duky,dukz
@@ -981,7 +990,11 @@ c
       real*8 pdi,pti,pgamma
       real*8 fid(3),fkd(3)
       real*8 fip(3),fkp(3)
+      real*8 lambdai(5)
+      real*8 lambdak(5)
+      real*8 lambdaik(5)
       real*8, allocatable :: uscale(:)
+      real*8, allocatable :: muscale(:)
       real*8 field(3,*)
       real*8 fieldp(3,*)
       logical proceed
@@ -1005,11 +1018,13 @@ c
 c     perform dynamic allocation of some local arrays
 c
       allocate (uscale(n))
+      allocate (muscale(n))
 c
 c     set array needed to scale connected atom interactions
 c
       do i = 1, n
          uscale(i) = 1.0d0
+         muscale(i) = 1.0d0
       end do
 c
 c     find the electrostatic field due to mutual induced dipoles
@@ -1018,6 +1033,7 @@ c
          ii = ipole(i)
          pdi = pdamp(i)
          pti = thole(i)
+         alphai = alphaele(i)
          duix = uind(1,i)
          duiy = uind(2,i)
          duiz = uind(3,i)
@@ -1036,6 +1052,18 @@ c
          do j = 1, np14(ii)
             uscale(ip14(j,ii)) = u4scale
          end do
+         do j = 1, n12(ii)
+            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+         end do
+         do j = 1, n13(ii)
+            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+         end do
+         do j = 1, n14(ii)
+            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+         end do
+         do j = 1, n15(ii)
+            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+         end do
          do k = i+1, npole
             kk = ipole(k)
             proceed = .true.
@@ -1048,24 +1076,31 @@ c
                r2 = xr*xr + yr* yr + zr*zr
                if (r2 .le. off2) then
                   r = sqrt(r2)
+                  alphak = alphaele(k)
                   dukx = uind(1,k)
                   duky = uind(2,k)
                   dukz = uind(3,k)
                   pukx = uinp(1,k)
                   puky = uinp(2,k)
                   pukz = uinp(3,k)
-                  scale3 = uscale(kk)
-                  scale5 = uscale(kk)
-                  damp = pdi * pdamp(k)
-                  if (damp .ne. 0.0d0) then
-                     pgamma = min(pti,thole(k))
-                     damp = -pgamma * (r/damp)**3
-                     if (damp .gt. -50.0d0) then
-                        expdamp = exp(damp)
-                        scale3 = scale3 * (1.0d0-expdamp)
-                        scale5 = scale5 * (1.0d0-expdamp*(1.0d0-damp))
-                     end if
-                  end if
+c                  scale3 = uscale(kk)
+c                  scale5 = uscale(kk)
+c                  damp = pdi * pdamp(k)
+c                  if (damp .ne. 0.0d0) then
+c                     pgamma = min(pti,thole(k))
+c                     damp = -pgamma * (r/damp)**3
+c                     if (damp .gt. -50.0d0) then
+c                        expdamp = exp(damp)
+c                        scale3 = scale3 * (1.0d0-expdamp)
+c                        scale5 = scale5 * (1.0d0-expdamp*(1.0d0-damp))
+c                     end if
+c                  end if
+c
+                  call udamphlike(r,alphai,alphak,
+     &                 lambdai,lambdak,lambdaik)
+                  scale3 = muscale(kk)*lambdaik(3)
+                  scale5 = muscale(kk)*lambdaik(5)
+c
                   rr3 = -scale3 / (r*r2)
                   rr5 = 3.0d0 * scale5 / (r*r2*r2)
                   duir = xr*duix + yr*duiy + zr*duiz
@@ -1096,6 +1131,18 @@ c
 c
 c     reset exclusion coefficients for connected atoms
 c
+         do j = 1, n12(ii)
+            muscale(i12(j,ii)) = 1.0d0
+         end do
+         do j = 1, n13(ii)
+            muscale(i13(j,ii)) = 1.0d0
+         end do
+         do j = 1, n14(ii)
+            muscale(i14(j,ii)) = 1.0d0
+         end do
+         do j = 1, n15(ii)
+            muscale(i15(j,ii)) = 1.0d0
+         end do
          do j = 1, np11(ii)
             uscale(ip11(j,ii)) = 1.0d0
          end do
@@ -2822,6 +2869,13 @@ c
 c
 c     perform deallocation of some local arrays
 c
+c      do i = 1, 6
+c         do j = 1, n*maxelst
+c            if (tdipdip(i,j) .ne. 0.0d0) then
+c               print *,"udirect2b tdipdip",tdipdip(i,j)
+c            end if
+c         end do
+c      end do
       deallocate (toffset)
       deallocate (pscale)
       deallocate (dscale)
