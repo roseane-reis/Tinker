@@ -149,5 +149,21 @@ c
             ict(nct) = i
          end if
       end do
+c
+c
+c
+      do i = 1, nkey
+         next = 1
+         record = keyline(i)
+         call gettext (record,keyword,next)
+         call upcase (keyword)
+         string = record(next:120)
+         if (keyword(1:14) .eq. 'TRANSFER-TYPE ') then
+c            call getword (record,penetration,next)
+            read (string,*,err=110,end=110)  transtyp
+         end if
+ 110     continue
+      end do
+c
       return
       end

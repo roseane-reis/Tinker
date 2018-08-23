@@ -267,7 +267,7 @@ c
             uscale(ip14(j,ii)) = u4scale
          end do
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-         print *,"Hacker Warning! forcing pscale to equal dscale"
+c         print *,"Hacker Warning! forcing pscale to equal dscale"
          pscale = dscale
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c

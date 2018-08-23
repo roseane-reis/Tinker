@@ -150,8 +150,13 @@ c
 c
 c     compute charge transfer energy for the pair
 c
-                  e = -transferi * exp(-alphak*r) - 
-     &                 transferk * exp(-alphai*r) 
+                  if (transtyp .eq. "R2") then
+                     e = -transferi * exp(-alphak*r2) -
+     &                    transferk * exp(-alphai*r2)
+                  else
+                     e = -transferi * exp(-alphak*r) - 
+     &                    transferk * exp(-alphai*r)
+                  end if
                   ex = ex + e*mscale(kk)
                   if (molcule(ii) .ne. molcule(kk))
      &                  einter = einter + e*mscale(kk)
@@ -248,7 +253,7 @@ c
 !$OMP PARALLEL default(private)
 !$OMP& shared(npole,ipole,x,y,z,chgct,alphact,n12,i12,n13,i13,
 !$OMP& n14,i14,n15,i15,m2scale,m3scale,m4scale,m5scale,
-!$OMP& nelst,elst,use_bounds,off2)
+!$OMP& nelst,elst,use_bounds,off2,transtyp)
 !$OMP& firstprivate(mscale) shared (ex)
 !$OMP DO reduction(+:ex) schedule(guided)
 c
@@ -291,8 +296,13 @@ c
 c     
 c     compute charge transfer energy for the pair
 c
-               e = -transferi * exp(-alphak*r) - 
-     &              transferk * exp(-alphai*r) 
+               if (transtyp .eq. "R2") then
+                  e = -transferi * exp(-alphak*r2) -
+     &                 transferk * exp(-alphai*r2)
+               else
+                  e = -transferi * exp(-alphak*r) -
+     &                 transferk * exp(-alphai*r)
+               end if
                ex = ex + e*mscale(kk)
             end if
          end do
