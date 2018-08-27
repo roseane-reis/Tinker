@@ -222,8 +222,7 @@ c
       if (use_charge)  call echarge1
       if (use_chgdpl)  call echgdpl1
       if (use_dipole)  call edipole1
-c      if (use_mpole)  call empole1
-      if (use_mpole) call emoeba1
+      if (use_mpole)  call empole1
       if (use_polar)  call epolar1
       if (use_rxnfld)  call erxnfld1
 c
@@ -233,12 +232,14 @@ c
       if (use_metal)  call emetal1
       if (use_geom)  call egeom1
       if (use_extra)  call extra1
-c      if (use_disp) call edisp1
-c      if (use_disp) print *,'not using edisp1 in gradient'
+      if (use_chgpen) call ejosh1
+      if (use_polarcp) call epolarjosh1
+c     
+c     NOTE: Charge penetration electrostatics, pauli repulsion and
+c     damped dispersion are all computed in ejosh1
 c
 c     sum up to get the total energy and first derivatives
 c
-c      print *,"gradient: em,ep,edis,epr,ex",em,ep,edis,epr,ex
       esum = eb + ea + eba + eub + eaa + eopb + eopd + eid + eit
      &          + et + ept + ebt + eat + ett + ev + ec + ecd + ed
      &          + em + ep + er + es + elf + eg + ex + edis + epr

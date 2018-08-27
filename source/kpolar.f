@@ -289,7 +289,7 @@ c
 c     remove zero and undefined polarizable sites from the list
 c
       npolar = 0
-      if (use_polar .or. use_solv) then
+      if (use_polar .or. use_solv .or. use_polarcp) then
          npole = 0
          do i = 1, n
             if (polsiz(i).ne.0 .or. polarity(i).ne.0.0d0) then
@@ -336,7 +336,7 @@ c
 c
 c     perform dynamic allocation of some global arrays
 c
-      if (use_polar) then
+      if (use_polar .or. use_polarcp) then
          if (allocated(mindex))  deallocate (mindex)
          if (allocated(minv))  deallocate (minv)
          allocate (mindex(npole))

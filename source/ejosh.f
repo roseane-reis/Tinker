@@ -7,16 +7,16 @@ c     #############################################################
 c
 c     #############################################################
 c     ##                                                         ##
-c     ##  subroutine emoeba  --  atomic multipole moment energy  ##
+c     ##  subroutine ejosh  --  atomic multipole moment energy  ##
 c     ##                                                         ##
 c     #############################################################
 c
 c
-c     "emoeba" calculates the electrostatic energy due to atomic
+c     "ejosh" calculates the electrostatic energy due to atomic
 c     multipole interactions
 c
 c
-      subroutine emoeba
+      subroutine ejosh
       use limits
       use mpole
       implicit none
@@ -29,15 +29,15 @@ c     choose the method for summing over multipole interactions
 c
       if (use_ewald) then
          if (use_mlist) then
-            call emoeba0d
+            call ejosh0d
          else
-            call emoeba0c
+            call ejosh0c
          end if
       else
          if (use_mlist) then
-            call emoeba0b
+            call ejosh0b
          else
-            call emoeba0a
+            call ejosh0a
          end if
       end if
       return
@@ -46,16 +46,16 @@ c
 c
 c     #############################################################
 c     ##                                                         ##
-c     ##  subroutine emoeba0a  --  double loop multipole energy  ##
+c     ##  subroutine ejosh0a  --  double loop multipole energy  ##
 c     ##                                                         ##
 c     #############################################################
 c
 c
-c     "emoeba0a" calculates the atomic multipole interaction energy
+c     "ejosh0a" calculates the atomic multipole interaction energy
 c     using a double loop
 c
 c
-      subroutine emoeba0a
+      subroutine ejosh0a
       use sizes
       use atoms
       use bound
@@ -448,7 +448,7 @@ ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c
 c     accumulate energy terms
 c
-                  if (use_mpole) em = em + e_ele
+                  if (use_chgpen) em = em + e_ele
                   if (use_disp) edis = edis + e_disp
                   if (use_pauli) epr = epr + e_pauli
                end if
@@ -630,16 +630,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine emoeba0b  --  neighbor list multipole energy  ##
+c     ##  subroutine ejosh0b  --  neighbor list multipole energy  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "emoeba0b" calculates the atomic multipole interaction energy
+c     "ejosh0b" calculates the atomic multipole interaction energy
 c     using a neighbor list
 c
 c
-      subroutine emoeba0b
+      subroutine ejosh0b
       use sizes
       use atoms
       use bound
@@ -862,16 +862,16 @@ c
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine emoeba0c  --  Ewald multipole energy via loop  ##
+c     ##  subroutine ejosh0c  --  Ewald multipole energy via loop  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "emoeba0c" calculates the atomic multipole interaction energy
+c     "ejosh0c" calculates the atomic multipole interaction energy
 c     using particle mesh Ewald summation and a double loop
 c
 c
-      subroutine emoeba0c
+      subroutine ejosh0c
       use sizes
       use atoms
       use boxes
@@ -964,12 +964,12 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine emoebareal0c  --  real space mpole energy via loop  ##
+c     ##  subroutine ejoshreal0c  --  real space mpole energy via loop  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "emoebareal0c" evaluates the real space portion of the Ewald sum
+c     "ejoshreal0c" evaluates the real space portion of the Ewald sum
 c     energy due to atomic multipoles using a double loop
 c
 c     literature reference:
@@ -978,7 +978,7 @@ c     W. Smith, "Point Multipoles in the Ewald Summation (Revisited)",
 c     CCP5 Newsletter, 46, 18-30, 1998  (see http://www.ccp5.org/)
 c
 c
-      subroutine emoebareal0c
+      subroutine ejoshreal0c
       use sizes
       use atoms
       use bound
@@ -1336,16 +1336,16 @@ c
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine emoeba0d  --  Ewald multipole energy via list  ##
+c     ##  subroutine ejosh0d  --  Ewald multipole energy via list  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "emoeba0d" calculates the atomic multipole interaction energy
+c     "ejosh0d" calculates the atomic multipole interaction energy
 c     using particle mesh Ewald summation and a neighbor list
 c
 c
-      subroutine emoeba0d
+      subroutine ejosh0d
       use sizes
       use atoms
       use boxes
@@ -1389,7 +1389,7 @@ c
 c
 c     compute the real space portion of the Ewald summation
 c
-      call emoebareal0d
+      call ejoshreal0d
 c
 c     compute the reciprocal space part of the Ewald summation
 c
@@ -1463,12 +1463,12 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine emoebareal0d  --  real space mpole energy via list  ##
+c     ##  subroutine ejoshreal0d  --  real space mpole energy via list  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "emoebareal0d" evaluates the real space portion of the Ewald sum
+c     "ejoshreal0d" evaluates the real space portion of the Ewald sum
 c     energy due to atomic multipoles using a neighbor list
 c
 c     literature reference:
@@ -1477,7 +1477,7 @@ c     W. Smith, "Point Multipoles in the Ewald Summation (Revisited)",
 c     CCP5 Newsletter, 46, 18-30, 1998  (see http://www.ccp5.org/)
 c
 c
-      subroutine emoebareal0d
+      subroutine ejoshreal0d
       use sizes
       use atoms
       use atomid
@@ -1641,19 +1641,19 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
-            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
-            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
-            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+            muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
-            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -2029,7 +2029,7 @@ c
 c      do i = 1, 6
 c         do j =1, n*maxelst
 c            if (tdipdip(i,j) .ne. 0.0d0) then
-c               print *,"emoeba tdipdip",tdipdip(i,j)
+c               print *,"ejosh tdipdip",tdipdip(i,j)
 c            end if
 c         end do
 c      end do

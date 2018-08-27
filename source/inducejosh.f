@@ -7,12 +7,12 @@ c     #############################################################
 c
 c     ##############################################################
 c     ##                                                          ##
-c     ##  subroutine induce  --  evaluate induced dipole moments  ##
+c     ##  subroutine inducejosh  --  evaluate inducejoshd dipole moments  ##
 c     ##                                                          ##
 c     ##############################################################
 c
 c
-c     "induce" computes the induced dipole moments at polarizable
+c     "inducejosh" computes the induced dipole moments at polarizable
 c     sites due to direct or mutual polarization
 c
 c     assumes multipole components have already been rotated into
@@ -20,7 +20,7 @@ c     the global coordinate frame; computes induced dipoles based
 c     on full system, use of active or inactive atoms is ignored
 c
 c
-      subroutine induce
+      subroutine inducejosh
       use sizes
       use inform
       use iounit
@@ -40,11 +40,11 @@ c
 c     choose the method for computation of induced dipoles
 c
       if (solvtyp(1:2) .eq. 'PB') then
-         call induce0e
+         call inducejosh0e
       else if (solvtyp(1:2) .eq. 'GK') then
-         call induce0d
+         call inducejosh0d
       else
-         call induce0a
+         call inducejosh0a
       end if
 c
 c     update the lists of previous induced dipole values
@@ -73,7 +73,7 @@ c
 c
 c     print out a list of the final induced dipole moments
 c
-      if (debug .and. use_polar) then
+      if (debug .and. use_polarcp) then
          header = .true.
          do i = 1, npole
             if (polarity(i) .ne. 0.0d0) then
@@ -163,16 +163,16 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine induce0a  --  conjugate gradient dipole solver  ##
+c     ##  subroutine inducejosh0a  --  conjugate gradient dipole solver  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "induce0a" computes the induced dipole moments at polarizable
+c     "inducejosh0a" computes the induced dipole moments at polarizable
 c     sites using a preconditioned conjugate gradient solver
 c
 c
-      subroutine induce0a
+      subroutine inducejosh0a
       use sizes
       use atoms
       use ielscf
@@ -219,7 +219,7 @@ c
             uinp(j,i) = 0.0d0
          end do
       end do
-      if (.not. use_polar)  return
+      if (.not. use_polarcp)  return
 c
 c     perform dynamic allocation of some local arrays
 c
@@ -228,13 +228,14 @@ c
 c
 c     get the electrostatic field due to permanent multipoles
 c
+      print *,"yoooo,",savefield
       if (.not.savefield) then
          if (use_ewald) then
-            call dfield0c (field,fieldp)
+            call dfieldjosh0c (field,fieldp)
          else if (use_mlist) then
-            call dfield0b (field,fieldp)
+            call dfieldjosh0b (field,fieldp)
          else
-            call dfield0a (field,fieldp)
+            call dfieldjosh0a (field,fieldp)
          end if
       else
          field = permfield
@@ -268,11 +269,11 @@ c
          do k = 1, coptmax
             optlevel = k - 1
             if (use_ewald) then
-               call ufield0c (field,fieldp)
+               call ufieldjosh0c (field,fieldp)
             else if (use_mlist) then
-               call ufield0b (field,fieldp)
+               call ufieldjosh0b (field,fieldp)
             else
-               call ufield0a (field,fieldp)
+               call ufieldjosh0a (field,fieldp)
             end if
             do i = 1, npole
                if (douind(ipole(i))) then
@@ -319,7 +320,7 @@ c
 c     estimate induced dipoles using a polynomial predictor
 c
          if (use_pred .and. nualt.eq.maxualt) then
-            call ulspred
+            call ulspredjosh
             do i = 1, npole
                do j = 1, 3
                   udsum = 0.0d0
@@ -360,11 +361,11 @@ c
 c     get the electrostatic field due to induced dipoles
 c
          if (use_ewald) then
-            call ufield0c (field,fieldp)
+            call ufieldjosh0c (field,fieldp)
          else if (use_mlist) then
-            call ufield0b (field,fieldp)
+            call ufieldjosh0b (field,fieldp)
          else
-            call ufield0a (field,fieldp)
+            call ufieldjosh0a (field,fieldp)
          end if
 c
 c     set initial conjugate gradient residual and conjugate vector
@@ -387,13 +388,13 @@ c
          end do
          mode = 'BUILD'
          if (use_mlist) then
-            call uscale0b (mode,rsd,rsdp,zrsd,zrsdp)
+            call uscalejosh0b (mode,rsd,rsdp,zrsd,zrsdp)
             mode = 'APPLY'
-            call uscale0b (mode,rsd,rsdp,zrsd,zrsdp)
+            call uscalejosh0b (mode,rsd,rsdp,zrsd,zrsdp)
          else
-            call uscale0a (mode,rsd,rsdp,zrsd,zrsdp)
+            call uscalejosh0a (mode,rsd,rsdp,zrsd,zrsdp)
             mode = 'APPLY'
-            call uscale0a (mode,rsd,rsdp,zrsd,zrsdp)
+            call uscalejosh0a (mode,rsd,rsdp,zrsd,zrsdp)
          end if
          do i = 1, npole
             if (douind(ipole(i))) then
@@ -419,11 +420,11 @@ c
                end if
             end do
             if (use_ewald) then
-               call ufield0c (field,fieldp)
+               call ufieldjosh0c (field,fieldp)
             else if (use_mlist) then
-               call ufield0b (field,fieldp)
+               call ufieldjosh0b (field,fieldp)
             else
-               call ufield0a (field,fieldp)
+               call ufieldjosh0a (field,fieldp)
             end if
             do i = 1, npole
                if (douind(ipole(i))) then
@@ -462,9 +463,9 @@ c
                end if
             end do
             if (use_mlist) then
-               call uscale0b (mode,rsd,rsdp,zrsd,zrsdp)
+               call uscalejosh0b (mode,rsd,rsdp,zrsd,zrsdp)
             else
-               call uscale0a (mode,rsd,rsdp,zrsd,zrsdp)
+               call uscalejosh0a (mode,rsd,rsdp,zrsd,zrsdp)
             end if
             b = 0.0d0
             bp = 0.0d0
@@ -565,16 +566,16 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine dfield0a  --  direct induction via double loop  ##
+c     ##  subroutine dfieldjosh0a  --  direct induction via double loop  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "dfield0a" computes the direct electrostatic field due to
+c     "dfieldjosh0a" computes the direct electrostatic field due to
 c     permanent multipole moments via a double loop
 c
 c
-      subroutine dfield0a (field,fieldp)
+      subroutine dfieldjosh0a (field,fieldp)
       use sizes
       use atoms
       use bound
@@ -949,16 +950,16 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine ufield0a  --  mutual induction via double loop  ##
+c     ##  subroutine ufieldjosh0a  --  mutual induction via double loop  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "ufield0a" computes the mutual electrostatic field due to
+c     "ufieldjosh0a" computes the mutual electrostatic fieldjosh due to
 c     induced dipole moments via a double loop
 c
 c
-      subroutine ufield0a (field,fieldp)
+      subroutine ufieldjosh0a (field,fieldp)
       use sizes
       use atoms
       use atomid
@@ -1053,16 +1054,16 @@ c
             uscale(ip14(j,ii)) = u4scale
          end do
          do j = 1, n12(ii)
-            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
-            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
-            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+            muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
-            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do k = i+1, npole
             kk = ipole(k)
@@ -1274,22 +1275,23 @@ c
 c     perform deallocation of some local arrays
 c
       deallocate (uscale)
+      deallocate (muscale)
       return
       end
 c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine dfield0b  --  direct induction via pair list  ##
+c     ##  subroutine dfieldjosh0b  --  direct induction via pair list  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "dfield0b" computes the mutual electrostatic field due to
+c     "dfieldjosh0b" computes the mutual electrostatic field due to
 c     permanent multipole moments via a pair list
 c
 c
-      subroutine dfield0b (field,fieldp)
+      subroutine dfieldjosh0b (field,fieldp)
       use sizes
       use atoms
       use bound
@@ -1510,16 +1512,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine ufield0b  --  mutual induction via pair list  ##
+c     ##  subroutine ufieldjosh0b  --  mutual induction via pair list  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "ufield0b" computes the mutual electrostatic field due to
+c     "ufieldjosh0b" computes the mutual electrostatic field due to
 c     induced dipole moments via a pair list
 c
 c
-      subroutine ufield0b (field,fieldp)
+      subroutine ufieldjosh0b (field,fieldp)
       use sizes
       use atoms
       use bound
@@ -1686,16 +1688,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine dfield0c  --  direct induction via Ewald sum  ##
+c     ##  subroutine dfieldjosh0c  --  direct induction via Ewald sum  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "dfield0c" computes the mutual electrostatic field due to
+c     "dfieldjosh0c" computes the mutual electrostatic field due to
 c     permanent multipole moments via Ewald summation
 c
 c
-      subroutine dfield0c (field,fieldp)
+      subroutine dfieldjosh0c (field,fieldp)
       use sizes
       use atoms
       use boxes
@@ -1723,7 +1725,7 @@ c
 c
 c     get the reciprocal space part of the electrostatic field
 c
-      call udirect1 (field)
+      call udirectjosh1 (field)
       do i = 1, npole
          do j = 1, 3
             fieldp(j,i) = field(j,i)
@@ -1733,9 +1735,9 @@ c
 c     get the real space portion of the electrostatic field
 c
       if (use_mlist) then
-         call udirect2b (field,fieldp)
+         call udirectjosh2b (field,fieldp)
       else
-         call udirect2a (field,fieldp)
+         call udirectjosh2a (field,fieldp)
       end if
 c
 c     get the self-energy portion of the electrostatic field
@@ -1774,16 +1776,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine ufield0c  --  mutual induction via Ewald sum  ##
+c     ##  subroutine ufieldjosh0c  --  mutual induction via Ewald sum  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "ufield0c" computes the mutual electrostatic field due to
+c     "ufieldjosh0c" computes the mutual electrostatic field due to
 c     induced dipole moments via Ewald summation
 c
 c
-      subroutine ufield0c (field,fieldp)
+      subroutine ufieldjosh0c (field,fieldp)
       use sizes
       use atoms
       use boxes
@@ -1812,14 +1814,14 @@ c
 c
 c     get the reciprocal space part of the electrostatic field
 c
-      call umutual1 (field,fieldp)
+      call umutualjosh1 (field,fieldp)
 c
 c     get the real space portion of the electrostatic field
 c
       if (use_mlist) then
-         call umutual2b (field,fieldp)
+         call umutualjosh2b (field,fieldp)
       else
-         call umutual2a (field,fieldp)
+         call umutualjosh2a (field,fieldp)
       end if
 c
 c     get the self-energy portion of the electrostatic field
@@ -1859,16 +1861,16 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine udirect1  --  Ewald recip direct induced field  ##
+c     ##  subroutine udirectjosh1  --  Ewald recip direct induced field  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "udirect1" computes the reciprocal space contribution of the
+c     "udirectjosh1" computes the reciprocal space contribution of the
 c     permanent atomic multipole moments to the field
 c
 c
-      subroutine udirect1 (field)
+      subroutine udirectjosh1 (field)
       use sizes
       use bound
       use boxes
@@ -2024,16 +2026,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine udirect2a  --  Ewald real direct field via loop  ##
+c     ##  subroutine udirectjosh2a  --  Ewald real direct field via loop  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "udirect2a" computes the real space contribution of the permanent
+c     "udirectjosh2a" computes the real space contribution of the permanent
 c     atomic multipole moments to the field via a double loop
 c
 c
-      subroutine udirect2a (field,fieldp)
+      subroutine udirectjosh2a (field,fieldp)
       use sizes
       use atoms
       use boxes
@@ -2494,16 +2496,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine udirect2b  --  Ewald real direct field via list  ##
+c     ##  subroutine udirectjosh2b  --  Ewald real direct field via list  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "udirect2b" computes the real space contribution of the permanent
+c     "udirectjosh2b" computes the real space contribution of the permanent
 c     atomic multipole moments to the field via a neighbor list
 c
 c
-      subroutine udirect2b (field,fieldp)
+      subroutine udirectjosh2b (field,fieldp)
       use sizes
       use atoms
       use boxes
@@ -2888,16 +2890,16 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine umutual1  --  Ewald recip mutual induced field  ##
+c     ##  subroutine umutualjosh1  --  Ewald recip mutual induced field  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "umutual1" computes the reciprocal space contribution of the
+c     "umutualjosh1" computes the reciprocal space contribution of the
 c     induced atomic dipole moments to the field
 c
 c
-      subroutine umutual1 (field,fieldp)
+      subroutine umutualjosh1 (field,fieldp)
       use sizes
       use boxes
       use ewald
@@ -3026,16 +3028,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine umutual2a  --  Ewald real mutual field via loop  ##
+c     ##  subroutine umutualjosh2a  --  Ewald real mutual field via loop  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "umutual2a" computes the real space contribution of the induced
+c     "umutualjosh2a" computes the real space contribution of the induced
 c     atomic dipole moments to the field via a double loop
 c
 c
-      subroutine umutual2a (field,fieldp)
+      subroutine umutualjosh2a (field,fieldp)
       use sizes
       use atoms
       use boxes
@@ -3355,16 +3357,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine umutual2b  --  Ewald real mutual field via list  ##
+c     ##  subroutine umutualjosh2b  --  Ewald real mutual field via list  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "umutual2b" computes the real space contribution of the induced
+c     "umutualjosh2b" computes the real space contribution of the induced
 c     atomic dipole moments to the field via a neighbor list
 c
 c
-      subroutine umutual2b (field,fieldp)
+      subroutine umutualjosh2b (field,fieldp)
       use sizes
       use mpole
       use polar
@@ -3466,16 +3468,16 @@ c
 c
 c     ##############################################################
 c     ##                                                          ##
-c     ##  subroutine induce0d  --  Kirkwood SCRF induced dipoles  ##
+c     ##  subroutine inducejosh0d  --  Kirkwood SCRF induced dipoles  ##
 c     ##                                                          ##
 c     ##############################################################
 c
 c
-c     "induce0d" computes the induced dipole moments at polarizable
+c     "inducejosh0d" computes the induced dipole moments at polarizable
 c     sites for generalized Kirkwood SCRF and vacuum environments
 c
 c
-      subroutine induce0d
+      subroutine inducejosh0d
       use sizes
       use atoms
       use inform
@@ -3539,7 +3541,7 @@ c
             uinps(j,i) = 0.0d0
          end do
       end do
-      if (.not.use_polar .and. .not.use_solv)  return
+      if (.not.use_polarcp .and. .not.use_solv)  return
 c
 c     set the switching function coefficients
 c
@@ -3556,7 +3558,7 @@ c
 c     compute the direct induced dipole moment at each atom, and
 c     another set that also includes RF due to permanent multipoles
 c
-      call dfield0d (field,fieldp,fields,fieldps)
+      call dfieldjosh0d (field,fieldp,fields,fieldps)
 c
 c     set vacuum induced dipoles to polarizability times direct field;
 c     set SCRF induced dipoles to polarizability times direct field
@@ -3591,7 +3593,7 @@ c
             end if
          end do
          do k = 1, coptmax
-            call ufield0d (field,fieldp,fields,fieldps)
+            call ufieldjosh0d (field,fieldp,fields,fieldps)
             do i = 1, npole
                if (douind(ipole(i))) then
                   do j = 1, 3
@@ -3695,7 +3697,7 @@ c
 c
 c     set initial conjugate gradient residual and conjugate vector
 c
-         call ufield0d (field,fieldp,fields,fieldps)
+         call ufieldjosh0d (field,fieldp,fields,fieldps)
          do i = 1, npole
             if (douind(ipole(i))) then
                poli(i) = max(polmin,polarity(i))
@@ -3738,7 +3740,7 @@ c
                   end do
                end if
             end do
-            call ufield0d (field,fieldp,fields,fieldps)
+            call ufieldjosh0d (field,fieldp,fields,fieldps)
             do i = 1, npole
                if (douind(ipole(i))) then
                   do j = 1, 3
@@ -3920,17 +3922,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine dfield0d  --  generalized Kirkwood direct field  ##
+c     ##  subroutine dfieldjosh0d  --  generalized Kirkwood direct field  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "dfield0d" computes the direct electrostatic field due to
+c     "dfieldjosh0d" computes the direct electrostatic field due to
 c     permanent multipole moments for use with with generalized
 c     Kirkwood implicit solvation
 c
 c
-      subroutine dfield0d (field,fieldp,fields,fieldps)
+      subroutine dfieldjosh0d (field,fieldp,fields,fieldps)
       use sizes
       use atoms
       use couple
@@ -4407,17 +4409,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine ufield0d  --  generalized Kirkwood mutual field  ##
+c     ##  subroutine ufieldjosh0d  --  generalized Kirkwood mutual field  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "ufield0d" computes the mutual electrostatic field due to
+c     "ufieldjosh0d" computes the mutual electrostatic field due to
 c     induced dipole moments for use with with generalized Kirkwood
 c     implicit solvation
 c
 c
-      subroutine ufield0d (field,fieldp,fields,fieldps)
+      subroutine ufieldjosh0d (field,fieldp,fields,fieldps)
       use sizes
       use atoms
       use gkstuf
@@ -4741,16 +4743,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine induce0e  --  Poisson-Boltzmann induced dipoles  ##
+c     ##  subroutine inducejosh0e  --  Poisson-Boltzmann induced dipoles  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "induce0e" computes the induced dipole moments at polarizable
+c     "inducejosh0e" computes the induced dipole moments at polarizable
 c     sites for Poisson-Boltzmann SCRF and vacuum environments
 c
 c
-      subroutine induce0e
+      subroutine inducejosh0e
       use sizes
       use atoms
       use inform
@@ -4814,7 +4816,7 @@ c
             uinps(j,i) = 0.0d0
          end do
       end do
-      if (.not.use_polar .or. .not.use_solv)  return
+      if (.not.use_polarcp .or. .not.use_solv)  return
 c
 c     set the switching function coefficients
 c
@@ -4831,7 +4833,7 @@ c
 c     compute the direct induced dipole moment at each atom, and
 c     another set that also includes RF due to permanent multipoles
 c
-      call dfield0e (field,fieldp,fields,fieldps)
+      call dfieldjosh0e (field,fieldp,fields,fieldps)
 c
 c     set vacuum induced dipoles to polarizability times direct field;
 c     SCRF induced dipoles are polarizability times direct field
@@ -4866,7 +4868,7 @@ c
             end if
          end do
          do k = 1, coptmax
-            call ufield0e (field,fieldp,fields,fieldps)
+            call ufieldjosh0e (field,fieldp,fields,fieldps)
             do i = 1, npole
                if (douind(ipole(i))) then
                   do j = 1, 3
@@ -4970,7 +4972,7 @@ c
 c
 c     set initial conjugate gradient residual and conjugate vector
 c
-         call ufield0e (field,fieldp,fields,fieldps)
+         call ufieldjosh0e (field,fieldp,fields,fieldps)
          do i = 1, npole
             if (douind(ipole(i))) then
                poli(i) = max(polmin,polarity(i))
@@ -5013,7 +5015,7 @@ c
                   end do
                end if
             end do
-            call ufield0e (field,fieldp,fields,fieldps)
+            call ufieldjosh0e (field,fieldp,fields,fieldps)
             do i = 1, npole
                if (douind(ipole(i))) then
                   do j = 1, 3
@@ -5195,16 +5197,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine dfield0e  --  Poisson-Boltzmann direct field  ##
+c     ##  subroutine dfieldjosh0e  --  Poisson-Boltzmann direct field  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "dfield0e" computes the direct electrostatic field due to
+c     "dfieldjosh0e" computes the direct electrostatic field due to
 c     permanent multipole moments for use with in Poisson-Boltzmann
 c
 c
-      subroutine dfield0e (field,fieldp,fields,fieldps)
+      subroutine dfieldjosh0e (field,fieldp,fields,fieldps)
       use sizes
       use atoms
       use couple
@@ -5438,16 +5440,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine ufield0e  --  Poisson-Boltzmann mutual field  ##
+c     ##  subroutine ufieldjosh0e  --  Poisson-Boltzmann mutual field  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "ufield0e" computes the mutual electrostatic field due to
+c     "ufieldjosh0e" computes the mutual electrostatic field due to
 c     induced dipole moments via a Poisson-Boltzmann solver
 c
 c
-      subroutine ufield0e (field,fieldp,fields,fieldps)
+      subroutine ufieldjosh0e (field,fieldp,fields,fieldps)
       use sizes
       use atoms
       use group
@@ -5704,12 +5706,12 @@ c
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine ulspred  --  induced dipole prediction coeffs  ##
+c     ##  subroutine ulspredjosh  --  induced dipole prediction coeffs  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "ulspred" uses standard extrapolation or a least squares fit
+c     "ulspredjosh" uses standard extrapolation or a least squares fit
 c     to set coefficients of an induced dipole predictor polynomial
 c
 c     literature references:
@@ -5722,7 +5724,7 @@ c     W. Wang and R. D. Skeel, "Fast Evaluation of Polarizable Forces",
 c     Journal of Chemical Physics, 123, 164107 (2005)
 c
 c
-      subroutine ulspred
+      subroutine ulspredjosh
       use sizes
       use mpole
       use uprior
@@ -5825,16 +5827,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine uscale0a  --  dipole preconditioner via loop  ##
+c     ##  subroutine uscalejosh0a  --  dipole preconditioner via loop  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "uscale0a" builds and applies a preconditioner for the conjugate
+c     "uscalejosh0a" builds and applies a preconditioner for the conjugate
 c     gradient induced dipole solver using a double loop
 c
 c
-      subroutine uscale0a (mode,rsd,rsdp,zrsd,zrsdp)
+      subroutine uscalejosh0a (mode,rsd,rsdp,zrsd,zrsdp)
       use sizes
       use atoms
       use limits
@@ -6030,16 +6032,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine uscale0b  --  dipole preconditioner via list  ##
+c     ##  subroutine uscalejosh0b  --  dipole preconditioner via list  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "uscale0b" builds and applies a preconditioner for the conjugate
+c     "uscalejosh0b" builds and applies a preconditioner for the conjugate
 c     gradient induced dipole solver using a neighbor pair list
 c
 c
-      subroutine uscale0b (mode,rsd,rsdp,zrsd,zrsdp)
+      subroutine uscalejosh0b (mode,rsd,rsdp,zrsd,zrsdp)
       use sizes
       use atoms
       use mpole

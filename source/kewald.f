@@ -107,9 +107,9 @@ c
          if (keyword(1:12) .eq. 'FFT-PACKAGE ') then
             call getword (record,ffttyp,next)
          else if (keyword(1:12) .eq. 'EWALD-ALPHA ') then
-            read (string,*,err=20)  aewald
+            read (string,*,err=22)  aewald
          else if (keyword(1:23) .eq. 'DISPERSION-EWALD-ALPHA ') then
-            read (string,*,err=20)  adewald
+            read (string,*,err=22)  adewald
          else if (keyword(1:15) .eq. 'EWALD-BOUNDARY ') then
             boundary = 'VACUUM'
          else if (keyword(1:9) .eq. 'PME-GRID ') then
@@ -121,8 +121,7 @@ c
             if (ifft2 .eq. 0)  ifft2 = ifft1
             if (ifft3 .eq. 0)  ifft3 = ifft1
          else if (keyword(1:10) .eq. 'PME-ORDER ') then
-            read (string,*,err=20)  bsorder
-   20       continue
+            read (string,*,err=22)  bsorder
          else if (keyword(1:20) .eq. 'DISPERSION-PME-GRID ') then
             dfft1 = 0
             dfft2 = 0
@@ -132,7 +131,8 @@ c
             if (dfft2 .eq. 0)  dfft2 = dfft1
             if (dfft3 .eq. 0)  dfft3 = dfft1
          else if (keyword(1:21) .eq. 'DISPERSION-PME-ORDER ') then
-            read (string,*,err=20)  dbsorder
+            read (string,*,err=22)  dbsorder
+   22       continue
          end if
       end do
 c      print *,"multipole grid dimension",ifft1,ifft2,ifft3

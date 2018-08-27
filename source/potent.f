@@ -41,6 +41,7 @@ c     use_born    logical flag governing use of Born radii values
 c     use_orbit   logical flag governing use of pisystem computation
 c     use_disp    logical flag governing use of dispersion potential
 c     use_chgpen  logical flag governing use of charge penetration
+c     use_polarcp logical flag governing use of cp polarization
 c     use_pauli   logical flag governing use of pauli repulsion term
 c
 c
@@ -61,5 +62,6 @@ c
       logical use_extra,use_born
       logical use_orbit,use_disp
       logical use_chgpen,use_pauli
+      logical use_polarcp
       save
       end

@@ -51,6 +51,8 @@ c
       use_metal = .false.
       use_geom = .true.
       use_extra = .true.
+      use_chgpen = .true.
+      use_polarcp = .true.
       use_disp = .true.
       use_pauli = .true.
 c

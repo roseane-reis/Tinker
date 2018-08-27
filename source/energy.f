@@ -108,8 +108,7 @@ c
       if (use_charge)  call echarge
       if (use_chgdpl)  call echgdpl
       if (use_dipole)  call edipole
-c      if (use_mpole)  call empole
-      if (use_mpole) call emoeba
+      if (use_mpole)  call empole
       if (use_polar)  call epolar
       if (use_rxnfld)  call erxnfld
 c
@@ -119,8 +118,11 @@ c
       if (use_geom)  call egeom
       if (use_metal)  call emetal
       if (use_extra)  call extra
-c      if (use_disp) call edisp
-c      if (use_disp) print *,"currently not using edisp in energy"
+      if (use_chgpen) call ejosh
+      if (use_polarcp) call epolarjosh
+c     
+c     NOTE: Charge penetration electrostatics, pauli repulsion and
+c     damped dispersion are all computed in ejosh
 c
 c     sum up to give the total potential energy
 c

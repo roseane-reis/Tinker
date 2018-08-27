@@ -566,7 +566,7 @@ c
 c
 c     perform dynamic allocation of some global arrays
 c
-      if (.not. use_polar) then
+      if (.not. (use_polar .or. use_polarcp)) then
          if (allocated(uind))  deallocate (uind)
          if (allocated(uinp))  deallocate (uinp)
          if (allocated(uinds))  deallocate (uinds)
@@ -590,7 +590,7 @@ c
 c
 c     remove any zero or undefined atomic multipoles
 c
-      if (.not. use_polar) then
+      if (.not. (use_polar .or. use_polarcp)) then
          npole = 0
          do i = 1, n
             if (polsiz(i) .ne. 0) then

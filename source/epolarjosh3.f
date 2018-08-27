@@ -7,16 +7,16 @@ c     ##################################################
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine epolar3  --  induced dipole energy & analysis  ##
+c     ##  subroutine epolarjosh3  --  induced dipole energy & analysis  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "epolar3" calculates the induced dipole polarization energy,
+c     "epolarjosh3" calculates the induced dipole polarization energy,
 c     and partitions the energy among atoms
 c
 c
-      subroutine epolar3
+      subroutine epolarjosh3
       use limits
       implicit none
       logical pairwise
@@ -28,19 +28,19 @@ c
       if (pairwise) then
          if (use_ewald) then
             if (use_mlist) then
-               call epolar3d
+               call epolarjosh3d
             else
-               call epolar3c
+               call epolarjosh3c
             end if
          else
             if (use_mlist) then
-               call epolar3b
+               call epolarjosh3b
             else
-               call epolar3a
+               call epolarjosh3a
             end if
          end if
       else
-         call epolar3e
+         call epolarjosh3e
       end if
       return
       end
@@ -48,16 +48,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine epolar3a  --  double loop polarization analysis  ##
+c     ##  subroutine epolarjosh3a  --  double loop polarization analysis  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "epolar3a" calculates the induced dipole polarization energy
+c     "epolarjosh3a" calculates the induced dipole polarization energy
 c     using a double loop, and partitions the energy among atoms
 c
 c
-      subroutine epolar3a
+      subroutine epolarjosh3a
       use sizes
       use action
       use analyz
@@ -120,15 +120,15 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     print header information if debug output was requested
 c
@@ -518,16 +518,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine epolar3b  --  polarization analysis via list  ##
+c     ##  subroutine epolarjosh3b  --  polarization analysis via list  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "epolar3b" calculates the induced dipole polarization energy
+c     "epolarjosh3b" calculates the induced dipole polarization energy
 c     using a neighbor list, and partitions the energy among atoms
 c
 c
-      subroutine epolar3b
+      subroutine epolarjosh3b
       use sizes
       use action
       use analyz
@@ -590,15 +590,15 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     print header information if debug output was requested
 c
@@ -823,17 +823,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine epolar3c  --  Ewald polarization analysis; loop  ##
+c     ##  subroutine epolarjosh3c  --  Ewald polarization analysis; loop  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "epolar3c" calculates the polarization energy and analysis with
+c     "epolarjosh3c" calculates the polarization energy and analysis with
 c     respect to Cartesian coordinates using particle mesh Ewald and
 c     a double loop
 c
 c
-      subroutine epolar3c
+      subroutine epolarjosh3c
       use sizes
       use action
       use analyz
@@ -872,23 +872,23 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     compute the real space part of the Ewald summation
 c
-      call epreal3c
+      call eprealjosh3c
 c
 c     compute the reciprocal space part of the Ewald summation
 c
-      call eprecip
+      call eprecipjosh
 c
 c     compute the Ewald self-energy term over all the atoms
 c
@@ -940,16 +940,16 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine epreal3c  --  real space polar analysis via loop  ##
+c     ##  subroutine eprealjosh3c  --  real space polar analysis via loop  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "epreal3c" calculates the induced dipole polarization energy and
+c     "eprealjosh3c" calculates the induced dipole polarization energy and
 c     analysis using particle mesh Ewald summation and a double loop
 c
 c
-      subroutine epreal3c
+      subroutine eprealjosh3c
       use sizes
       use action
       use analyz
@@ -1459,17 +1459,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine epolar3d  --  Ewald polarization analysis; list  ##
+c     ##  subroutine epolarjosh3d  --  Ewald polarization analysis; list  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "epolar3d" calculates the polarization energy and analysis with
+c     "epolarjosh3d" calculates the polarization energy and analysis with
 c     respect to Cartesian coordinates using particle mesh Ewald and
 c     a neighbor list
 c
 c
-      subroutine epolar3d
+      subroutine epolarjosh3d
       use sizes
       use action
       use analyz
@@ -1508,23 +1508,23 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     compute the real space part of the Ewald summation
 c
-      call epreal3d
+      call eprealjosh3d
 c
 c     compute the reciprocal space part of the Ewald summation
 c
-      call eprecip
+      call eprecipjosh
 c
 c     compute the Ewald self-energy term over all the atoms
 c
@@ -1576,16 +1576,16 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine epreal3d  --  real space polar analysis via list  ##
+c     ##  subroutine eprealjosh3d  --  real space polar analysis via list  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "epreal3d" calculates the induced dipole polarization energy
+c     "eprealjosh3d" calculates the induced dipole polarization energy
 c     and analysis using particle mesh Ewald and a neighbor list
 c
 c
-      subroutine epreal3d
+      subroutine eprealjosh3d
       use sizes
       use action
       use analyz
@@ -1895,16 +1895,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine epolar3e  --  single-loop polarization analysis  ##
+c     ##  subroutine epolarjosh3e  --  single-loop polarization analysis  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "epolar3e" calculates the dipole polarizability interaction
+c     "epolarjosh3e" calculates the dipole polarizability interaction
 c     from the induced dipoles times the electric field
 c
 c
-      subroutine epolar3e
+      subroutine epolarjosh3e
       use sizes
       use action
       use analyz
@@ -1944,15 +1944,15 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     print header information if debug output was requested
 c

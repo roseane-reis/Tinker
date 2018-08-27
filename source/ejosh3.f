@@ -7,16 +7,16 @@ c     #############################################################
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine emoeba3  --  atomic multipole energy & analysis  ##
+c     ##  subroutine ejosh3  --  atomic multipole energy & analysis  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "emoeba3" calculates the electrostatic energy due to atomic
+c     "ejosh3" calculates the electrostatic energy due to atomic
 c     multipole interactions, and partitions the energy among atoms
 c
 c
-      subroutine emoeba3
+      subroutine ejosh3
       use limits
       use mpole
       implicit none
@@ -30,15 +30,15 @@ c     choose the method for summing over multipole interactions
 c
       if (use_ewald) then
          if (use_mlist) then
-            call emoeba3d
+            call ejosh3d
          else
-            call emoeba3c
+            call ejosh3c
          end if
       else
          if (use_mlist) then
-            call emoeba3b
+            call ejosh3b
          else
-            call emoeba3a
+            call ejosh3a
          end if
       end if
       return
@@ -47,16 +47,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine emoeba3a  --  double loop multipole analysis  ##
+c     ##  subroutine ejosh3a  --  double loop multipole analysis  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "emoeba3a" calculates the atomic multipole interaction energy
+c     "ejosh3a" calculates the atomic multipole interaction energy
 c     using a double loop, and partitions the energy among atoms
 c
 c
-      subroutine emoeba3a
+      subroutine ejosh3a
       use sizes
       use action
       use analyz
@@ -775,16 +775,16 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine emoeba3b  --  neighbor list multipole analysis  ##
+c     ##  subroutine ejosh3b  --  neighbor list multipole analysis  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "emoeba3b" calculates the atomic multipole interaction energy
+c     "ejosh3b" calculates the atomic multipole interaction energy
 c     using a neighbor list, and partitions the energy among the atoms
 c
 c
-      subroutine emoeba3b
+      subroutine ejosh3b
       use sizes
       use action
       use analyz
@@ -1060,17 +1060,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine emoeba3c  --  Ewald multipole analysis via loop  ##
+c     ##  subroutine ejosh3c  --  Ewald multipole analysis via loop  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "emoeba3c" calculates the atomic multipole interaction energy
+c     "ejosh3c" calculates the atomic multipole interaction energy
 c     using a particle mesh Ewald summation and double loop, and
 c     partitions the energy among the atoms
 c
 c
-      subroutine emoeba3c
+      subroutine ejosh3c
       use sizes
       use action
       use analyz
@@ -1176,12 +1176,12 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine emoebareal3c  --  real space mpole analysis via loop  ##
+c     ##  subroutine ejoshreal3c  --  real space mpole analysis via loop  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "emoebareal3c" evaluates the real space portion of the Ewald sum
+c     "ejoshreal3c" evaluates the real space portion of the Ewald sum
 c     energy due to atomic multipole interactions and partitions
 c     the energy among the atoms
 c
@@ -1191,7 +1191,7 @@ c     W. Smith, "Point Multipoles in the Ewald Summation (Revisited)",
 c     CCP5 Newsletter, 46, 18-30, 1998  (see http://www.ccp5.org/)
 c
 c
-      subroutine emoebareal3c
+      subroutine ejoshreal3c
       use sizes
       use action
       use analyz
@@ -1632,17 +1632,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine emoeba3d  --  Ewald multipole analysis via list  ##
+c     ##  subroutine ejosh3d  --  Ewald multipole analysis via list  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "emoeba3d" calculates the atomic multipole interaction energy
+c     "ejosh3d" calculates the atomic multipole interaction energy
 c     using particle mesh Ewald summation and a neighbor list, and
 c     partitions the energy among the atoms
 c
 c
-      subroutine emoeba3d
+      subroutine ejosh3d
       use sizes
       use action
       use analyz
@@ -1698,7 +1698,7 @@ c
 c
 c     compute the real space part of the Ewald summation
 c
-      call emoebareal3d
+      call ejoshreal3d
 c
 c     compute the reciprocal space part of multipole Ewald summation
 c
@@ -1779,12 +1779,12 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine emoebareal3d  --  real space mpole analysis via list  ##
+c     ##  subroutine ejoshreal3d  --  real space mpole analysis via list  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "emoebareal3d" evaluates the real space portion of the Ewald sum
+c     "ejoshreal3d" evaluates the real space portion of the Ewald sum
 c     energy due to atomic multipole interactions, and partitions
 c     the energy among the atoms using a pairwise neighbor list
 c
@@ -1794,7 +1794,7 @@ c     W. Smith, "Point Multipoles in the Ewald Summation (Revisited)",
 c     CCP5 Newsletter, 46, 18-30, 1998  (see http://www.ccp5.org/)
 c
 c
-      subroutine emoebareal3d
+      subroutine ejoshreal3d
       use sizes
       use action
       use analyz
@@ -1979,19 +1979,19 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
-            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
-            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
-            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+            muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
-            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale

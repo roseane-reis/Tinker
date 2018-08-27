@@ -7,16 +7,16 @@ c     #############################################################
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine emoeba1  --  mpole/polar energy & derivatives  ##
+c     ##  subroutine ejosh1  --  mpole/polar energy & derivatives  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "emoeba1" calculates the multipole and dipole polarization
+c     "ejosh1" calculates the multipole and dipole polarization
 c     energy and derivatives with respect to Cartesian coordinates
 c
 c
-      subroutine emoeba1
+      subroutine ejosh1
       use limits
       use mpole
       implicit none
@@ -30,15 +30,15 @@ c     choose the method for summing over multipole interactions
 c
       if (use_ewald) then
          if (use_mlist) then
-            call emoeba1d
+            call ejosh1d
          else
-            call emoeba1c
+            call ejosh1c
          end if
       else
          if (use_mlist) then
-            call emoeba1b
+            call ejosh1b
          else
-            call emoeba1a
+            call ejosh1a
          end if
       end if
       return
@@ -47,16 +47,16 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine emoeba1a  --  double loop multipole derivatives  ##
+c     ##  subroutine ejosh1a  --  double loop multipole derivatives  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "emoeba1a" calculates the multipole energy and derivatives with 
+c     "ejosh1a" calculates the multipole energy and derivatives with 
 c     respect to Cartesian coordinates using a pairwise double loop
 c
 c
-      subroutine emoeba1a
+      subroutine ejosh1a
       use sizes
       use atoms
       use bound
@@ -1232,16 +1232,16 @@ c
 c
 c     ###############################################################
 c     ##                                                           ##
-c     ##  subroutine emoeba1b  --  neighbor list multipole derivs  ##
+c     ##  subroutine ejosh1b  --  neighbor list multipole derivs  ##
 c     ##                                                           ##
 c     ###############################################################
 c
 c
-c     "emoeba1b" calculates the multipole energy and derivatives
+c     "ejosh1b" calculates the multipole energy and derivatives
 c     with respect to Cartesian coordinates using a neighbor list
 c
 c
-      subroutine emoeba1b
+      subroutine ejosh1b
       use sizes
       use atoms
       use bound
@@ -1674,17 +1674,17 @@ c
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine emoeba1c  --  Ewald multipole derivs via loop  ##
+c     ##  subroutine ejosh1c  --  Ewald multipole derivs via loop  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "emoeba1c" calculates the multipole energy and derivatives
+c     "ejosh1c" calculates the multipole energy and derivatives
 c     with respect to Cartesian coordinates using particle mesh
 c     Ewald summation and a double loop
 c
 c
-      subroutine emoeba1c
+      subroutine ejosh1c
       use sizes
       use atoms
       use boxes
@@ -1736,11 +1736,11 @@ c
 c
 c     compute the real space part of the Ewald summation
 c
-      call emoebareal1c
+      call ejoshreal1c
 c
 c     compute the reciprocal space part of the Ewald summation
 c
-      call emoebarecip1
+      call ejoshrecip1
 c
 c     compute the Ewald self-energy term over all the atoms
 c
@@ -1833,17 +1833,17 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine emoebareal1c  --  Ewald real space derivs via loop  ##
+c     ##  subroutine ejoshreal1c  --  Ewald real space derivs via loop  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "emoebareal1c" evaluates the real space portion of the Ewald
+c     "ejoshreal1c" evaluates the real space portion of the Ewald
 c     summation energy and gradient due to multipole interactions
 c     via a double loop
 c
 c
-      subroutine emoebareal1c
+      subroutine ejoshreal1c
       use sizes
       use atoms
       use bound
@@ -2556,17 +2556,17 @@ c
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine emoeba1d  --  Ewald multipole derivs via list  ##
+c     ##  subroutine ejosh1d  --  Ewald multipole derivs via list  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "emoeba1d" calculates the multipole energy and derivatives
+c     "ejosh1d" calculates the multipole energy and derivatives
 c     with respect to Cartesian coordinates using particle mesh Ewald
 c     summation and a neighbor list
 c
 c
-      subroutine emoeba1d
+      subroutine ejosh1d
       use sizes
       use atoms
       use boxes
@@ -2625,7 +2625,7 @@ c
 c
 c     compute the real space part of the Ewald summation
 c
-      call emoebareal1d
+      call ejoshreal1d
 c
 c     compute the reciprocal space part of the electrostatic Ewald summation
 c
@@ -2742,17 +2742,17 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine emoebareal1d  --  Ewald real space derivs via list  ##
+c     ##  subroutine ejoshreal1d  --  Ewald real space derivs via list  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "emoebareal1d" evaluates the real space portion of the Ewald
+c     "ejoshreal1d" evaluates the real space portion of the Ewald
 c     summation energy and gradient due to multipole interactions
 c     via a neighbor list
 c
 c
-      subroutine emoebareal1d
+      subroutine ejoshreal1d
       use sizes
       use atoms
       use atomid
@@ -2971,19 +2971,19 @@ c
          qizz = rpole(13,i)
          do j = 1, n12(ii)
             mscale(i12(j,ii)) = m2scale
-            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             mscale(i13(j,ii)) = m3scale
-            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             mscale(i14(j,ii)) = m4scale
-            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+            muscale(i14(j,ii)) = mu4scale
          end do
          do j = 1, n15(ii)
             mscale(i15(j,ii)) = m5scale
-            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -3755,7 +3755,7 @@ c
 c      do i = 1, 6
 c         do j =1, n*maxelst
 c            if (tdipdip(i,j) .ne. 0.0d0) then
-c               print *,"emoeba1 tdipdip",tdipdip(i,j)
+c               print *,"ejosh1 tdipdip",tdipdip(i,j)
 c            end if
 c         end do
 c      end do
@@ -3766,12 +3766,12 @@ c
 c
 c     ####################################################################
 c     ##                                                                ##
-c     ##  subroutine emoebarecip1  --  PME recip multipole energy & derivs  ##
+c     ##  subroutine ejoshrecip1  --  PME recip multipole energy & derivs  ##
 c     ##                                                                ##
 c     ####################################################################
 c
 c
-c     "emoebarecip1" evaluates the reciprocal space portion of the particle
+c     "ejoshrecip1" evaluates the reciprocal space portion of the particle
 c     mesh Ewald summation energy and gradient due to multipoles
 c
 c     literature reference:
@@ -3786,7 +3786,7 @@ c     modifications for nonperiodic systems suggested by Tom Darden
 c     during May 2007
 c
 c
-      subroutine emoebarecip1
+      subroutine ejoshrecip1
       use sizes
       use atoms
       use bound

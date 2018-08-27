@@ -7,16 +7,16 @@ c     ##################################################
 c
 c     ############################################################
 c     ##                                                        ##
-c     ##  subroutine epolar1  --  polarization energy & derivs  ##
+c     ##  subroutine epolarjosh1  --  polarization energy & derivs  ##
 c     ##                                                        ##
 c     ############################################################
 c
 c
-c     "epolar1" calculates the induced dipole polarization energy
+c     "epolarjosh1" calculates the induced dipole polarization energy
 c     and derivatives with respect to Cartesian coordinates
 c
 c
-      subroutine epolar1
+      subroutine epolarjosh1
       use limits
       implicit none
 c
@@ -25,15 +25,15 @@ c     choose the method for summing over polarization interactions
 c
       if (use_ewald) then
          if (use_mlist) then
-            call epolar1d
+            call epolarjosh1d
          else
-            call epolar1c
+            call epolarjosh1c
          end if
       else
          if (use_mlist) then
-            call epolar1b
+            call epolarjosh1b
          else
-            call epolar1a
+            call epolarjosh1a
          end if
       end if
       return
@@ -42,17 +42,17 @@ c
 c
 c     ################################################################
 c     ##                                                            ##
-c     ##  subroutine epolar1a  --  double loop polarization derivs  ##
+c     ##  subroutine epolarjosh1a  --  double loop polarization derivs  ##
 c     ##                                                            ##
 c     ################################################################
 c
 c
-c     "epolar1a" calculates the dipole polarization energy and
+c     "epolarjosh1a" calculates the dipole polarization energy and
 c     derivatives with respect to Cartesian coordinates using a
 c     pairwise double loop
 c
 c
-      subroutine epolar1a
+      subroutine epolarjosh1a
       use sizes
       use atoms
       use atomid
@@ -162,15 +162,15 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     perform dynamic allocation of some local arrays
 c
@@ -232,15 +232,15 @@ c
          uizp = uinp(3,i)
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = p2scale
-            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = p3scale
-            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = p4scale
-            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+            muscale(i14(j,ii)) = mu4scale
             do k = 1, np11(ii)
                 if (i14(j,ii) .eq. ip11(k,ii))
      &            pscale(i14(j,ii)) = p4scale * p41scale
@@ -248,7 +248,7 @@ c
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = p5scale
-            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -1524,17 +1524,17 @@ c
 c
 c     ##################################################################
 c     ##                                                              ##
-c     ##  subroutine epolar1b  --  neighbor list polarization derivs  ##
+c     ##  subroutine epolarjosh1b  --  neighbor list polarization derivs  ##
 c     ##                                                              ##
 c     ##################################################################
 c
 c
-c     "epolar1b" calculates the dipole polarization energy and
+c     "epolarjosh1b" calculates the dipole polarization energy and
 c     derivatives with respect to Cartesian coordinates using a
 c     neighbor list
 c
 c
-      subroutine epolar1b
+      subroutine epolarjosh1b
       use sizes
       use atoms
       use bound
@@ -1626,15 +1626,15 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     perform dynamic allocation of some local arrays
 c
@@ -2241,17 +2241,17 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine epolar1c  --  Ewald polarization derivs via loop  ##
+c     ##  subroutine epolarjosh1c  --  Ewald polarization derivs via loop  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "epolar1c" calculates the dipole polarization energy and
+c     "epolarjosh1c" calculates the dipole polarization energy and
 c     derivatives with respect to Cartesian coordinates using
 c     particle mesh Ewald summation and a double loop
 c
 c
-      subroutine epolar1c
+      subroutine epolarjosh1c
       use sizes
       use atoms
       use boxes
@@ -2303,23 +2303,23 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     compute the real space part of the Ewald summation
 c
-      call epreal1c
+      call eprealjosh1c
 c
 c     compute the reciprocal space part of the Ewald summation
 c
-      call eprecip1
+      call eprecipjosh1
 c
 c     compute the Ewald self-energy term over all the atoms
 c
@@ -2474,17 +2474,17 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine epreal1c  --  Ewald real space derivs via loop  ##
+c     ##  subroutine eprealjosh1c  --  Ewald real space derivs via loop  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "epreal1c" evaluates the real space portion of the Ewald
+c     "eprealjosh1c" evaluates the real space portion of the Ewald
 c     summation energy and gradient due to dipole polarization
 c     via a double loop
 c
 c
-      subroutine epreal1c
+      subroutine eprealjosh1c
       use sizes
       use atoms
       use bound
@@ -3882,17 +3882,17 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine epolar1d  --  Ewald polarization derivs via list  ##
+c     ##  subroutine epolarjosh1d  --  Ewald polarization derivs via list  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "epolar1d" calculates the dipole polarization energy and
+c     "epolarjosh1d" calculates the dipole polarization energy and
 c     derivatives with respect to Cartesian coordinates using
 c     particle mesh Ewald summation and a neighbor list
 c
 c
-      subroutine epolar1d
+      subroutine epolarjosh1d
       use sizes
       use atoms
       use boxes
@@ -3944,23 +3944,23 @@ c
 c
 c     check the sign of multipole components at chiral sites
 c
-      if (.not. use_mpole)  call chkpole
+      if (.not. use_chgpen)  call chkpole
 c
 c     rotate the multipole components into the global frame
 c
-      if (.not. use_mpole)  call rotpole
+      if (.not. use_chgpen)  call rotpole
 c
 c     compute the induced dipoles at each polarizable atom
 c
-      call induce
+      call inducejosh
 c
 c     compute the real space part of the Ewald summation
 c
-      call epreal1d
+      call eprealjosh1d
 c
 c     compute the reciprocal space part of the Ewald summation
 c
-      call eprecip1
+      call eprecipjosh1
 c
 c     compute the Ewald self-energy term over all the atoms
 c
@@ -4115,17 +4115,17 @@ c
 c
 c     #################################################################
 c     ##                                                             ##
-c     ##  subroutine epreal1d  --  Ewald real space derivs via list  ##
+c     ##  subroutine eprealjosh1d  --  Ewald real space derivs via list  ##
 c     ##                                                             ##
 c     #################################################################
 c
 c
-c     "epreal1d" evaluates the real space portion of the Ewald
+c     "eprealjosh1d" evaluates the real space portion of the Ewald
 c     summation energy and gradient due to dipole polarization
 c     via a neighbor list
 c
 c
-      subroutine epreal1d
+      subroutine eprealjosh1d
       use sizes
       use atoms
       use atomid
@@ -4314,15 +4314,15 @@ c
          uizp = uinp(3,i)
          do j = 1, n12(ii)
             pscale(i12(j,ii)) = p2scale
-            if (atomic(i12(j,ii)).eq.1) muscale(i12(j,ii)) = mu2scale
+            muscale(i12(j,ii)) = mu2scale
          end do
          do j = 1, n13(ii)
             pscale(i13(j,ii)) = p3scale
-            if (atomic(i13(j,ii)).eq.1) muscale(i13(j,ii)) = mu3scale
+            muscale(i13(j,ii)) = mu3scale
          end do
          do j = 1, n14(ii)
             pscale(i14(j,ii)) = p4scale
-            if (atomic(i14(j,ii)).eq.1) muscale(i14(j,ii)) = mu4scale
+            muscale(i14(j,ii)) = mu4scale
             do k = 1, np11(ii)
                 if (i14(j,ii) .eq. ip11(k,ii))
      &            pscale(i14(j,ii)) = p4scale * p41scale
@@ -4330,7 +4330,7 @@ c
          end do
          do j = 1, n15(ii)
             pscale(i15(j,ii)) = p5scale
-            if (atomic(i15(j,ii)).eq.1) muscale(i15(j,ii)) = mu5scale
+            muscale(i15(j,ii)) = mu5scale
          end do
          do j = 1, np11(ii)
             dscale(ip11(j,ii)) = d1scale
@@ -4917,12 +4917,12 @@ c
 c
 c     ###################################################################
 c     ##                                                               ##
-c     ##  subroutine eprecip1  --  PME recip polarize energy & derivs  ##
+c     ##  subroutine eprecipjosh1  --  PME recip polarize energy & derivs  ##
 c     ##                                                               ##
 c     ###################################################################
 c
 c
-c     "eprecip1" evaluates the reciprocal space portion of the particle
+c     "eprecipjosh1" evaluates the reciprocal space portion of the particle
 c     mesh Ewald summation energy and gradient due to dipole polarization
 c
 c     literature reference:
@@ -4937,7 +4937,7 @@ c     modifications for nonperiodic systems suggested by Tom Darden
 c     during May 2007
 c
 c
-      subroutine eprecip1
+      subroutine eprecipjosh1
       use sizes
       use atoms
       use bound
@@ -5042,7 +5042,7 @@ c
 c
 c     remove scalar sum virial from prior multipole 3-D FFT
 c
-      if (use_mpole) then
+      if (use_chgpen) then
          vxx = -vmxx
          vxy = -vmxy
          vxz = -vmxz

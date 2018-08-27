@@ -173,6 +173,16 @@ c
          if (value .eq. 'ONLY')  call potoff
          use_extra = .true.
          if (value .eq. 'NONE')  use_extra = .false.
+      else if (keyword(1:7) .eq. 'CPTERM ') then
+         call getword (record,value,next)
+         if (value .eq. 'ONLY')  call potoff
+         use_chgpen = .true.
+         if (value .eq. 'NONE')  use_chgpen = .false.
+      else if (keyword(1:12) .eq. 'POLARCPTERM ') then
+         call getword (record,value,next)
+         if (value .eq. 'ONLY')  call potoff
+         use_polarcp = .true.
+         if (value .eq. 'NONE')  use_polarcp = .false.
       else if (keyword(1:15) .eq. 'DISPERSIONTERM ') then
          call getword (record,value,next)
          if (value .eq. 'ONLY')  call potoff
@@ -492,6 +502,8 @@ c
       use_metal = .false.
       use_geom = .false.
       use_extra = .false.
+      use_chgpen = .false.
+      use_polarcp = .false.
       use_disp = .false.
       use_pauli = .false.
       return

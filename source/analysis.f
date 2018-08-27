@@ -211,13 +211,12 @@ c
 c
 c     call the electrostatic energy component routines
 c
+      print *,"uses",use_mpole,use_polar,use_polarcp
+
       if (use_charge)  call echarge3
       if (use_chgdpl)  call echgdpl3
       if (use_dipole)  call edipole3
-c
-c      if (use_mpole)  call empole3
-      if (use_mpole)  call emoeba3
-c
+      if (use_mpole)  call empole3
       if (use_polar)  call epolar3
       if (use_rxnfld)  call erxnfld3
 c
@@ -227,10 +226,12 @@ c
       if (use_metal)  call emetal3
       if (use_geom)  call egeom3
       if (use_extra)  call extra3
-      if (use_disp) print *,"currently not using edisp3 in analysis"
-c      if (use_disp) call edisp3
+      if (use_chgpen)  call ejosh3
+      if (use_polarcp) call epolarjosh3
 c
-c      print *,"energies",em,edis,epr
+c     NOTE: charge penetration electrostatics, pauli repulsion
+c     and damped dispersion are all computed in ejosh3
+c
 c
 c     sum up to give the total potential energy
 c

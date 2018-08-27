@@ -358,7 +358,8 @@ c
 c
 c     details of electrostatic energy functional form
 c
-      if (use_charge .or. use_dipole .or. use_mpole .or. use_polar) then
+      if (use_charge .or. use_dipole .or. use_mpole .or. use_polar
+     &     .or. use_polarcp) then
          write (iout,80)
    80    format ()
       end if
@@ -374,13 +375,13 @@ c
          write (iout,100)  value
   100    format (' Electrostatics',14x,a20)
       end if
-      if (use_mpole) then
+      if (use_mpole .or. use_chgpen) then
          value = 'ATOMIC MULTIPOLE'
          call justify (value)
          write (iout,110)  value
   110    format (' Electrostatics',14x,a20)
       end if
-      if (use_polar) then
+      if (use_polar .or. use_polarcp) then
          value = 'INDUCED DIPOLE'
          call justify (value)
          write (iout,120)  value
@@ -546,11 +547,11 @@ c
          write (iout,190)  ndipole
   190    format (' Bond Dipole Moments',14x,i15)
       end if
-      if (use_mpole .and. npole.ne.0) then
+      if ((use_mpole .or. use_chgpen) .and. npole.ne.0) then
          write (iout,200)  npole
   200    format (' Atomic Multipoles',16x,i15)
       end if
-      if (use_polar .and. npolar.ne.0) then
+      if ((use_polar .or. use_polarcp) .and. npolar.ne.0) then
          write (iout,210)  npolar
   210    format (' Polarizable Sites',16x,i15)
       end if
@@ -1123,7 +1124,7 @@ c
 c
 c     parameters used for atomic multipole moments
 c
-      if (use_mpole) then
+      if (use_mpole .or. use_chgpen) then
          header = .true.
          do i = 1, npole
             ia = ipole(i)
@@ -1178,7 +1179,7 @@ c
 c
 c     parameters used for dipole polarizability
 c
-      if (use_polar) then
+      if (use_polar .or. use_polarcp) then
          header = .true.
          do i = 1, npole
             ia = ipole(i)
@@ -1455,7 +1456,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
          write (iout,fstr)  epr,nepr
       end if
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      if (use_polar .and. (nep.ne.0.or.ep.ne.0.0d0)) then
+      if ((use_polar .or. use_polarcp) .and. 
+     &     (nep.ne.0.or.ep.ne.0.0d0)) then
          if (abs(ep) .lt. 1.0d10) then
             fstr = '('' Polarization'',15x,'//form1//')'
          else
@@ -2363,7 +2365,7 @@ c
 c
 c     parameters used for atomic multipole moments
 c
-      if (use_mpole) then
+      if (use_mpole .or. use_chgpen) then
          header = .true.
          do i = 1, npole
             ia = ipole(i)
@@ -2417,7 +2419,7 @@ c
 c
 c     parameters used for dipole polarizability
 c
-      if (use_polar) then
+      if (use_polar .or. use_polarcp) then
          header = .true.
          do i = 1, npole
             ia = ipole(i)

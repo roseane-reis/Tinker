@@ -1494,14 +1494,27 @@ c
 c
 c     perform dynamic allocation of some global arrays
 c
+c      if (allocated(cmp) .and. size(cmp).lt.10*npole)
+c     &   deallocate (cmp)
+c      if (allocated(fmp) .and. size(fmp).lt.10*npole)
+c     &   deallocate (fmp)
+c      if (allocated(fphi) .and. size(fphi).lt.20*npole)
+c     &   deallocate (fphi)
+c      if (.not. allocated(cmp))  allocate (cmp(10,npole))
+c      if (.not. allocated(fmp))  allocate (fmp(10,npole))
+c      if (.not. allocated(fphi))  allocate (fphi(20,npole))
+c
       if (allocated(cmp) .and. size(cmp).lt.10*npole)
      &   deallocate (cmp)
       if (allocated(fmp) .and. size(fmp).lt.10*npole)
      &   deallocate (fmp)
+      if (allocated(cphi) .and. size(cphi).lt.10*npole)
+     &   deallocate (cphi)
       if (allocated(fphi) .and. size(fphi).lt.20*npole)
      &   deallocate (fphi)
       if (.not. allocated(cmp))  allocate (cmp(10,npole))
       if (.not. allocated(fmp))  allocate (fmp(10,npole))
+      if (.not. allocated(cphi))  allocate (cphi(10,npole))
       if (.not. allocated(fphi))  allocate (fphi(20,npole))
 c
 c     copy the multipole moments into local storage areas

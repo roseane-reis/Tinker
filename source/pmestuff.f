@@ -103,7 +103,8 @@ c
 c     set B-spline depth for partial charges or multipoles
 c
       level = 2
-      if (use_mpole .or. use_polar)  level = 4
+      if (use_mpole .or. use_polar .or. use_chgpen .or. use_polarcp)  
+     &     level = 4
 c
 c     initialization to get to 2nd order recursion
 c
