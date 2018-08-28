@@ -228,7 +228,6 @@ c
 c
 c     get the electrostatic field due to permanent multipoles
 c
-      print *,"yoooo,",savefield
       if (.not.savefield) then
          if (use_ewald) then
             call dfieldjosh0c (field,fieldp)
@@ -1114,17 +1113,20 @@ c
                   fkd(1) = rr3*duix + rr5*duir*xr
                   fkd(2) = rr3*duiy + rr5*duir*yr
                   fkd(3) = rr3*duiz + rr5*duir*zr
-                  fip(1) = rr3*pukx + rr5*pukr*xr
-                  fip(2) = rr3*puky + rr5*pukr*yr
-                  fip(3) = rr3*pukz + rr5*pukr*zr
-                  fkp(1) = rr3*puix + rr5*puir*xr
-                  fkp(2) = rr3*puiy + rr5*puir*yr
-                  fkp(3) = rr3*puiz + rr5*puir*zr
+c                  fip(1) = rr3*pukx + rr5*pukr*xr
+c                  fip(2) = rr3*puky + rr5*pukr*yr
+c                  fip(3) = rr3*pukz + rr5*pukr*zr
+c                  fkp(1) = rr3*puix + rr5*puir*xr
+c                  fkp(2) = rr3*puiy + rr5*puir*yr
+c                  fkp(3) = rr3*puiz + rr5*puir*zr
                   do j = 1, 3
                      field(j,i) = field(j,i) + fid(j)
                      field(j,k) = field(j,k) + fkd(j)
-                     fieldp(j,i) = fieldp(j,i) + fip(j)
-                     fieldp(j,k) = fieldp(j,k) + fkp(j)
+                     fieldp(j,i) = fieldp(j,i) + fid(j)
+                     fieldp(j,k) = fieldp(j,k) + fkd(j)
+c                     
+c                     fieldp(j,i) = fieldp(j,i) + fip(j)
+c                     fieldp(j,k) = fieldp(j,k) + fkp(j)
                   end do
                end if
             end if
@@ -3422,18 +3424,31 @@ c
      &                + tdipdip(5,m)*uind(3,i)
          fkmd(3) = tdipdip(3,m)*uind(1,i) + tdipdip(5,m)*uind(2,i)
      &                + tdipdip(6,m)*uind(3,i)
-         fimp(1) = tdipdip(1,m)*uinp(1,k) + tdipdip(2,m)*uinp(2,k)
-     &                + tdipdip(3,m)*uinp(3,k)
-         fimp(2) = tdipdip(2,m)*uinp(1,k) + tdipdip(4,m)*uinp(2,k)
-     &                + tdipdip(5,m)*uinp(3,k)
-         fimp(3) = tdipdip(3,m)*uinp(1,k) + tdipdip(5,m)*uinp(2,k)
-     &                + tdipdip(6,m)*uinp(3,k)
-         fkmp(1) = tdipdip(1,m)*uinp(1,i) + tdipdip(2,m)*uinp(2,i)
-     &                + tdipdip(3,m)*uinp(3,i)
-         fkmp(2) = tdipdip(2,m)*uinp(1,i) + tdipdip(4,m)*uinp(2,i)
-     &                + tdipdip(5,m)*uinp(3,i)
-         fkmp(3) = tdipdip(3,m)*uinp(1,i) + tdipdip(5,m)*uinp(2,i)
-     &                + tdipdip(6,m)*uinp(3,i)
+         fimp(1) = tdipdip(1,m)*uind(1,k) + tdipdip(2,m)*uind(2,k)
+     &                + tdipdip(3,m)*uind(3,k)
+         fimp(2) = tdipdip(2,m)*uind(1,k) + tdipdip(4,m)*uind(2,k)
+     &                + tdipdip(5,m)*uind(3,k)
+         fimp(3) = tdipdip(3,m)*uind(1,k) + tdipdip(5,m)*uind(2,k)
+     &                + tdipdip(6,m)*uind(3,k)
+         fkmp(1) = tdipdip(1,m)*uind(1,i) + tdipdip(2,m)*uind(2,i)
+     &                + tdipdip(3,m)*uind(3,i)
+         fkmp(2) = tdipdip(2,m)*uind(1,i) + tdipdip(4,m)*uind(2,i)
+     &                + tdipdip(5,m)*uind(3,i)
+         fkmp(3) = tdipdip(3,m)*uind(1,i) + tdipdip(5,m)*uind(2,i)
+     &                + tdipdip(6,m)*uind(3,i)
+c
+c         fimp(1) = tdipdip(1,m)*uinp(1,k) + tdipdip(2,m)*uinp(2,k)
+c     &                + tdipdip(3,m)*uinp(3,k)
+c         fimp(2) = tdipdip(2,m)*uinp(1,k) + tdipdip(4,m)*uinp(2,k)
+c     &                + tdipdip(5,m)*uinp(3,k)
+c         fimp(3) = tdipdip(3,m)*uinp(1,k) + tdipdip(5,m)*uinp(2,k)
+c     &                + tdipdip(6,m)*uinp(3,k)
+c         fkmp(1) = tdipdip(1,m)*uinp(1,i) + tdipdip(2,m)*uinp(2,i)
+c     &                + tdipdip(3,m)*uinp(3,i)
+c         fkmp(2) = tdipdip(2,m)*uinp(1,i) + tdipdip(4,m)*uinp(2,i)
+c     &                + tdipdip(5,m)*uinp(3,i)
+c         fkmp(3) = tdipdip(3,m)*uinp(1,i) + tdipdip(5,m)*uinp(2,i)
+c     &                + tdipdip(6,m)*uinp(3,i)
 c
 c     increment the field at each site due to this interaction
 c

@@ -364,18 +364,18 @@ c     get damping functions
 c
                call damphlike(r,9,alphai,alphak,
      &              lambdai,lambdak,lambdaik)
-               dsr3i = rr3 * lambdai(3) * dscale(kk)
-               dsr5i = rr5 * lambdai(5) * dscale(kk)
-               dsr7i = rr7 * lambdai(7) * dscale(kk)
-               psr3i = rr3 * lambdai(3) * pscale(kk)
-               psr5i = rr5 * lambdai(5) * pscale(kk)
-               psr7i = rr7 * lambdai(7) * pscale(kk)
-               dsr3k = rr3 * lambdak(3) * dscale(kk)
-               dsr5k = rr5 * lambdak(5) * dscale(kk)
-               dsr7k = rr7 * lambdak(7) * dscale(kk)
-               psr3k = rr3 * lambdak(3) * pscale(kk)
-               psr5k = rr5 * lambdak(5) * pscale(kk)
-               psr7k = rr7 * lambdak(7) * pscale(kk)
+               dsr3i = 2.0d0 * rr3 * lambdai(3) * dscale(kk)
+               dsr5i = 2.0d0 * rr5 * lambdai(5) * dscale(kk)
+               dsr7i = 2.0d0 * rr7 * lambdai(7) * dscale(kk)
+c               psr3i = rr3 * lambdai(3) * pscale(kk)
+c               psr5i = rr5 * lambdai(5) * pscale(kk)
+c               psr7i = rr7 * lambdai(7) * pscale(kk)
+               dsr3k = 2.0d0 * rr3 * lambdak(3) * dscale(kk)
+               dsr5k = 2.0d0 * rr5 * lambdak(5) * dscale(kk)
+               dsr7k = 2.0d0 * rr7 * lambdak(7) * dscale(kk)
+c               psr3k = rr3 * lambdak(3) * pscale(kk)
+c               psr5k = rr5 * lambdak(5) * pscale(kk)
+c               psr7k = rr7 * lambdak(7) * pscale(kk)
 c
 c     intermediates involving moments and distance separation
 c
@@ -668,15 +668,15 @@ c               print *,"old",txxk,tyyk,tzzk,txyk,txzk,tyzk
 c
 c     get the dEd/dR terms used for direct polarization force
 c
-               depx = txxi*ukxp + txyi*ukyp + txzi*ukzp
-     &                   - txxk*uixp - txyk*uiyp - txzk*uizp
-               depy = txyi*ukxp + tyyi*ukyp + tyzi*ukzp
-     &                   - txyk*uixp - tyyk*uiyp - tyzk*uizp
-               depz = txzi*ukxp + tyzi*ukyp + tzzi*ukzp
-     &                   - txzk*uixp - tyzk*uiyp - tzzk*uizp
-               frcx = dscale(kk) * depx
-               frcy = dscale(kk) * depy
-               frcz = dscale(kk) * depz
+c               depx = txxi*ukxp + txyi*ukyp + txzi*ukzp
+c     &                   - txxk*uixp - txyk*uiyp - txzk*uizp
+c               depy = txyi*ukxp + tyyi*ukyp + tyzi*ukzp
+c     &                   - txyk*uixp - tyyk*uiyp - tyzk*uizp
+c               depz = txzi*ukxp + tyzi*ukyp + tzzi*ukzp
+c     &                   - txzk*uixp - tyzk*uiyp - tzzk*uizp
+c               frcx = dscale(kk) * depx
+c               frcy = dscale(kk) * depy
+c               frcz = dscale(kk) * depz
 c
 c     get the dEp/dR terms used for direct polarization force
 c
@@ -686,9 +686,14 @@ c
      &                   - txyk*uix - tyyk*uiy - tyzk*uiz
                depz = txzi*ukx + tyzi*uky + tzzi*ukz
      &                   - txzk*uix - tyzk*uiy - tzzk*uiz
-               frcx = frcx + pscale(kk)*depx
-               frcy = frcy + pscale(kk)*depy
-               frcz = frcz + pscale(kk)*depz
+c               frcx = frcx + pscale(kk)*depx
+c               frcy = frcy + pscale(kk)*depy
+c               frcz = frcz + pscale(kk)*depz
+               frcx = frcx + 2.0d0*dscale(kk)*depx
+               frcy = frcy + 2.0d0*dscale(kk)*depy
+               frcz = frcz + 2.0d0*dscale(kk)*depz
+
+
 c
 c     get the dtau/dr terms used for mutual polarization force
 c
@@ -858,14 +863,23 @@ c
 c
 c     get the induced dipole field used for dipole torques
 c
-               txi3 = psr3i*ukx + dsr3i*ukxp
-               tyi3 = psr3i*uky + dsr3i*ukyp
-               tzi3 = psr3i*ukz + dsr3i*ukzp
-               txk3 = psr3k*uix + dsr3k*uixp
-               tyk3 = psr3k*uiy + dsr3k*uiyp
-               tzk3 = psr3k*uiz + dsr3k*uizp
-               turi = -psr5i*urk - dsr5i*urkp
-               turk = -psr5k*uri - dsr5k*urip
+               txi3 = dsr3i*ukx
+               tyi3 = dsr3i*uky
+               tzi3 = dsr3i*ukz
+               txk3 = dsr3k*uix
+               tyk3 = dsr3k*uiy
+               tzk3 = dsr3k*uiz
+               turi = - dsr5i*urk
+               turk = - dsr5k*uri
+c
+c               txi3 = psr3i*ukx + dsr3i*ukxp
+c               tyi3 = psr3i*uky + dsr3i*ukyp
+c               tzi3 = psr3i*ukz + dsr3i*ukzp
+c               txk3 = psr3k*uix + dsr3k*uixp
+c               tyk3 = psr3k*uiy + dsr3k*uiyp
+c               tzk3 = psr3k*uiz + dsr3k*uizp
+c               turi = -psr5i*urk - dsr5i*urkp
+c               turk = -psr5k*uri - dsr5k*urip
                ufld(1,i) = ufld(1,i) + txi3 + xr*turi
                ufld(2,i) = ufld(2,i) + tyi3 + yr*turi
                ufld(3,i) = ufld(3,i) + tzi3 + zr*turi
@@ -875,14 +889,24 @@ c
 c
 c     get induced dipole field gradient used for quadrupole torques
 c
-               txi5 = 2.0d0 * (psr5i*ukx+dsr5i*ukxp)
-               tyi5 = 2.0d0 * (psr5i*uky+dsr5i*ukyp)
-               tzi5 = 2.0d0 * (psr5i*ukz+dsr5i*ukzp)
-               txk5 = 2.0d0 * (psr5k*uix+dsr5k*uixp)
-               tyk5 = 2.0d0 * (psr5k*uiy+dsr5k*uiyp)
-               tzk5 = 2.0d0 * (psr5k*uiz+dsr5k*uizp)
-               turi = -psr7i*urk - dsr7i*urkp
-               turk = -psr7k*uri - dsr7k*urip
+               txi5 = 2.0d0 * (dsr5i*ukx)
+               tyi5 = 2.0d0 * (dsr5i*uky)
+               tzi5 = 2.0d0 * (dsr5i*ukz)
+               txk5 = 2.0d0 * (dsr5k*uix)
+               tyk5 = 2.0d0 * (dsr5k*uiy)
+               tzk5 = 2.0d0 * (dsr5k*uiz)
+               turi = -dsr7i*urk
+               turk = -dsr7k*uri
+c
+c               txi5 = 2.0d0 * (psr5i*ukx+dsr5i*ukxp)
+c               tyi5 = 2.0d0 * (psr5i*uky+dsr5i*ukyp)
+c               tzi5 = 2.0d0 * (psr5i*ukz+dsr5i*ukzp)
+c               txk5 = 2.0d0 * (psr5k*uix+dsr5k*uixp)
+c               tyk5 = 2.0d0 * (psr5k*uiy+dsr5k*uiyp)
+c               tzk5 = 2.0d0 * (psr5k*uiz+dsr5k*uizp)
+c               turi = -psr7i*urk - dsr7i*urkp
+c               turk = -psr7k*uri - dsr7k*urip
+c
                dufld(1,i) = dufld(1,i) + xr*txi5 + xr*xr*turi
                dufld(2,i) = dufld(2,i) + xr*tyi5 + yr*txi5
      &                         + 2.0d0*xr*yr*turi
@@ -4747,14 +4771,14 @@ c
 c
 c     get the induced dipole field used for dipole torques
 c
-               txi3 = rr3i*ukx + rr3i*ukxp
-               tyi3 = rr3i*uky + rr3i*ukyp
-               tzi3 = rr3i*ukz + rr3i*ukzp
-               txk3 = rr3k*uix + rr3k*uixp
-               tyk3 = rr3k*uiy + rr3k*uiyp
-               tzk3 = rr3k*uiz + rr3k*uizp
-               turi = -rr5i*urk - rr5i*urkp
-               turk = -rr5k*uri - rr5k*urip
+               txi3 = 2.0d0*rr3i*ukx
+               tyi3 = 2.0d0*rr3i*uky
+               tzi3 = 2.0d0*rr3i*ukz
+               txk3 = 2.0d0*rr3k*uix
+               tyk3 = 2.0d0*rr3k*uiy
+               tzk3 = 2.0d0*rr3k*uiz
+               turi = -2.0d0*rr5i*urk
+               turk = -2.0d0*rr5k*uri
                ufld(1,i) = ufld(1,i) + f*txi3 + f*xr*turi
                ufld(2,i) = ufld(2,i) + f*tyi3 + f*yr*turi
                ufld(3,i) = ufld(3,i) + f*tzi3 + f*zr*turi
@@ -4764,14 +4788,14 @@ c
 c
 c     get induced dipole field gradient used for quadrupole torques
 c
-               txi5 = 2.0d0 * (rr5i*ukx+rr5i*ukxp)
-               tyi5 = 2.0d0 * (rr5i*uky+rr5i*ukyp)
-               tzi5 = 2.0d0 * (rr5i*ukz+rr5i*ukzp)
-               txk5 = 2.0d0 * (rr5k*uix+rr5k*uixp)
-               tyk5 = 2.0d0 * (rr5k*uiy+rr5k*uiyp)
-               tzk5 = 2.0d0 * (rr5k*uiz+rr5k*uizp)
-               turi = -rr7i*urk - rr7i*urkp
-               turk = -rr7k*uri - rr7k*urip
+               txi5 = 4.0d0 * (rr5i*ukx)
+               tyi5 = 4.0d0 * (rr5i*uky)
+               tzi5 = 4.0d0 * (rr5i*ukz)
+               txk5 = 4.0d0 * (rr5k*uix)
+               tyk5 = 4.0d0 * (rr5k*uiy)
+               tzk5 = 4.0d0 * (rr5k*uiz)
+               turi = -2.0d0*rr7i*urk 
+               turk = -2.0d0*rr7k*uri 
                dufld(1,i) = dufld(1,i) + f*xr*txi5 + f*xr*xr*turi
                dufld(2,i) = dufld(2,i) + f*xr*tyi5 + f*yr*txi5
      &                         + f*2.0d0*xr*yr*turi

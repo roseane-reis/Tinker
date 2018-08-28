@@ -211,8 +211,6 @@ c
 c
 c     call the electrostatic energy component routines
 c
-      print *,"uses",use_mpole,use_polar,use_polarcp
-
       if (use_charge)  call echarge3
       if (use_chgdpl)  call echgdpl3
       if (use_dipole)  call edipole3

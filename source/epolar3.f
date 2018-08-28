@@ -24,7 +24,6 @@ c
 c
 c     choose the method for summing over polarization interactions
 c
-      print *,"why am i in epolar?"
       pairwise = .false.
       if (pairwise) then
          if (use_ewald) then

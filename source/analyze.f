@@ -1431,7 +1431,8 @@ c
          write (iout,fstr)  ed,ned
       end if
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-      if (use_mpole .and. (nem.ne.0.or.em.ne.0.0d0)) then
+      if ((use_mpole .or. use_chgpen) .and. (nem.ne.0.or.em.ne.0.0d0)) 
+     &     then
          if (abs(em) .lt. 1.0d10) then
             fstr = '('' Atomic Multipoles'',10x,'//form1//')'
          else
