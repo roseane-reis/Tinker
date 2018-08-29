@@ -352,6 +352,7 @@ opbend.o \
 opdist.o \
 openend.o \
 openmp.o \
+optinit.o \
 optsave.o \
 orbital.o \
 orbits.o \
@@ -369,11 +370,13 @@ piorbs.o \
 pistuf.o \
 pitors.o \
 pme.o \
-pmestuff.o \
+pmestuf.o \
 pmpb.o \
 polar.o \
 polgrp.o \
+polopt.o \
 polpot.o \
+poltcg.o \
 polymer.o \
 potent.o \
 potfit.o \
@@ -432,7 +435,7 @@ shunt.o \
 sigmoid.o \
 simplex.o \
 sizes.o \
-sktstuff.o \
+sktstuf.o \
 socket.o \
 solute.o \
 sort.o \
@@ -446,6 +449,7 @@ surfatom.o \
 switch.o \
 syntrn.o \
 tarray.o \
+tcgstuf.o \
 temper.o \
 titles.o \
 tncg.o \

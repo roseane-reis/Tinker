@@ -352,6 +352,7 @@ opbend.o \
 opdist.o \
 openend.o \
 openmp.o \
+optinit.o \
 optsave.o \
 orbital.o \
 orbits.o \
@@ -373,7 +374,9 @@ pmestuff.o \
 pmpb.o \
 polar.o \
 polgrp.o \
+polopt.o \
 polpot.o \
+poltcg.o \
 polymer.o \
 potent.o \
 potfit.o \
@@ -446,6 +449,7 @@ surfatom.o \
 switch.o \
 syntrn.o \
 tarray.o \
+tcgstuf.o \
 temper.o \
 titles.o \
 tncg.o \

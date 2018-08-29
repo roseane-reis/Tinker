@@ -47,6 +47,7 @@ c
       subroutine extra3a
       use sizes
       use atoms
+      use action
       use analyz
       use atoms
       use bound

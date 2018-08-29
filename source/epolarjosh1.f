@@ -72,6 +72,7 @@ c
       use shunt
       use virial
       use chgpen
+      use polopt
       implicit none
       integer i,j,k,m
       integer ii,kk,jcell
@@ -1576,6 +1577,7 @@ c
       use potent
       use shunt
       use virial
+      use polopt
       implicit none
       integer i,j,k,m
       integer ii,kk,kkk
@@ -2289,6 +2291,7 @@ c
       use polpot
       use potent
       use virial
+      use polopt
       implicit none
       integer i,j,ii
       integer iax,iay,iaz
@@ -2528,6 +2531,7 @@ c
       use potent
       use shunt
       use virial
+      use polopt
       implicit none
       integer i,j,k,m
       integer ii,kk,jcell
@@ -4171,6 +4175,7 @@ c
       use shunt
       use virial
       use chgpen
+      use polopt
       implicit none
       integer i,j,k,m
       integer ii,kk,kkk
@@ -4978,6 +4983,7 @@ c
       use polpot
       use potent
       use virial
+      use polopt
       implicit none
       integer i,j,k,m,ii
       integer j1,j2,j3

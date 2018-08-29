@@ -17,7 +17,6 @@ c     for a periodic system
 c
 c
       subroutine kewald
-      use sizes
       use atoms
       use bound
       use boxes
@@ -303,7 +302,6 @@ c     "extent" finds the largest interatomic distance in a system
 c
 c
       subroutine extent (rmax)
-      use sizes
       use atoms
       implicit none
       integer i,k

@@ -52,7 +52,6 @@ c     respect to Cartesian coordinates using a pairwise double loop
 c
 c
       subroutine empole1a
-      use sizes
       use atoms
       use bound
       use cell
@@ -391,10 +390,10 @@ c
 c     increment the virial due to pairwise Cartesian forces
 c
                vxx = -xr * frcx
-               vxy = -yr * frcx
-               vxz = -zr * frcx
+               vxy = -0.5d0 * (yr*frcx+xr*frcy)
+               vxz = -0.5d0 * (zr*frcx+xr*frcz)
                vyy = -yr * frcy
-               vyz = -zr * frcy
+               vyz = -0.5d0 * (zr*frcy+yr*frcz)
                vzz = -zr * frcz
                vir(1,1) = vir(1,1) + vxx
                vir(2,1) = vir(2,1) + vxy
@@ -674,10 +673,10 @@ c
 c     increment the virial due to pairwise Cartesian forces
 c
                vxx = -xr * frcx
-               vxy = -yr * frcx
-               vxz = -zr * frcx
+               vxy = -0.5d0 * (yr*frcx+xr*frcy)
+               vxz = -0.5d0 * (zr*frcx+xr*frcz)
                vyy = -yr * frcy
-               vyz = -zr * frcy
+               vyz = -0.5d0 * (zr*frcy+yr*frcz)
                vzz = -zr * frcz
                vir(1,1) = vir(1,1) + vxx
                vir(2,1) = vir(2,1) + vxy
@@ -770,7 +769,6 @@ c     with respect to Cartesian coordinates using a neighbor list
 c
 c
       subroutine empole1b
-      use sizes
       use atoms
       use bound
       use chgpot
@@ -1108,10 +1106,10 @@ c
 c     increment the virial due to pairwise Cartesian forces
 c
                vxx = -xr * frcx
-               vxy = -yr * frcx
-               vxz = -zr * frcx
+               vxy = -0.5d0 * (yr*frcx+xr*frcy)
+               vxz = -0.5d0 * (zr*frcx+xr*frcz)
                vyy = -yr * frcy
-               vyz = -zr * frcy
+               vyz = -0.5d0 * (zr*frcy+yr*frcz)
                vzz = -zr * frcz
                vir(1,1) = vir(1,1) + vxx
                vir(2,1) = vir(2,1) + vxy
@@ -1213,7 +1211,6 @@ c     Ewald summation and a double loop
 c
 c
       subroutine empole1c
-      use sizes
       use atoms
       use boxes
       use chgpot
@@ -1372,7 +1369,6 @@ c     via a double loop
 c
 c
       subroutine emreal1c
-      use sizes
       use atoms
       use bound
       use cell
@@ -1704,10 +1700,10 @@ c
 c     increment the virial due to pairwise Cartesian forces
 c
                vxx = -xr * frcx
-               vxy = -yr * frcx
-               vxz = -zr * frcx
+               vxy = -0.5d0 * (yr*frcx+xr*frcy)
+               vxz = -0.5d0 * (zr*frcx+xr*frcz)
                vyy = -yr * frcy
-               vyz = -zr * frcy
+               vyz = -0.5d0 * (zr*frcy+yr*frcz)
                vzz = -zr * frcz
                vir(1,1) = vir(1,1) + vxx
                vir(2,1) = vir(2,1) + vxy
@@ -1999,10 +1995,10 @@ c
 c     increment the virial due to pairwise Cartesian forces
 c
                vxx = -xr * frcx
-               vxy = -yr * frcx
-               vxz = -zr * frcx
+               vxy = -0.5d0 * (yr*frcx+xr*frcy)
+               vxz = -0.5d0 * (zr*frcx+xr*frcz)
                vyy = -yr * frcy
-               vyz = -zr * frcy
+               vyz = -0.5d0 * (zr*frcy+yr*frcz)
                vzz = -zr * frcz
                vir(1,1) = vir(1,1) + vxx
                vir(2,1) = vir(2,1) + vxy
@@ -2095,7 +2091,6 @@ c     summation and a neighbor list
 c
 c
       subroutine empole1d
-      use sizes
       use atoms
       use boxes
       use chgpot
@@ -2254,7 +2249,6 @@ c     via a neighbor list
 c
 c
       subroutine emreal1d
-      use sizes
       use atoms
       use bound
       use chgpot
@@ -2596,10 +2590,10 @@ c
 c     increment the virial due to pairwise Cartesian forces
 c
                vxx = -xr * frcx
-               vxy = -yr * frcx
-               vxz = -zr * frcx
+               vxy = -0.5d0 * (yr*frcx+xr*frcy)
+               vxz = -0.5d0 * (zr*frcx+xr*frcz)
                vyy = -yr * frcy
-               vyz = -zr * frcy
+               vyz = -0.5d0 * (zr*frcy+yr*frcz)
                vzz = -zr * frcz
                vir(1,1) = vir(1,1) + vxx
                vir(2,1) = vir(2,1) + vxy
@@ -2710,7 +2704,6 @@ c     during May 2007
 c
 c
       subroutine emrecip1
-      use sizes
       use atoms
       use bound
       use boxes

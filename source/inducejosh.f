@@ -185,6 +185,7 @@ c
       use potent
       use units
       use uprior
+      use polopt
       implicit none
       integer i,j,k,iter
       integer maxiter
@@ -2910,6 +2911,7 @@ c
       use pme
       use polar
       use polpot
+      use polopt
       implicit none
       integer i,j,k
       real*8 term
@@ -3503,6 +3505,7 @@ c
       use potent
       use units
       use uprior
+      use polopt
       implicit none
       integer i,j,k,iter
       integer maxiter
@@ -4778,6 +4781,7 @@ c
       use potent
       use units
       use uprior
+      use polopt
       implicit none
       integer i,j,k,iter
       integer maxiter
