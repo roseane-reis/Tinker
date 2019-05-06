@@ -1,0 +1,129 @@
+active.f:         if (keyword(1:7) .eq. 'ACTIVE ') then
+active.f:         else if (keyword(1:9) .eq. 'INACTIVE ') then
+analyze.f:         if (octahedron)  value = 'TRUNCATED OCTAHEDRON'
+archive.f:      if (mode .eq. 2)  modtyp = 'EXTRACT'
+archive.f:            if (modtyp .eq. 'EXTRACT') then
+born.f:c     J. Phys. Chem., 100, 19824-19839 (1996)  (HCT Method)
+born.f:      if (borntyp .eq. 'PERFECT') then
+born.f:      if (borntyp .eq. 'PERFECT') then
+born.f:      else if (borntyp .eq. 'HCT') then
+born.f:c     get the Born radii via Grycuk's modified HCT method
+born.f:      else if (borntyp .eq. 'PERFECT') then
+born.f:      if (borntyp .eq. 'PERFECT') then
+born.f:c     get Born radius chain rule components for the HCT method
+born.f:      else if (borntyp .eq. 'HCT') then
+born.f:c     get Born radius chain rule components for Grycuk's HCT method
+cluster.f:         else if (keyword(1:13) .eq. 'GROUP-SELECT ') then
+cutoffs.f:         else if (keyword(1:8) .eq. 'CT-LIST ') then
+cutoffs.f:         else if (keyword(1:10) .eq. 'CT-CUTOFF ') then
+cutoffs.f:      if (poltyp .eq. 'DIRECT')  use_ulist = .false.
+cutoffs.f:         if (poltyp .ne. 'DIRECT') then
+document.f:               if (module.eq.'SUBROUTINE' .or. module.eq.'FUNCTION'
+ect0.f:      mode = 'CT'
+ect0.f:c     zero out the CT energy contribution
+ect0.f:      mode = 'CT'
+ect0.f:c     increment the overall CT energy components
+ect1.f:c     ##  subroutine ect1  --  CT energy & derivative via double loop ##
+ect1.f:      mode = 'CT'
+ect1.f:c     zero out the CT energy contribution
+ect1.f:      mode = 'CT'
+ect3.f:c     ##  subroutine ect3a -- CT double loop energy & analysis        ##
+ect3.f:      mode = 'CT'
+ect3.f:c     zero out the CT energy contribution
+ect3.f:      mode = 'CT'
+ect3.f:c     increment the overall CT energy components
+epolar1.f:         if (poltyp .eq. 'DIRECT') then
+epolar1.f:         if (poltyp .eq. 'DIRECT') then
+epolar1.f:            if (poltyp.eq.'DIRECT' .or. poltyp.eq.'OPT') then
+epolar1.f:         if (poltyp.eq.'DIRECT' .or. poltyp.eq.'OPT') then
+epolar1.f:      if (poltyp .eq. 'DIRECT') then
+esolv.f:c     of a solute using an HCT-like method
+esolv.f:c     set overlap scale factor for HCT descreening method
+esolv1.f:               if (poltyp .eq. 'DIRECT') then
+esolv1.f:               if (poltyp .eq. 'DIRECT') then
+esolv1.f:               if (poltyp .eq. 'DIRECT') then
+esolv1.f:               if (poltyp .eq. 'DIRECT') then
+esolv1.f:         if (poltyp .eq. 'DIRECT') then
+esolv1.f:c     set overlap scale factor for HCT descreening method
+esolv3.f:c     set overlap scale factor for HCT descreening method
+esolv3.f:   10    format (/,' HCT Implicit Solvation Dispersion :',/)
+esolv3.f:   30    format (/,' Total HCT Dispersion Energy :',7x,f12.4)
+induce.f:      if (poltyp .ne. 'DIRECT') then
+induce.f:               if (poltyp .ne. 'DIRECT') then
+induce.f:      if (poltyp .ne. 'DIRECT') then
+kbond.f:         if (keyword(1:9) .eq. 'ELECTNEG ') then
+kctr.f:         if (keyword(1:3) .eq. 'CT ') then
+kctr.f:c     remove zero-sized atoms from the list of CT sites
+kctr.f:c     turn off the CT potential if it is not used
+ksolv.f:            else if (value(1:3) .eq. 'HCT') then
+ksolv.f:               solvtyp = 'HCT'
+ksolv.f:            else if (value(1:3) .eq. 'HCT') then
+ksolv.f:               borntyp = 'HCT'
+ksolv.f:            else if (value(1:7) .eq. 'PERFECT') then
+ksolv.f:               borntyp = 'PERFECT'
+ksolv.f:         else if (keyword(1:18) .eq. 'DIELECTRIC-OFFSET ') then
+ksolv.f:      if (borntyp .eq. 'PERFECT')  call kpb
+ksolv.f:c     set overlap scale factors for HCT and OBC methods
+ksolv.f:      if (borntyp.eq.'HCT' .or. borntyp.eq.'OBC') then
+ksolv.f:      else if (borntyp .eq. 'HCT') then
+ksolv.f:c     assign generic value for the HCT overlap scale factor
+ksolv.f:c     assign generic value for the HCT overlap scale factor
+lbfgs.f:         if (keyword(1:14) .eq. 'LBFGS-VECTORS ') then
+lbfgs.f:         else if (keyword(1:7) .eq. 'FCTMIN ') then
+limits.f:c     use_ctlist  logical flag governing use of CT neighbor list
+mdinit.f:         else if (keyword(1:9) .eq. 'FRICTION ') then
+mdinit.f:         else if (keyword(1:17) .eq. 'FRICTION-SCALING ') then
+mdinit.f:         else if (keyword(1:14) .eq. 'POLAR-PREDICT ') then
+nblist.f:c     update the vdw, CT and electrostatic neighbor lists
+nblist.f:   10    format (/,' CTLIST  --  Pairwise Neighbor List cannot',
+nblist.f:   40       format (/,' CTLIST  --  Too many Neighbors;',
+nblist.f:     &                 ' Increase MAXCTLST')
+nblist.f:   10       format (/,' CTBUILD  --  Too many Neighbors;',
+nblist.f:     &                 ' Increase MAXCTLST')
+nblist.f:c     ##  subroutine ctlight  --  get CT list via lights             ##
+nblist.f:c     "ctlight" performs a complete rebuild of the CT 
+nblist.f:   30       format (/,' CTLIGHT  --  Too many Neighbors;',
+nblist.f:     &                 ' Increase MAXCTLST')
+neigh.f:      real*8 ctbuf2,ctbufx !CT
+neigh.f:      real*8, allocatable :: xctold(:) !CT
+neigh.f:      real*8, allocatable :: yctold(:) !CT
+neigh.f:      real*8, allocatable :: zctold(:) !CT
+neigh.f:      logical doctlst !CT
+ocvm.f:         if (keyword(1:7) .eq. 'FCTMIN ') then
+pdb.f:c     npdb12    number of atoms directly bonded to each CONECT atom
+pdb.f:c     ipdb12    atom numbers of atoms connected to each CONECT atom
+poledit.f:      if (poltyp .eq. 'DIRECT') then
+potential.f:         else if (keyword(1:17) .eq. 'POTENTIAL-FACTOR ') then
+prmedit.f:         else if (keyword(1:9) .eq. 'ELECTNEG ') then
+prmedit.f:         else if (keyword(1:9) .eq. 'ELECTNEG ') then
+prmkey.f:      else if (keyword(1:7) .eq. 'CTTERM ') then
+prmkey.f:      else if (keyword(1:15) .eq. 'VDW-CORRECTION ') then
+prmkey.f:      else if (keyword(1:13) .eq. 'CT-12-SCALE ') then
+prmkey.f:      else if (keyword(1:13) .eq. 'CT-13-SCALE ') then
+prmkey.f:      else if (keyword(1:13) .eq. 'CT-14-SCALE ') then
+prmkey.f:      else if (keyword(1:13) .eq. 'CT-15-SCALE ') then
+prmkey.f:      else if (keyword(1:9) .eq. 'ELECTRIC ') then
+prmkey.f:      else if (keyword(1:11) .eq. 'DIELECTRIC ') then
+prmkey.f:      else if (keyword(1:16) .eq. 'DIRECT-11-SCALE ') then
+prmkey.f:      else if (keyword(1:16) .eq. 'DIRECT-12-SCALE ') then
+prmkey.f:      else if (keyword(1:16) .eq. 'DIRECT-13-SCALE ') then
+prmkey.f:      else if (keyword(1:16) .eq. 'DIRECT-14-SCALE ') then
+prmkey.f:      else if (keyword(1:14) .eq. 'REACTIONFIELD ') then
+prtmol2.f:  110 format (/,'@<TRIPOS>SUBSTRUCTURE')
+prtpdb.f:      fstr = '(''CONECT'',9'//atmc//')'
+readpdb.f:         if (atmname .eq. 'OCT1')  atmname = ' O  '
+readpdb.f:         if (atmname .eq. 'OCT2')  atmname = ' OXT'
+readpdb.f:         if (atmname .eq. ' CT ')  atmname = ' CH3'
+readprm.f:         else if (keyword(1:3) .eq. 'CT ') then
+readprm.f:         else if (keyword(1:9) .eq. 'ELECTNEG ') then
+square.f:         if (keyword(1:7) .eq. 'FCTMIN ') then
+switch.f:      else if (mode(1:2) .eq. 'CT') then
+testgrad.f:     &                 /,15x,'EX',14x, 'ECT') 
+testgrad.f:     &                 /,14x,'ECT')
+testgrad.f:     &                 /,14x,'EX',10x,'ECT') 
+testgrad.f:     &              /,15x,'d EX',12x,'d ECT') 
+testgrad.f:     &                 10x,'d EX', /,14x, 'd ECT')
+testgrad.f:     &              /,12x,'d EX',8x, 'd ECT') 
+testpol.f:      poltyp = 'DIRECT'
+tncg.f:         if (keyword(1:7) .eq. 'FCTMIN ') then
+unitcell.f:         else if (keyword(1:11) .eq. 'OCTAHEDRON ') then
