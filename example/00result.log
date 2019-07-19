@@ -1,0 +1,35 @@
+#===============================================
+# BindingEnergy in kcal/mol
+# The clusters and monomers are in QM geometry
+# J. Chem. Theory Comput.2019, 15, 7, 4122-4139
+#===============================================
+ Cluster                      AMOEBA+    QM
+ Trimer                      -16.066   -15.742 
+ Tetramer                    -28.263   -27.400 
+ Pentamer                    -36.414   -35.933 
+ Prism                       -46.025   -45.920 
+ Cage                        -46.096   -45.670 
+ Bag                         -44.649   -44.300 
+ CyclicChair                 -44.878   -44.120 
+ Book1                       -45.866   -45.200 
+ Book2                       -45.248   -44.900 
+ CyclicBoat1                 -43.543   -43.130 
+ CyclicBoat2                 -43.513   -43.070 
+ Octamer_S4                  -73.559   -72.700 
+ Octamer_D2d                 -73.737   -72.700 
+ 11-mer_434                 -101.651  -105.718 
+ 11-mer_515                 -101.539  -105.182 
+ 11-mer_551                 -101.230  -104.920 
+ 11-mer_443                 -101.549  -104.760 
+ 11-mer_4412                -100.945  -103.971 
+ 16-mer_boat-a              -162.509  -170.800 
+ 16-mer_boat-b              -162.095  -170.630 
+ 16-mer_antiboat            -161.778  -170.540 
+ 16-mer_abab                -163.588  -171.050 
+ 16-mer_aabb                -163.191  -170.510 
+ 17-mer_sphere              -172.243  -182.540 
+ 17-mer_5525                -171.007  -181.830 
+ 20-mer_Dodecahedron        -193.590  -200.100 
+ 20-mer_FusedCubes          -208.649  -212.100 
+ 20-mer_FaceSharingPrisms   -205.314  -215.200 
+ 20-mer_EdgeSharingPrisms   -208.534  -218.100 
