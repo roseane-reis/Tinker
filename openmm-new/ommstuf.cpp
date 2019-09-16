@@ -1868,3 +1868,33 @@ void set_vdwpot_data_ (int* maxgauss, int* ngauss, double* igauss,
 }
 
 }
+
+extern "C" void openmm_init_ (void** ommHandle, double* dt) {}
+
+extern "C" void openmm_take_steps_ (void** omm, int* numSteps) {}
+
+extern "C" void openmm_update_(void** omm, double* dt, int* istep,int* callMdStat, int* callMdSave) {}
+
+extern "C" void openmm_cleanup_ (void** omm) {}
+
+extern "C" void openmm_test_ () {}
+
+extern "C" void openmm_bar_energy_ (void** ommHandle, double* energyInKcal) {}
+
+#include "ommz1.h"
+#include "ommz2.h"
+#include "ommz3.h"
+#include "ommz4.h"
+#include "ommz5.h"
+
+#include "ommj1.h"
+#include "ommj2.h"
+#include "ommj3.h"
+#include "ommj4.h"
+#include "ommj5.h"
+
+#include "ommr1.h"
+#include "ommr2.h"
+#include "ommr3.h"
+#include "ommr4.h"
+#include "ommr5.h"
