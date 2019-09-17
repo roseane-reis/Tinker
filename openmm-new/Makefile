@@ -709,7 +709,7 @@ OBJS =	action.o \
 EXEFILES = analyze_omm.x bar_omm.x dynamic_omm.x
 
 %.o: %.f
-	${F77} ${F77FLAGS} ${OPTFLAGS} $< -o $@ 
+	${F77} ${F77FLAGS} ${OPTFLAGS} $< -o $@
 
 %.o: %.c
 	${CC} ${CFLAGS} ${OPTFLAGS} ${INCLUDEDIR} -O3 $<
@@ -731,7 +731,7 @@ clean:
 listing:
 	cat *.f *.cpp > tinker.txt
 
-OMMSTUF_OBJS = ommstuf.o ommz1.o ommz2.o ommz3.o ommz4.o ommz5.o \
+OMMSTUF_OBJS = ommstuf.o ommz1.o ommz2.o ommz3.o ommz4.o ommz5.o global_data.o \
 ommr1.o ommr2.o ommr3.o ommr4.o ommr5.o \
 ommj1.o ommj2.o ommj3.o ommj4.o ommj5.o
 
@@ -763,7 +763,7 @@ create_links:
 	ln -s $(BINDIR)/bar_omm $(LINKDIR)/bar_omm
 	ln -s $(BINDIR)/dynamic_omm $(LINKDIR)/dynamic_omm
 
-libtinker.a: ${OBJS} 
+libtinker.a: ${OBJS}
 	ar ${LIBFLAGS} libtinker.a \
 	action.o \
 	active.o \

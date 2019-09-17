@@ -19,6 +19,7 @@
  *    ############################################################
  */
 
+#include "global_data.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,10 +67,6 @@ struct OpenMMData_s {
    OpenMM_Context* context;
    OpenMM_Integrator* integrator;
 };
-
-typedef struct {
-   char s20[20];
-} char20;
 
 /*
  *    ############################################################
@@ -381,7 +378,7 @@ struct {
    double* tbx;
    double* tby;
    double* tbxy;
-   char20* ktt;
+   char (*ktt)[20];
 } ktrtor__;
 
 struct {
@@ -1257,7 +1254,7 @@ void set_inform_data_ (int* maxask, int* digits, int* iprint, int* iwrite,
 void set_ktrtor_data_ (int* maxntt, int* maxtgrd, int* maxtgrd2,
                        int* tnx, int* tny, double* ttx, double* tty,
                        double* tbf, double* tbx, double* tby,
-                       double* tbxy, char20* ktt) {
+                       double* tbxy, char (*ktt)[20]) {
 
    ktrtor__.maxntt = *maxntt;
    ktrtor__.maxtgrd = *maxtgrd;
