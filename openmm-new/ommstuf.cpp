@@ -1869,7 +1869,339 @@ void set_vdwpot_data_ (int* maxgauss, int* ngauss, double* igauss,
 
 }
 
-extern "C" void openmm_init_ (void** ommHandle, double* dt) {}
+/*
+ *  ###############################################################
+ *  setupSystemParticles  --  add individual atoms to OpenMM System
+ *  ###############################################################
+ */
+
+static void setupSystemParticles (OpenMM_System* system, FILE* log) {
+
+   int ii;
+   for (ii = 0; ii < atoms__.n; ii++) {
+      OpenMM_System_addParticle (system, atomid__.mass[ii]);
+   }
+}
+
+/*
+ *  ####################################################################
+ *  setupCMMotionRemover  --  frequency of center-of-mass motion removal
+ *  ####################################################################
+ */
+
+static void setupCMMotionRemover (OpenMM_System* system, FILE* log) {
+
+   int frequency = mdstuf__.irest > 0 ? mdstuf__.irest : 100;
+   OpenMM_CMMotionRemover* cMMotionRemover;
+   cMMotionRemover = OpenMM_CMMotionRemover_create (frequency);
+   OpenMM_System_addForce (system, (OpenMM_Force*) cMMotionRemover);
+
+}
+
+/*
+ *  #############################################################
+ *  ConstraintMap  --  list of distance constraints for each atom
+ *  #############################################################
+ */
+
+struct ConstraintMap {
+
+   int* constraintOffset;  // offset into constraint list
+   int* constraintCount;   // number of constraints for atom i
+   int* constraintList;    // list of constraints sorted by atom index
+
+   // For constraint involving atom i and j with i < j,
+   //     constraintList[offset+kk] = j
+   // where offset=constraintOffset[i], and 0 <= kk < constraintCount[i]
+   // Note: one constraintOffset or constraintCount could be eliminated
+   // since constraintCount[i] = constraintOffset[i+1] - constraintOffset[i]
+};
+
+/*
+ *  ############################################################
+ *  freeConstraintMap  --  removal of an existing constraint map
+ *  ############################################################
+ */
+
+static void freeConstraintMap (struct ConstraintMap* map) {
+
+   free (map->constraintOffset);
+   free (map->constraintCount);
+   free (map->constraintList);
+}
+
+/*
+ *  ##############################################################
+ *  mapConstraints  --  generate lists of Shake/Rattle constraints
+ *  ##############################################################
+ */
+
+static void mapConstraints (struct ConstraintMap* map, FILE* log) {
+
+   int ii, jj;
+   int p1, p2;
+   int offset, count;
+
+   int numberOfParticles = atoms__.n;
+
+   int* constraintCount = (int*) malloc (sizeof(int)*numberOfParticles);
+   int* constraintOffset = (int*) malloc (sizeof(int)*numberOfParticles);
+
+   memset (constraintCount, 0, sizeof(int)*numberOfParticles);
+   memset (constraintOffset, 0, sizeof(int)*numberOfParticles);
+
+   // count number of constraints for each particle where that particle
+   // has the smaller index of the two constrained particles
+
+   for (ii = 0; ii < freeze__.nrat; ii++) {
+      p1 = *(freeze__.irat+2*ii) - 1;
+      p2 = *(freeze__.irat + 2*ii +1) - 1;
+      if (p1 > p2) {
+         p1 = p2;
+      }
+      constraintCount[p1]++;
+   }
+
+   // set the offset value
+
+   constraintOffset[0] = 0;
+   for (ii = 1; ii < numberOfParticles; ii++){
+      constraintOffset[ii] = constraintOffset[ii-1] + constraintCount[ii-1];
+   }
+
+   // allocate constraint list and load
+
+   int* constraintList = (int*)  malloc (sizeof(int)*freeze__.nrat);
+   memset (constraintCount, 0, sizeof(int)*numberOfParticles);
+   for (ii = 0; ii < freeze__.nrat; ii++) {
+      p1 = *(freeze__.irat+2*ii) - 1;
+      p2 = *(freeze__.irat + 2*ii +1) - 1;
+      if (p1 > p2) {
+         int p3 = p2;
+         p2 = p1;
+         p1 = p3;
+      }
+      offset = constraintOffset[p1];
+      count = constraintCount[p1];
+      constraintCount[p1]++;
+      constraintList[offset+count] = p2;
+   }
+
+   if (log && 0) {
+      for (ii = 0; ii < numberOfParticles; ii++) {
+         offset = constraintOffset[ii];
+         count = constraintCount[ii];
+         (void) fprintf (stderr, "%5d Offset=%5d count=%5d: ",
+                         ii, offset, count);
+         for (jj = 0; jj < count; jj++) {
+              (void) fprintf (stderr, "%5d ", constraintList[offset+jj] );
+         }
+         (void) fprintf (stderr, "\n ");
+      }
+   }
+
+   map->constraintCount = constraintCount;
+   map->constraintOffset = constraintOffset;
+   map->constraintList = constraintList;
+}
+
+/*
+ *  ###################################################################
+ *  checkForConstraint  --  check of a constraint between pair of atoms
+ *  ###################################################################
+ */
+
+static int checkForConstraint (struct ConstraintMap* map,
+                               int p1, int p2, FILE* log) {
+
+   int ii;
+   int offset;
+   int match = 0;
+
+   if (p1 > p2) {
+      int p3 = p2;
+      p2 = p1;
+      p1 = p3;
+   }
+
+   offset = map->constraintOffset[p1];
+   for (ii = 0; ii < map->constraintCount[p1] && match == 0; ii++) {
+      if (map->constraintList[offset+ii] == p2) {
+         match = 1;
+      }
+   }
+   return match;
+}
+
+/*
+ *  ########################################################
+ *  setupAmoebaBondForce  --  setup AMOEBA bond stretch term
+ *  ########################################################
+ */
+
+static void setupAmoebaBondForce (OpenMM_System* system,
+                                  int removeConstrainedBonds, FILE* log) {
+
+   int ii;
+   int match;
+   int* bondPtr;
+   double kParameterConversion;
+
+   struct ConstraintMap map;
+   if (removeConstrainedBonds) {
+      mapConstraints (&map, log);
+   }
+
+   OpenMM_AmoebaBondForce* amoebaBondForce;
+   amoebaBondForce = OpenMM_AmoebaBondForce_create ();
+
+   kParameterConversion = OpenMM_KJPerKcal
+                             / (OpenMM_NmPerAngstrom*OpenMM_NmPerAngstrom);
+   bondPtr = bndstr__.ibnd;
+   for (ii = 0; ii < bndstr__.nbond; ii++) {
+      match = removeConstrainedBonds ? checkForConstraint (&map, (*bondPtr)-1,
+                                               *(bondPtr+1)-1, log ) : 0;
+      if (match == 0) {
+         OpenMM_AmoebaBondForce_addBond (amoebaBondForce, (*bondPtr)-1,
+                   *(bondPtr+1)-1, bndstr__.bl[ii]*OpenMM_NmPerAngstrom,
+                   kParameterConversion*bndpot__.bndunit*bndstr__.bk[ii]);
+      }
+      bondPtr += 2;
+   }
+
+   OpenMM_AmoebaBondForce_setAmoebaGlobalBondCubic (amoebaBondForce,
+                     bndpot__.cbnd/OpenMM_NmPerAngstrom);
+   OpenMM_AmoebaBondForce_setAmoebaGlobalBondQuartic (amoebaBondForce,
+                 bndpot__.qbnd/(OpenMM_NmPerAngstrom*OpenMM_NmPerAngstrom));
+   OpenMM_System_addForce (system, (OpenMM_Force*) amoebaBondForce);
+
+   if (removeConstrainedBonds) {
+       freeConstraintMap (&map);
+   }
+}
+
+/*
+ *  #############################################################
+ *  openmm_init  --  initialization of the OpenMM data structures
+ *  #############################################################
+ *
+ */
+
+extern "C" void openmm_init_ (void** ommHandle, double* dt) {
+
+   int ii;
+   int mdMode = 0;
+   int removeConstrainedCovalentIxns = 0;
+   char buffer[128];
+   char buffer2[128];
+   FILE* log = stderr;
+
+   // allocate space for opaque handle to hold OpenMM objects
+   // such as system, integrator, context, etc.
+
+   OpenMMData* omm = (OpenMMData*) malloc(sizeof(struct OpenMMData_s));
+
+   // temporary OpenMM objects used and discarded here
+
+   OpenMM_Vec3Array*       initialPosInNm;
+   OpenMM_Vec3Array*       initialVelInNm;
+   OpenMM_StringArray*     pluginList;
+   OpenMM_Platform*        platform;
+
+   // load the OpenMM plugin libraries from their default location;
+   // call the plugin loading routine twice to fix an issue with MacOS
+   // where the first library in the alphabetical list gets skipped
+
+   pluginList = OpenMM_Platform_loadPluginsFromDirectory
+                    (OpenMM_Platform_getDefaultPluginsDirectory());
+   pluginList = OpenMM_Platform_loadPluginsFromDirectory
+                    (OpenMM_Platform_getDefaultPluginsDirectory());
+
+   if (inform__.verbose) {
+      (void) fprintf (stderr, "\n Default OpenMM Plugin Directory :  %s\n\n",
+                          OpenMM_Platform_getDefaultPluginsDirectory());
+      for (ii = 0; ii < OpenMM_StringArray_getSize(pluginList); ii++) {
+         (void) fprintf (stderr, " Plugin Library :  %s\n",
+                             OpenMM_StringArray_get(pluginList, ii));
+      }
+   }
+
+   OpenMM_StringArray_destroy (pluginList);
+   (void) fflush (NULL);
+
+   // create System and Force objects within the System; retain a reference
+   // to each force object so we can fill in the forces; note the OpenMM
+   // System takes ownership of force objects, so don't delete them yourself
+
+   omm->system = OpenMM_System_create ();
+   setupSystemParticles (omm->system, log);
+   setupCMMotionRemover (omm->system, log);
+
+   if (potent__.use_bond) {
+      setupAmoebaBondForce (omm->system,
+                            removeConstrainedCovalentIxns, log);
+   }
+
+/*
+   if (potent__.use_angle) {
+      setupAmoebaAngleForce (omm->system,
+                             removeConstrainedCovalentIxns, log);
+      setupAmoebaInPlaneAngleForce (omm->system,
+                                    removeConstrainedCovalentIxns, log);
+   }
+
+   if (potent__.use_strbnd) {
+      setupAmoebaStretchBendForce (omm->system,
+                                   removeConstrainedCovalentIxns, log);
+   }
+
+   if (potent__.use_urey) {
+      setupAmoebaUreyBradleyForce (omm->system,
+                                   removeConstrainedCovalentIxns, log);
+   }
+
+   if (potent__.use_opbend) {
+      setupAmoebaOutOfPlaneBendForce (omm->system, log);
+   }
+
+   if (potent__.use_improp) {
+      setupAmoebaImproperTorsionForce (omm->system, log);
+   }
+
+   if (potent__.use_tors) {
+      setupAmoebaTorsionForce (omm->system, log);
+   }
+
+   if (potent__.use_strtor) {
+      setupAmoebaStretchTorsionForce (omm->system, log);
+   }
+
+   if (potent__.use_angtor) {
+      setupAmoebaAngleTorsionForce (omm->system, log);
+   }
+
+   if (potent__.use_pitors) {
+      setupAmoebaPiTorsionForce (omm->system, log);
+   }
+
+   if (potent__.use_tortor) {
+      setupAmoebaTorsionTorsionForce (omm->system, log);
+   }
+
+   if (potent__.use_vdw) {
+      setupAmoebaVdwForce (omm->system, log);
+   }
+
+   if (potent__.use_charge) {
+      setupAmoebaChargeForce (omm->system, log);
+   }
+
+   if (potent__.use_mpole) {
+      setupAmoebaMultipoleForce (omm->system, log);
+   }
+*/
+
+}
 
 extern "C" void openmm_take_steps_ (void** omm, int* numSteps) {}
 
