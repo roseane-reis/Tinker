@@ -125,13 +125,48 @@ double* kant;
 extern "C" void set_angtor_data_ (int* nangtor, int* iat, double* kant);
 
 extern struct argue_st {
-static constexpr int maxarg = 20;
+int maxarg;
 int* narg;
 int* listarg;
 char* arg;
 } argue__;
 
-extern "C" void set_argue_data_ (int* narg, int* listarg, char* arg);
+extern "C" void set_argue_data_ (int* maxarg, int* narg, int* listarg, char* arg);
+
+extern struct ascii_st {
+int null;
+int tab;
+int linefeed;
+int formfeed;
+int carriage;
+int escape;
+int space;
+int exclamation;
+int quote;
+int pound;
+int dollar;
+int percent;
+int ampersand;
+int apostrophe;
+int asterisk;
+int plus;
+int comma;
+int minus;
+int period;
+int frontslash;
+int colon;
+int semicolon;
+int equal;
+int question;
+int atsign;
+int backslash;
+int caret;
+int underbar;
+int vertical;
+int tilde;
+} ascii__;
+
+extern "C" void set_ascii_data_ (int* null, int* tab, int* linefeed, int* formfeed, int* carriage, int* escape, int* space, int* exclamation, int* quote, int* pound, int* dollar, int* percent, int* ampersand, int* apostrophe, int* asterisk, int* plus, int* comma, int* minus, int* period, int* frontslash, int* colon, int* semicolon, int* equal, int* question, int* atsign, int* backslash, int* caret, int* underbar, int* vertical, int* tilde);
 
 extern struct atmlst_st {
 int* bndlist;
@@ -163,7 +198,7 @@ double* z;
 extern "C" void set_atoms_data_ (int* n, int* type, double* x, double* y, double* z);
 
 extern struct bath_st {
-static constexpr int maxnose = 4;
+int maxnose;
 int* voltrial;
 double* kelvin;
 double* atmsph;
@@ -187,7 +222,7 @@ char* barostat;
 char* thermostat;
 } bath__;
 
-extern "C" void set_bath_data_ (int* voltrial, double* kelvin, double* atmsph, double* tautemp, double* taupres, double* compress, double* collide, double* eta, double* volmove, double* vbar, double* qbar, double* gbar, double* vnh, double* qnh, double* gnh, int* isothermal, int* isobaric, int* anisotrop, char* volscale, char* barostat, char* thermostat);
+extern "C" void set_bath_data_ (int* maxnose, int* voltrial, double* kelvin, double* atmsph, double* tautemp, double* taupres, double* compress, double* collide, double* eta, double* volmove, double* vbar, double* qbar, double* gbar, double* vnh, double* qnh, double* gnh, int* isothermal, int* isobaric, int* anisotrop, char* volscale, char* barostat, char* thermostat);
 
 extern struct bitor_st {
 int* nbitor;
@@ -593,7 +628,7 @@ int* fpcy;
 extern "C" void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxep, int* maxfs, int* maxcy, int* mxcyep, int* maxfp, int* mxfpcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* nep, int* epc, int* epv, int* afe, int* ale, int* epnext, int* nfs, int* fsen, int* fsep, int* ncy, int* cynep, int* cyep, int* nfp, int* fpa, int* fpncy, int* fpcy);
 
 extern struct fft_st {
-static constexpr int maxprime = 15;
+int maxprime;
 int* iprime;
 unsigned long long* planf;
 unsigned long long* planb;
@@ -601,15 +636,15 @@ double* ffttable;
 char* ffttyp;
 } fft__;
 
-extern "C" void set_fft_data_ (int* iprime, unsigned long long* planf, unsigned long long* planb, double* ffttable, char* ffttyp);
+extern "C" void set_fft_data_ (int* maxprime, int* iprime, unsigned long long* planf, unsigned long long* planb, double* ffttable, char* ffttyp);
 
 extern struct fields_st {
-static constexpr int maxbio = 10000;
+int maxbio;
 int* biotyp;
 char* forcefield;
 } fields__;
 
-extern "C" void set_fields_data_ (int* biotyp, char* forcefield);
+extern "C" void set_fields_data_ (int* maxbio, int* biotyp, char* forcefield);
 
 extern struct files_st {
 int* nprior;
@@ -679,29 +714,29 @@ double* hessz;
 extern "C" void set_hessn_data_ (double* hessx, double* hessy, double* hessz);
 
 extern struct hpmf_st {
-static constexpr double rcarbon = 1.7e0;
-static constexpr double rwater = 1.4e0;
-static constexpr double acsurf = 120.7628e0;
-static constexpr double safact = 0.3516e0;
-static constexpr double tslope = 100.0e0;
-static constexpr double toffset = 6.0e0;
-static constexpr double hpmfcut = 11.0e0;
-static constexpr double h1 = -0.7308004860404441194e0;
-static constexpr double h2 = 0.2001645051578760659e0;
-static constexpr double h3 = -0.0905499953418473502e0;
-static constexpr double c1 = 3.8167879266271396155e0;
-static constexpr double c2 = 5.4669162286016419472e0;
-static constexpr double c3 = 7.1167694861385353278e0;
-static constexpr double w1 = 1.6858993102248638341e0;
-static constexpr double w2 = 1.3906405621629980285e0;
-static constexpr double w3 = 1.5741657341338335385e0;
+double rcarbon;
+double rwater;
+double acsurf;
+double safact;
+double tslope;
+double toffset;
+double hpmfcut;
+double h1;
+double h2;
+double h3;
+double c1;
+double c2;
+double c3;
+double w1;
+double w2;
+double w3;
 int* npmf;
 int* ipmf;
 double* rpmf;
 double* acsa;
 } hpmf__;
 
-extern "C" void set_hpmf_data_ (int* npmf, int* ipmf, double* rpmf, double* acsa);
+extern "C" void set_hpmf_data_ (double* rcarbon, double* rwater, double* acsurf, double* safact, double* tslope, double* toffset, double* hpmfcut, double* h1, double* h2, double* h3, double* c1, double* c2, double* c3, double* w1, double* w2, double* w3, int* npmf, int* ipmf, double* rpmf, double* acsa);
 
 extern struct ielscf_st {
 int* nfree_aux;
@@ -738,7 +773,7 @@ double* itors3;
 extern "C" void set_imptor_data_ (int* nitors, int* iitors, double* itors1, double* itors2, double* itors3);
 
 extern struct inform_st {
-static constexpr int maxask = 5;
+int maxask;
 int* digits;
 int* iprint;
 int* iwrite;
@@ -750,7 +785,7 @@ int* holdup;
 int* abort;
 } inform__;
 
-extern "C" void set_inform_data_ (int* digits, int* iprint, int* iwrite, int* isend, int* silent, int* verbose, int* debug, int* holdup, int* abort);
+extern "C" void set_inform_data_ (int* maxask, int* digits, int* iprint, int* iwrite, int* isend, int* silent, int* verbose, int* debug, int* holdup, int* abort);
 
 extern struct inter_st {
 double* einter;
@@ -772,12 +807,12 @@ double* anan;
 extern "C" void set_kanang_data_ (double* anan);
 
 extern struct kangs_st {
-static constexpr int maxna = 2000;
-static constexpr int maxna5 = 500;
-static constexpr int maxna4 = 500;
-static constexpr int maxna3 = 500;
-static constexpr int maxnap = 2000;
-static constexpr int maxnaf = 500;
+int maxna;
+int maxna5;
+int maxna4;
+int maxna3;
+int maxnap;
+int maxnaf;
 double* acon;
 double* acon5;
 double* acon4;
@@ -798,15 +833,15 @@ char* kap;
 char* kaf;
 } kangs__;
 
-extern "C" void set_kangs_data_ (double* acon, double* acon5, double* acon4, double* acon3, double* aconp, double* aconf, double* ang, double* ang5, double* ang4, double* ang3, double* angp, double* angf, char* ka, char* ka5, char* ka4, char* ka3, char* kap, char* kaf);
+extern "C" void set_kangs_data_ (int* maxna, int* maxna5, int* maxna4, int* maxna3, int* maxnap, int* maxnaf, double* acon, double* acon5, double* acon4, double* acon3, double* aconp, double* aconf, double* ang, double* ang5, double* ang4, double* ang3, double* angp, double* angf, char* ka, char* ka5, char* ka4, char* ka3, char* kap, char* kaf);
 
 extern struct kantor_st {
-static constexpr int maxnat = 500;
+int maxnat;
 double* atcon;
 char* kat;
 } kantor__;
 
-extern "C" void set_kantor_data_ (double* atcon, char* kat);
+extern "C" void set_kantor_data_ (int* maxnat, double* atcon, char* kat);
 
 extern struct katoms_st {
 int* atmcls;
@@ -820,11 +855,11 @@ char* describe;
 extern "C" void set_katoms_data_ (int* atmcls, int* atmnum, int* ligand, double* weight, char* symbol, char* describe);
 
 extern struct kbonds_st {
-static constexpr int maxnb = 2000;
-static constexpr int maxnb5 = 500;
-static constexpr int maxnb4 = 500;
-static constexpr int maxnb3 = 500;
-static constexpr int maxnel = 500;
+int maxnb;
+int maxnb5;
+int maxnb4;
+int maxnb3;
+int maxnel;
 double* bcon;
 double* bcon5;
 double* bcon4;
@@ -841,7 +876,7 @@ char* kb3;
 char* kel;
 } kbonds__;
 
-extern "C" void set_kbonds_data_ (double* bcon, double* bcon5, double* bcon4, double* bcon3, double* blen, double* blen5, double* blen4, double* blen3, double* dlen, char* kb, char* kb5, char* kb4, char* kb3, char* kel);
+extern "C" void set_kbonds_data_ (int* maxnb, int* maxnb5, int* maxnb4, int* maxnb3, int* maxnel, double* bcon, double* bcon5, double* bcon4, double* bcon3, double* blen, double* blen5, double* blen4, double* blen3, double* dlen, char* kb, char* kb5, char* kb4, char* kb3, char* kel);
 
 extern struct kchrge_st {
 double* chg;
@@ -864,10 +899,10 @@ double* ctdmp;
 extern "C" void set_kctrn_data_ (double* ctchg, double* ctdmp);
 
 extern struct kdipol_st {
-static constexpr int maxnd = 1000;
-static constexpr int maxnd5 = 500;
-static constexpr int maxnd4 = 500;
-static constexpr int maxnd3 = 500;
+int maxnd;
+int maxnd5;
+int maxnd4;
+int maxnd3;
 double* dpl;
 double* dpl5;
 double* dpl4;
@@ -882,7 +917,7 @@ char* kd4;
 char* kd3;
 } kdipol__;
 
-extern "C" void set_kdipol_data_ (double* dpl, double* dpl5, double* dpl4, double* dpl3, double* pos, double* pos5, double* pos4, double* pos3, char* kd, char* kd5, char* kd4, char* kd3);
+extern "C" void set_kdipol_data_ (int* maxnd, int* maxnd5, int* maxnd4, int* maxnd3, double* dpl, double* dpl5, double* dpl4, double* dpl3, double* pos, double* pos5, double* pos4, double* pos3, char* kd, char* kd5, char* kd4, char* kd3);
 
 extern struct kdsp_st {
 double* dspsix;
@@ -892,70 +927,70 @@ double* dspdmp;
 extern "C" void set_kdsp_data_ (double* dspsix, double* dspdmp);
 
 extern struct keys_st {
-static constexpr int maxkey = 25000;
+int maxkey;
 int* nkey;
 char* keyline;
 } keys__;
 
-extern "C" void set_keys_data_ (int* nkey, char* keyline);
+extern "C" void set_keys_data_ (int* maxkey, int* nkey, char* keyline);
 
 extern struct khbond_st {
-static constexpr int maxnhb = 500;
+int maxnhb;
 double* radhb;
 double* epshb;
 char* khb;
 } khbond__;
 
-extern "C" void set_khbond_data_ (double* radhb, double* epshb, char* khb);
+extern "C" void set_khbond_data_ (int* maxnhb, double* radhb, double* epshb, char* khb);
 
 extern struct kiprop_st {
-static constexpr int maxndi = 500;
+int maxndi;
 double* dcon;
 double* tdi;
 char* kdi;
 } kiprop__;
 
-extern "C" void set_kiprop_data_ (double* dcon, double* tdi, char* kdi);
+extern "C" void set_kiprop_data_ (int* maxndi, double* dcon, double* tdi, char* kdi);
 
 extern struct kitors_st {
-static constexpr int maxnti = 500;
+int maxnti;
 double* ti1;
 double* ti2;
 double* ti3;
 char* kti;
 } kitors__;
 
-extern "C" void set_kitors_data_ (double* ti1, double* ti2, double* ti3, char* kti);
+extern "C" void set_kitors_data_ (int* maxnti, double* ti1, double* ti2, double* ti3, char* kti);
 
 extern struct kmulti_st {
-static constexpr int maxnmp = 2000;
+int maxnmp;
 double* multip;
 char* mpaxis;
 char* kmp;
 } kmulti__;
 
-extern "C" void set_kmulti_data_ (double* multip, char* mpaxis, char* kmp);
+extern "C" void set_kmulti_data_ (int* maxnmp, double* multip, char* mpaxis, char* kmp);
 
 extern struct kopbnd_st {
-static constexpr int maxnopb = 500;
+int maxnopb;
 double* opbn;
 char* kopb;
 } kopbnd__;
 
-extern "C" void set_kopbnd_data_ (double* opbn, char* kopb);
+extern "C" void set_kopbnd_data_ (int* maxnopb, double* opbn, char* kopb);
 
 extern struct kopdst_st {
-static constexpr int maxnopd = 500;
+int maxnopd;
 double* opds;
 char* kopd;
 } kopdst__;
 
-extern "C" void set_kopdst_data_ (double* opds, char* kopd);
+extern "C" void set_kopdst_data_ (int* maxnopd, double* opds, char* kopd);
 
 extern struct korbs_st {
-static constexpr int maxnpi = 500;
-static constexpr int maxnpi5 = 200;
-static constexpr int maxnpi4 = 200;
+int maxnpi;
+int maxnpi5;
+int maxnpi4;
 double* sslope;
 double* sslope5;
 double* sslope4;
@@ -970,15 +1005,15 @@ char* kpi5;
 char* kpi4;
 } korbs__;
 
-extern "C" void set_korbs_data_ (double* sslope, double* sslope5, double* sslope4, double* tslope, double* tslope5, double* tslope4, double* electron, double* ionize, double* repulse, char* kpi, char* kpi5, char* kpi4);
+extern "C" void set_korbs_data_ (int* maxnpi, int* maxnpi5, int* maxnpi4, double* sslope, double* sslope5, double* sslope4, double* tslope, double* tslope5, double* tslope4, double* electron, double* ionize, double* repulse, char* kpi, char* kpi5, char* kpi4);
 
 extern struct kpitor_st {
-static constexpr int maxnpt = 500;
+int maxnpt;
 double* ptcon;
 char* kpt;
 } kpitor__;
 
-extern "C" void set_kpitor_data_ (double* ptcon, char* kpt);
+extern "C" void set_kpitor_data_ (int* maxnpt, double* ptcon, char* kpt);
 
 extern struct kpolr_st {
 int* pgrp;
@@ -998,25 +1033,25 @@ double* prele;
 extern "C" void set_krepl_data_ (double* prsiz, double* prdmp, double* prele);
 
 extern struct kstbnd_st {
-static constexpr int maxnsb = 2000;
+int maxnsb;
 double* stbn;
 char* ksb;
 } kstbnd__;
 
-extern "C" void set_kstbnd_data_ (double* stbn, char* ksb);
+extern "C" void set_kstbnd_data_ (int* maxnsb, double* stbn, char* ksb);
 
 extern struct ksttor_st {
-static constexpr int maxnbt = 500;
+int maxnbt;
 double* btcon;
 char* kbt;
 } ksttor__;
 
-extern "C" void set_ksttor_data_ (double* btcon, char* kbt);
+extern "C" void set_ksttor_data_ (int* maxnbt, double* btcon, char* kbt);
 
 extern struct ktorsn_st {
-static constexpr int maxnt = 2000;
-static constexpr int maxnt5 = 500;
-static constexpr int maxnt4 = 500;
+int maxnt;
+int maxnt5;
+int maxnt4;
 double* t1;
 double* t2;
 double* t3;
@@ -1040,12 +1075,12 @@ char* kt5;
 char* kt4;
 } ktorsn__;
 
-extern "C" void set_ktorsn_data_ (double* t1, double* t2, double* t3, double* t4, double* t5, double* t6, double* t15, double* t25, double* t35, double* t45, double* t55, double* t65, double* t14, double* t24, double* t34, double* t44, double* t54, double* t64, char* kt, char* kt5, char* kt4);
+extern "C" void set_ktorsn_data_ (int* maxnt, int* maxnt5, int* maxnt4, double* t1, double* t2, double* t3, double* t4, double* t5, double* t6, double* t15, double* t25, double* t35, double* t45, double* t55, double* t65, double* t14, double* t24, double* t34, double* t44, double* t54, double* t64, char* kt, char* kt5, char* kt4);
 
 extern struct ktrtor_st {
-static constexpr int maxntt = 100;
-static constexpr int maxtgrd = 30;
-static constexpr int maxtgrd2 = maxtgrd*maxtgrd;
+int maxntt;
+int maxtgrd;
+int maxtgrd2;
 int* tnx;
 int* tny;
 double* ttx;
@@ -1057,25 +1092,25 @@ double* tbxy;
 char* ktt;
 } ktrtor__;
 
-extern "C" void set_ktrtor_data_ (int* tnx, int* tny, double* ttx, double* tty, double* tbf, double* tbx, double* tby, double* tbxy, char* ktt);
+extern "C" void set_ktrtor_data_ (int* maxntt, int* maxtgrd, int* maxtgrd2, int* tnx, int* tny, double* ttx, double* tty, double* tbf, double* tbx, double* tby, double* tbxy, char* ktt);
 
 extern struct kurybr_st {
-static constexpr int maxnu = 2000;
+int maxnu;
 double* ucon;
 double* dst13;
 char* ku;
 } kurybr__;
 
-extern "C" void set_kurybr_data_ (double* ucon, double* dst13, char* ku);
+extern "C" void set_kurybr_data_ (int* maxnu, double* ucon, double* dst13, char* ku);
 
 extern struct kvdwpr_st {
-static constexpr int maxnvp = 500;
+int maxnvp;
 double* radpr;
 double* epspr;
 char* kvpr;
 } kvdwpr__;
 
-extern "C" void set_kvdwpr_data_ (double* radpr, double* epspr, char* kvpr);
+extern "C" void set_kvdwpr_data_ (int* maxnvp, double* radpr, double* epspr, char* kvpr);
 
 extern struct kvdws_st {
 double* rad;
@@ -1146,6 +1181,19 @@ double* angmax;
 } linmin__;
 
 extern "C" void set_linmin_data_ (int* intmax, double* stpmin, double* stpmax, double* cappa, double* slpmax, double* angmax);
+
+extern struct math_st {
+double pi;
+double elog;
+double radian;
+double logten;
+double twosix;
+double sqrtpi;
+double sqrttwo;
+double sqrtthree;
+} math__;
+
+extern "C" void set_math_data_ (double* pi, double* elog, double* radian, double* logten, double* twosix, double* sqrtpi, double* sqrttwo, double* sqrtthree);
 
 extern struct mdstuf_st {
 int* nfree;
@@ -1304,7 +1352,7 @@ char* pentyp;
 extern "C" void set_mplpot_data_ (double* m2scale, double* m3scale, double* m4scale, double* m5scale, int* use_chgpen, char* pentyp);
 
 extern struct mpole_st {
-static constexpr int maxpole = 13;
+int maxpole;
 int* npole;
 int* ipole;
 int* polsiz;
@@ -1319,7 +1367,7 @@ double* srpole;
 char* polaxe;
 } mpole__;
 
-extern "C" void set_mpole_data_ (int* npole, int* ipole, int* polsiz, int* pollist, int* zaxis, int* xaxis, int* yaxis, double* pole, double* rpole, double* spole, double* srpole, char* polaxe);
+extern "C" void set_mpole_data_ (int* maxpole, int* npole, int* ipole, int* polsiz, int* pollist, int* zaxis, int* xaxis, int* yaxis, double* pole, double* rpole, double* spole, double* srpole, char* polaxe);
 
 extern struct mrecip_st {
 double* vmxx;
@@ -1398,12 +1446,12 @@ int* doulst;
 extern "C" void set_neigh_data_ (int* maxvlst, int* maxelst, int* maxulst, int* nvlst, int* vlst, int* nelst, int* elst, int* nulst, int* ulst, double* lbuffer, double* pbuffer, double* lbuf2, double* pbuf2, double* vbuf2, double* vbufx, double* dbuf2, double* dbufx, double* cbuf2, double* cbufx, double* mbuf2, double* mbufx, double* ubuf2, double* ubufx, double* xvold, double* yvold, double* zvold, double* xeold, double* yeold, double* zeold, double* xuold, double* yuold, double* zuold, int* dovlst, int* dodlst, int* doclst, int* domlst, int* doulst);
 
 extern struct nonpol_st {
-static constexpr double epso = 0.1100e0;
-static constexpr double epsh = 0.0135e0;
-static constexpr double rmino = 1.7025e0;
-static constexpr double rminh = 1.3275e0;
-static constexpr double awater = 0.033428e0;
-static constexpr double slevy = 1.0e0;
+double epso;
+double epsh;
+double rmino;
+double rminh;
+double awater;
+double slevy;
 double* solvprs;
 double* surften;
 double* spcut;
@@ -1415,7 +1463,7 @@ double* rdisp;
 double* cdisp;
 } nonpol__;
 
-extern "C" void set_nonpol_data_ (double* solvprs, double* surften, double* spcut, double* spoff, double* stcut, double* stoff, double* rcav, double* rdisp, double* cdisp);
+extern "C" void set_nonpol_data_ (double* epso, double* epsh, double* rmino, double* rminh, double* awater, double* slevy, double* solvprs, double* surften, double* spcut, double* spoff, double* stcut, double* stoff, double* rcav, double* rdisp, double* cdisp);
 
 extern struct nucleo_st {
 int* pucker;
@@ -1453,6 +1501,15 @@ double* opdk;
 
 extern "C" void set_opdist_data_ (int* nopdist, int* iopd, double* opdk);
 
+extern struct openmm_st {
+unsigned long long* ommhandle;
+char* cudaprecision;
+char* ommplatform;
+char* cudadevice;
+} openmm__;
+
+extern "C" void set_openmm_data_ (unsigned long long* ommhandle, char* cudaprecision, char* ommplatform, char* cudadevice);
+
 extern struct openmp_st {
 int* nproc;
 int* nthread;
@@ -1482,12 +1539,12 @@ char* coordtype;
 extern "C" void set_output_data_ (int* archive, int* noversion, int* overwrite, int* cyclesave, int* velsave, int* frcsave, int* uindsave, char* coordtype);
 
 extern struct params_st {
-static constexpr int maxprm = 25000;
+int maxprm;
 int* nprm;
 char* prmline;
 } params__;
 
-extern "C" void set_params_data_ (int* nprm, char* prmline);
+extern "C" void set_params_data_ (int* maxprm, int* nprm, char* prmline);
 
 extern struct paths_st {
 double* pnorm;
@@ -1503,7 +1560,7 @@ double* gc;
 extern "C" void set_paths_data_ (double* pnorm, double* acoeff, double* pc0, double* pc1, double* pvect, double* pstep, double* pzet, double* gc);
 
 extern struct pbstuf_st {
-static constexpr int maxion = 10;
+int maxion;
 int* ionn;
 int* dime;
 int* ionq;
@@ -1536,7 +1593,7 @@ char* chgm;
 char* srfm;
 } pbstuf__;
 
-extern "C" void set_pbstuf_data_ (int* ionn, int* dime, int* ionq, double* pbe, double* pdie, double* sdie, double* srad, double* swin, double* sdens, double* smin, double* grid, double* gcent, double* cgrid, double* cgcent, double* fgrid, double* fgcent, double* ionr, double* ionc, double* apbe, double* pbr, double* pbep, double* pbfp, double* pbtp, double* pbeuind, double* pbeuinp, char* pbtyp, char* pbsoln, char* bcfl, char* chgm, char* srfm);
+extern "C" void set_pbstuf_data_ (int* maxion, int* ionn, int* dime, int* ionq, double* pbe, double* pdie, double* sdie, double* srad, double* swin, double* sdens, double* smin, double* grid, double* gcent, double* cgrid, double* cgcent, double* fgrid, double* fgcent, double* ionr, double* ionc, double* apbe, double* pbr, double* pbep, double* pbfp, double* pbtp, double* pbeuind, double* pbeuinp, char* pbtyp, char* pbsoln, char* bcfl, char* chgm, char* srfm);
 
 extern struct pdb_st {
 int* npdb;
@@ -1657,10 +1714,10 @@ int* douind;
 extern "C" void set_polar_data_ (int* npolar, int* ipolar, double* polarity, double* thole, double* dirdamp, double* pdamp, double* udir, double* udirp, double* udirs, double* udirps, double* uind, double* uinp, double* uinds, double* uinps, double* uexact, int* douind);
 
 extern struct polgrp_st {
-static constexpr int maxp11 = 120;
-static constexpr int maxp12 = 120;
-static constexpr int maxp13 = 120;
-static constexpr int maxp14 = 120;
+int maxp11;
+int maxp12;
+int maxp13;
+int maxp14;
 int* np11;
 int* np12;
 int* np13;
@@ -1671,10 +1728,10 @@ int* ip13;
 int* ip14;
 } polgrp__;
 
-extern "C" void set_polgrp_data_ (int* np11, int* np12, int* np13, int* np14, int* ip11, int* ip12, int* ip13, int* ip14);
+extern "C" void set_polgrp_data_ (int* maxp11, int* maxp12, int* maxp13, int* maxp14, int* np11, int* np12, int* np13, int* np14, int* ip11, int* ip12, int* ip13, int* ip14);
 
 extern struct polopt_st {
-static constexpr int maxopt = 6;
+int maxopt;
 int* optorder;
 int* optlevel;
 double* copt;
@@ -1687,7 +1744,7 @@ double* fopt;
 double* foptp;
 } polopt__;
 
-extern "C" void set_polopt_data_ (int* optorder, int* optlevel, double* copt, double* copm, double* uopt, double* uoptp, double* uopts, double* uoptps, double* fopt, double* foptp);
+extern "C" void set_polopt_data_ (int* maxopt, int* optorder, int* optlevel, double* copt, double* copm, double* uopt, double* uoptp, double* uopts, double* uoptps, double* fopt, double* foptp);
 
 extern struct polpcg_st {
 int* mindex;
@@ -1815,14 +1872,14 @@ int* fatm;
 extern "C" void set_potfit_data_ (int* nconf, int* namax, int* ngatm, int* nfatm, int* npgrid, int* ipgrid, double* resp, double* xdpl0, double* ydpl0, double* zdpl0, double* xxqdp0, double* xyqdp0, double* xzqdp0, double* yyqdp0, double* yzqdp0, double* zzqdp0, double* fit0, double* fchg, double* fpol, double* pgrid, double* epot, int* use_dpl, int* use_qdp, int* fit_mpl, int* fit_dpl, int* fit_qdp, int* fitchg, int* fitpol, int* gatm, int* fatm);
 
 extern struct ptable_st {
-static constexpr int maxele = 112;
+int maxele;
 double* atmass;
 double* vdwrad;
 double* covrad;
 char* elemnt;
 } ptable__;
 
-extern "C" void set_ptable_data_ (double* atmass, double* vdwrad, double* covrad, char* elemnt);
+extern "C" void set_ptable_data_ (int* maxele, double* atmass, double* vdwrad, double* covrad, char* elemnt);
 
 extern struct qmstuf_st {
 int* ngatom;
@@ -1879,8 +1936,8 @@ double* r5scale;
 extern "C" void set_reppot_data_ (double* r2scale, double* r3scale, double* r4scale, double* r5scale);
 
 extern struct resdue_st {
-static constexpr int maxamino = 38;
-static constexpr int maxnuc = 12;
+int maxamino;
+int maxnuc;
 int* ntyp;
 int* catyp;
 int* ctyp;
@@ -1926,7 +1983,7 @@ char* amino;
 char* nuclz;
 } resdue__;
 
-extern "C" void set_resdue_data_ (int* ntyp, int* catyp, int* ctyp, int* hntyp, int* otyp, int* hatyp, int* cbtyp, int* nntyp, int* cantyp, int* cntyp, int* hnntyp, int* ontyp, int* hantyp, int* nctyp, int* cactyp, int* cctyp, int* hnctyp, int* octyp, int* hactyp, int* o5typ, int* c5typ, int* h51typ, int* h52typ, int* c4typ, int* h4typ, int* o4typ, int* c1typ, int* h1typ, int* c3typ, int* h3typ, int* c2typ, int* h21typ, int* o2typ, int* h22typ, int* o3typ, int* ptyp, int* optyp, int* h5ttyp, int* h3ttyp, char* amino1, char* nuclz1, char* amino, char* nuclz);
+extern "C" void set_resdue_data_ (int* maxamino, int* maxnuc, int* ntyp, int* catyp, int* ctyp, int* hntyp, int* otyp, int* hatyp, int* cbtyp, int* nntyp, int* cantyp, int* cntyp, int* hnntyp, int* ontyp, int* hantyp, int* nctyp, int* cactyp, int* cctyp, int* hnctyp, int* octyp, int* hactyp, int* o5typ, int* c5typ, int* h51typ, int* h52typ, int* c4typ, int* h4typ, int* o4typ, int* c1typ, int* h1typ, int* c3typ, int* h3typ, int* c2typ, int* h21typ, int* o2typ, int* h22typ, int* o3typ, int* ptyp, int* optyp, int* h5ttyp, int* h3ttyp, char* amino1, char* nuclz1, char* amino, char* nuclz);
 
 extern struct restrn_st {
 int* npfix;
@@ -2065,6 +2122,19 @@ double* f7;
 
 extern "C" void set_shunt_data_ (double* off, double* off2, double* cut, double* cut2, double* c0, double* c1, double* c2, double* c3, double* c4, double* c5, double* f0, double* f1, double* f2, double* f3, double* f4, double* f5, double* f6, double* f7);
 
+extern struct sizes_st {
+int maxatm;
+int maxtyp;
+int maxclass;
+int maxval;
+int maxref;
+int maxgrp;
+int maxres;
+int maxfix;
+} sizes__;
+
+extern "C" void set_sizes_data_ (int* maxatm, int* maxtyp, int* maxclass, int* maxval, int* maxref, int* maxgrp, int* maxres, int* maxfix);
+
 extern struct socket_st {
 int* skttyp;
 int* cstep;
@@ -2187,16 +2257,38 @@ int* itt;
 extern "C" void set_tortor_data_ (int* ntortor, int* itt);
 
 extern struct tree_st {
-static constexpr int maxpss = 500;
+int maxpss;
 int* nlevel;
 double* etree;
 double* ilevel;
 } tree__;
 
-extern "C" void set_tree_data_ (int* nlevel, double* etree, double* ilevel);
+extern "C" void set_tree_data_ (int* maxpss, int* nlevel, double* etree, double* ilevel);
+
+extern struct units_st {
+double avogadro;
+double lightspd;
+double boltzmann;
+double gasconst;
+double elemchg;
+double vacperm;
+double emass;
+double planck;
+double joule;
+double ekcal;
+double bohr;
+double hartree;
+double evolt;
+double efreq;
+double coulomb;
+double debye;
+double prescon;
+} units__;
+
+extern "C" void set_units_data_ (double* avogadro, double* lightspd, double* boltzmann, double* gasconst, double* elemchg, double* vacperm, double* emass, double* planck, double* joule, double* ekcal, double* bohr, double* hartree, double* evolt, double* efreq, double* coulomb, double* debye, double* prescon);
 
 extern struct uprior_st {
-static constexpr int maxpred = 17;
+int maxpred;
 int* nualt;
 int* maxualt;
 double* gear;
@@ -2213,7 +2305,7 @@ int* use_pred;
 char* polpred;
 } uprior__;
 
-extern "C" void set_uprior_data_ (int* nualt, int* maxualt, double* gear, double* aspc, double* bpred, double* bpredp, double* bpreds, double* bpredps, double* udalt, double* upalt, double* usalt, double* upsalt, int* use_pred, char* polpred);
+extern "C" void set_uprior_data_ (int* maxpred, int* nualt, int* maxualt, double* gear, double* aspc, double* bpred, double* bpredp, double* bpreds, double* bpredps, double* udalt, double* upalt, double* usalt, double* upsalt, int* use_pred, char* polpred);
 
 extern struct urey_st {
 int* nurey;
@@ -2273,7 +2365,7 @@ double* epshbnd;
 extern "C" void set_vdw_data_ (int* nvdw, int* ivdw, int* jvdw, int* ired, double* kred, double* xred, double* yred, double* zred, double* radmin, double* epsilon, double* radmin4, double* epsilon4, double* radhbnd, double* epshbnd);
 
 extern struct vdwpot_st {
-static constexpr int maxgauss = 10;
+int maxgauss;
 int* ngauss;
 double* igauss;
 double* abuck;
@@ -2295,7 +2387,7 @@ char* epsrule;
 char* vdwtyp;
 } vdwpot__;
 
-extern "C" void set_vdwpot_data_ (int* ngauss, double* igauss, double* abuck, double* bbuck, double* cbuck, double* ghal, double* dhal, double* v2scale, double* v3scale, double* v4scale, double* v5scale, int* use_vcorr, char* vdwindex, char* radtyp, char* radsiz, char* gausstyp, char* radrule, char* epsrule, char* vdwtyp);
+extern "C" void set_vdwpot_data_ (int* maxgauss, int* ngauss, double* igauss, double* abuck, double* bbuck, double* cbuck, double* ghal, double* dhal, double* v2scale, double* v3scale, double* v4scale, double* v5scale, int* use_vcorr, char* vdwindex, char* radtyp, char* radsiz, char* gausstyp, char* radrule, char* epsrule, char* vdwtyp);
 
 extern struct vibs_st {
 double* phi;
@@ -2328,8 +2420,8 @@ int* use_stophat;
 extern "C" void set_warp_data_ (double* deform, double* difft, double* diffv, double* diffc, double* m2, int* use_smooth, int* use_dem, int* use_gda, int* use_tophat, int* use_stophat);
 
 extern struct xtals_st {
-static constexpr int maxlsq = 1000;
-static constexpr int maxrsd = 1000;
+int maxlsq;
+int maxrsd;
 int* nxtal;
 int* nvary;
 int* ivary;
@@ -2340,7 +2432,7 @@ char* vartyp;
 char* rsdtyp;
 } xtals__;
 
-extern "C" void set_xtals_data_ (int* nxtal, int* nvary, int* ivary, int* iresid, int* vary, double* e0_lattice, char* vartyp, char* rsdtyp);
+extern "C" void set_xtals_data_ (int* maxlsq, int* maxrsd, int* nxtal, int* nvary, int* ivary, int* iresid, int* vary, double* e0_lattice, char* vartyp, char* rsdtyp);
 
 extern struct zclose_st {
 int* nadd;

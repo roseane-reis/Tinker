@@ -126,10 +126,46 @@ angtor__.kant = kant;
 
 argue_st argue__;
 
-void set_argue_data_ (int* narg, int* listarg, char* arg) {
+void set_argue_data_ (int* maxarg, int* narg, int* listarg, char* arg) {
+argue__.maxarg = *maxarg;
 argue__.narg = narg;
 argue__.listarg = listarg;
 argue__.arg = arg;
+}
+
+ascii_st ascii__;
+
+void set_ascii_data_ (int* null, int* tab, int* linefeed, int* formfeed, int* carriage, int* escape, int* space, int* exclamation, int* quote, int* pound, int* dollar, int* percent, int* ampersand, int* apostrophe, int* asterisk, int* plus, int* comma, int* minus, int* period, int* frontslash, int* colon, int* semicolon, int* equal, int* question, int* atsign, int* backslash, int* caret, int* underbar, int* vertical, int* tilde) {
+ascii__.null = *null;
+ascii__.tab = *tab;
+ascii__.linefeed = *linefeed;
+ascii__.formfeed = *formfeed;
+ascii__.carriage = *carriage;
+ascii__.escape = *escape;
+ascii__.space = *space;
+ascii__.exclamation = *exclamation;
+ascii__.quote = *quote;
+ascii__.pound = *pound;
+ascii__.dollar = *dollar;
+ascii__.percent = *percent;
+ascii__.ampersand = *ampersand;
+ascii__.apostrophe = *apostrophe;
+ascii__.asterisk = *asterisk;
+ascii__.plus = *plus;
+ascii__.comma = *comma;
+ascii__.minus = *minus;
+ascii__.period = *period;
+ascii__.frontslash = *frontslash;
+ascii__.colon = *colon;
+ascii__.semicolon = *semicolon;
+ascii__.equal = *equal;
+ascii__.question = *question;
+ascii__.atsign = *atsign;
+ascii__.backslash = *backslash;
+ascii__.caret = *caret;
+ascii__.underbar = *underbar;
+ascii__.vertical = *vertical;
+ascii__.tilde = *tilde;
 }
 
 atmlst_st atmlst__;
@@ -163,7 +199,8 @@ atoms__.z = z;
 
 bath_st bath__;
 
-void set_bath_data_ (int* voltrial, double* kelvin, double* atmsph, double* tautemp, double* taupres, double* compress, double* collide, double* eta, double* volmove, double* vbar, double* qbar, double* gbar, double* vnh, double* qnh, double* gnh, int* isothermal, int* isobaric, int* anisotrop, char* volscale, char* barostat, char* thermostat) {
+void set_bath_data_ (int* maxnose, int* voltrial, double* kelvin, double* atmsph, double* tautemp, double* taupres, double* compress, double* collide, double* eta, double* volmove, double* vbar, double* qbar, double* gbar, double* vnh, double* qnh, double* gnh, int* isothermal, int* isobaric, int* anisotrop, char* volscale, char* barostat, char* thermostat) {
+bath__.maxnose = *maxnose;
 bath__.voltrial = voltrial;
 bath__.kelvin = kelvin;
 bath__.atmsph = atmsph;
@@ -592,7 +629,8 @@ faces__.fpcy = fpcy;
 
 fft_st fft__;
 
-void set_fft_data_ (int* iprime, unsigned long long* planf, unsigned long long* planb, double* ffttable, char* ffttyp) {
+void set_fft_data_ (int* maxprime, int* iprime, unsigned long long* planf, unsigned long long* planb, double* ffttable, char* ffttyp) {
+fft__.maxprime = *maxprime;
 fft__.iprime = iprime;
 fft__.planf = planf;
 fft__.planb = planb;
@@ -602,7 +640,8 @@ fft__.ffttyp = ffttyp;
 
 fields_st fields__;
 
-void set_fields_data_ (int* biotyp, char* forcefield) {
+void set_fields_data_ (int* maxbio, int* biotyp, char* forcefield) {
+fields__.maxbio = *maxbio;
 fields__.biotyp = biotyp;
 fields__.forcefield = forcefield;
 }
@@ -676,7 +715,23 @@ hessn__.hessz = hessz;
 
 hpmf_st hpmf__;
 
-void set_hpmf_data_ (int* npmf, int* ipmf, double* rpmf, double* acsa) {
+void set_hpmf_data_ (double* rcarbon, double* rwater, double* acsurf, double* safact, double* tslope, double* toffset, double* hpmfcut, double* h1, double* h2, double* h3, double* c1, double* c2, double* c3, double* w1, double* w2, double* w3, int* npmf, int* ipmf, double* rpmf, double* acsa) {
+hpmf__.rcarbon = *rcarbon;
+hpmf__.rwater = *rwater;
+hpmf__.acsurf = *acsurf;
+hpmf__.safact = *safact;
+hpmf__.tslope = *tslope;
+hpmf__.toffset = *toffset;
+hpmf__.hpmfcut = *hpmfcut;
+hpmf__.h1 = *h1;
+hpmf__.h2 = *h2;
+hpmf__.h3 = *h3;
+hpmf__.c1 = *c1;
+hpmf__.c2 = *c2;
+hpmf__.c3 = *c3;
+hpmf__.w1 = *w1;
+hpmf__.w2 = *w2;
+hpmf__.w3 = *w3;
 hpmf__.npmf = npmf;
 hpmf__.ipmf = ipmf;
 hpmf__.rpmf = rpmf;
@@ -719,7 +774,8 @@ imptor__.itors3 = itors3;
 
 inform_st inform__;
 
-void set_inform_data_ (int* digits, int* iprint, int* iwrite, int* isend, int* silent, int* verbose, int* debug, int* holdup, int* abort) {
+void set_inform_data_ (int* maxask, int* digits, int* iprint, int* iwrite, int* isend, int* silent, int* verbose, int* debug, int* holdup, int* abort) {
+inform__.maxask = *maxask;
 inform__.digits = digits;
 inform__.iprint = iprint;
 inform__.iwrite = iwrite;
@@ -752,7 +808,13 @@ kanang__.anan = anan;
 
 kangs_st kangs__;
 
-void set_kangs_data_ (double* acon, double* acon5, double* acon4, double* acon3, double* aconp, double* aconf, double* ang, double* ang5, double* ang4, double* ang3, double* angp, double* angf, char* ka, char* ka5, char* ka4, char* ka3, char* kap, char* kaf) {
+void set_kangs_data_ (int* maxna, int* maxna5, int* maxna4, int* maxna3, int* maxnap, int* maxnaf, double* acon, double* acon5, double* acon4, double* acon3, double* aconp, double* aconf, double* ang, double* ang5, double* ang4, double* ang3, double* angp, double* angf, char* ka, char* ka5, char* ka4, char* ka3, char* kap, char* kaf) {
+kangs__.maxna = *maxna;
+kangs__.maxna5 = *maxna5;
+kangs__.maxna4 = *maxna4;
+kangs__.maxna3 = *maxna3;
+kangs__.maxnap = *maxnap;
+kangs__.maxnaf = *maxnaf;
 kangs__.acon = acon;
 kangs__.acon5 = acon5;
 kangs__.acon4 = acon4;
@@ -775,7 +837,8 @@ kangs__.kaf = kaf;
 
 kantor_st kantor__;
 
-void set_kantor_data_ (double* atcon, char* kat) {
+void set_kantor_data_ (int* maxnat, double* atcon, char* kat) {
+kantor__.maxnat = *maxnat;
 kantor__.atcon = atcon;
 kantor__.kat = kat;
 }
@@ -793,7 +856,12 @@ katoms__.describe = describe;
 
 kbonds_st kbonds__;
 
-void set_kbonds_data_ (double* bcon, double* bcon5, double* bcon4, double* bcon3, double* blen, double* blen5, double* blen4, double* blen3, double* dlen, char* kb, char* kb5, char* kb4, char* kb3, char* kel) {
+void set_kbonds_data_ (int* maxnb, int* maxnb5, int* maxnb4, int* maxnb3, int* maxnel, double* bcon, double* bcon5, double* bcon4, double* bcon3, double* blen, double* blen5, double* blen4, double* blen3, double* dlen, char* kb, char* kb5, char* kb4, char* kb3, char* kel) {
+kbonds__.maxnb = *maxnb;
+kbonds__.maxnb5 = *maxnb5;
+kbonds__.maxnb4 = *maxnb4;
+kbonds__.maxnb3 = *maxnb3;
+kbonds__.maxnel = *maxnel;
 kbonds__.bcon = bcon;
 kbonds__.bcon5 = bcon5;
 kbonds__.bcon4 = bcon4;
@@ -832,7 +900,11 @@ kctrn__.ctdmp = ctdmp;
 
 kdipol_st kdipol__;
 
-void set_kdipol_data_ (double* dpl, double* dpl5, double* dpl4, double* dpl3, double* pos, double* pos5, double* pos4, double* pos3, char* kd, char* kd5, char* kd4, char* kd3) {
+void set_kdipol_data_ (int* maxnd, int* maxnd5, int* maxnd4, int* maxnd3, double* dpl, double* dpl5, double* dpl4, double* dpl3, double* pos, double* pos5, double* pos4, double* pos3, char* kd, char* kd5, char* kd4, char* kd3) {
+kdipol__.maxnd = *maxnd;
+kdipol__.maxnd5 = *maxnd5;
+kdipol__.maxnd4 = *maxnd4;
+kdipol__.maxnd3 = *maxnd3;
 kdipol__.dpl = dpl;
 kdipol__.dpl5 = dpl5;
 kdipol__.dpl4 = dpl4;
@@ -856,14 +928,16 @@ kdsp__.dspdmp = dspdmp;
 
 keys_st keys__;
 
-void set_keys_data_ (int* nkey, char* keyline) {
+void set_keys_data_ (int* maxkey, int* nkey, char* keyline) {
+keys__.maxkey = *maxkey;
 keys__.nkey = nkey;
 keys__.keyline = keyline;
 }
 
 khbond_st khbond__;
 
-void set_khbond_data_ (double* radhb, double* epshb, char* khb) {
+void set_khbond_data_ (int* maxnhb, double* radhb, double* epshb, char* khb) {
+khbond__.maxnhb = *maxnhb;
 khbond__.radhb = radhb;
 khbond__.epshb = epshb;
 khbond__.khb = khb;
@@ -871,7 +945,8 @@ khbond__.khb = khb;
 
 kiprop_st kiprop__;
 
-void set_kiprop_data_ (double* dcon, double* tdi, char* kdi) {
+void set_kiprop_data_ (int* maxndi, double* dcon, double* tdi, char* kdi) {
+kiprop__.maxndi = *maxndi;
 kiprop__.dcon = dcon;
 kiprop__.tdi = tdi;
 kiprop__.kdi = kdi;
@@ -879,7 +954,8 @@ kiprop__.kdi = kdi;
 
 kitors_st kitors__;
 
-void set_kitors_data_ (double* ti1, double* ti2, double* ti3, char* kti) {
+void set_kitors_data_ (int* maxnti, double* ti1, double* ti2, double* ti3, char* kti) {
+kitors__.maxnti = *maxnti;
 kitors__.ti1 = ti1;
 kitors__.ti2 = ti2;
 kitors__.ti3 = ti3;
@@ -888,7 +964,8 @@ kitors__.kti = kti;
 
 kmulti_st kmulti__;
 
-void set_kmulti_data_ (double* multip, char* mpaxis, char* kmp) {
+void set_kmulti_data_ (int* maxnmp, double* multip, char* mpaxis, char* kmp) {
+kmulti__.maxnmp = *maxnmp;
 kmulti__.multip = multip;
 kmulti__.mpaxis = mpaxis;
 kmulti__.kmp = kmp;
@@ -896,21 +973,26 @@ kmulti__.kmp = kmp;
 
 kopbnd_st kopbnd__;
 
-void set_kopbnd_data_ (double* opbn, char* kopb) {
+void set_kopbnd_data_ (int* maxnopb, double* opbn, char* kopb) {
+kopbnd__.maxnopb = *maxnopb;
 kopbnd__.opbn = opbn;
 kopbnd__.kopb = kopb;
 }
 
 kopdst_st kopdst__;
 
-void set_kopdst_data_ (double* opds, char* kopd) {
+void set_kopdst_data_ (int* maxnopd, double* opds, char* kopd) {
+kopdst__.maxnopd = *maxnopd;
 kopdst__.opds = opds;
 kopdst__.kopd = kopd;
 }
 
 korbs_st korbs__;
 
-void set_korbs_data_ (double* sslope, double* sslope5, double* sslope4, double* tslope, double* tslope5, double* tslope4, double* electron, double* ionize, double* repulse, char* kpi, char* kpi5, char* kpi4) {
+void set_korbs_data_ (int* maxnpi, int* maxnpi5, int* maxnpi4, double* sslope, double* sslope5, double* sslope4, double* tslope, double* tslope5, double* tslope4, double* electron, double* ionize, double* repulse, char* kpi, char* kpi5, char* kpi4) {
+korbs__.maxnpi = *maxnpi;
+korbs__.maxnpi5 = *maxnpi5;
+korbs__.maxnpi4 = *maxnpi4;
 korbs__.sslope = sslope;
 korbs__.sslope5 = sslope5;
 korbs__.sslope4 = sslope4;
@@ -927,7 +1009,8 @@ korbs__.kpi4 = kpi4;
 
 kpitor_st kpitor__;
 
-void set_kpitor_data_ (double* ptcon, char* kpt) {
+void set_kpitor_data_ (int* maxnpt, double* ptcon, char* kpt) {
+kpitor__.maxnpt = *maxnpt;
 kpitor__.ptcon = ptcon;
 kpitor__.kpt = kpt;
 }
@@ -951,21 +1034,26 @@ krepl__.prele = prele;
 
 kstbnd_st kstbnd__;
 
-void set_kstbnd_data_ (double* stbn, char* ksb) {
+void set_kstbnd_data_ (int* maxnsb, double* stbn, char* ksb) {
+kstbnd__.maxnsb = *maxnsb;
 kstbnd__.stbn = stbn;
 kstbnd__.ksb = ksb;
 }
 
 ksttor_st ksttor__;
 
-void set_ksttor_data_ (double* btcon, char* kbt) {
+void set_ksttor_data_ (int* maxnbt, double* btcon, char* kbt) {
+ksttor__.maxnbt = *maxnbt;
 ksttor__.btcon = btcon;
 ksttor__.kbt = kbt;
 }
 
 ktorsn_st ktorsn__;
 
-void set_ktorsn_data_ (double* t1, double* t2, double* t3, double* t4, double* t5, double* t6, double* t15, double* t25, double* t35, double* t45, double* t55, double* t65, double* t14, double* t24, double* t34, double* t44, double* t54, double* t64, char* kt, char* kt5, char* kt4) {
+void set_ktorsn_data_ (int* maxnt, int* maxnt5, int* maxnt4, double* t1, double* t2, double* t3, double* t4, double* t5, double* t6, double* t15, double* t25, double* t35, double* t45, double* t55, double* t65, double* t14, double* t24, double* t34, double* t44, double* t54, double* t64, char* kt, char* kt5, char* kt4) {
+ktorsn__.maxnt = *maxnt;
+ktorsn__.maxnt5 = *maxnt5;
+ktorsn__.maxnt4 = *maxnt4;
 ktorsn__.t1 = t1;
 ktorsn__.t2 = t2;
 ktorsn__.t3 = t3;
@@ -991,7 +1079,10 @@ ktorsn__.kt4 = kt4;
 
 ktrtor_st ktrtor__;
 
-void set_ktrtor_data_ (int* tnx, int* tny, double* ttx, double* tty, double* tbf, double* tbx, double* tby, double* tbxy, char* ktt) {
+void set_ktrtor_data_ (int* maxntt, int* maxtgrd, int* maxtgrd2, int* tnx, int* tny, double* ttx, double* tty, double* tbf, double* tbx, double* tby, double* tbxy, char* ktt) {
+ktrtor__.maxntt = *maxntt;
+ktrtor__.maxtgrd = *maxtgrd;
+ktrtor__.maxtgrd2 = *maxtgrd2;
 ktrtor__.tnx = tnx;
 ktrtor__.tny = tny;
 ktrtor__.ttx = ttx;
@@ -1005,7 +1096,8 @@ ktrtor__.ktt = ktt;
 
 kurybr_st kurybr__;
 
-void set_kurybr_data_ (double* ucon, double* dst13, char* ku) {
+void set_kurybr_data_ (int* maxnu, double* ucon, double* dst13, char* ku) {
+kurybr__.maxnu = *maxnu;
 kurybr__.ucon = ucon;
 kurybr__.dst13 = dst13;
 kurybr__.ku = ku;
@@ -1013,7 +1105,8 @@ kurybr__.ku = ku;
 
 kvdwpr_st kvdwpr__;
 
-void set_kvdwpr_data_ (double* radpr, double* epspr, char* kvpr) {
+void set_kvdwpr_data_ (int* maxnvp, double* radpr, double* epspr, char* kvpr) {
+kvdwpr__.maxnvp = *maxnvp;
 kvdwpr__.radpr = radpr;
 kvdwpr__.epspr = epspr;
 kvdwpr__.kvpr = kvpr;
@@ -1087,6 +1180,19 @@ linmin__.stpmax = stpmax;
 linmin__.cappa = cappa;
 linmin__.slpmax = slpmax;
 linmin__.angmax = angmax;
+}
+
+math_st math__;
+
+void set_math_data_ (double* pi, double* elog, double* radian, double* logten, double* twosix, double* sqrtpi, double* sqrttwo, double* sqrtthree) {
+math__.pi = *pi;
+math__.elog = *elog;
+math__.radian = *radian;
+math__.logten = *logten;
+math__.twosix = *twosix;
+math__.sqrtpi = *sqrtpi;
+math__.sqrttwo = *sqrttwo;
+math__.sqrtthree = *sqrtthree;
 }
 
 mdstuf_st mdstuf__;
@@ -1247,7 +1353,8 @@ mplpot__.pentyp = pentyp;
 
 mpole_st mpole__;
 
-void set_mpole_data_ (int* npole, int* ipole, int* polsiz, int* pollist, int* zaxis, int* xaxis, int* yaxis, double* pole, double* rpole, double* spole, double* srpole, char* polaxe) {
+void set_mpole_data_ (int* maxpole, int* npole, int* ipole, int* polsiz, int* pollist, int* zaxis, int* xaxis, int* yaxis, double* pole, double* rpole, double* spole, double* srpole, char* polaxe) {
+mpole__.maxpole = *maxpole;
 mpole__.npole = npole;
 mpole__.ipole = ipole;
 mpole__.polsiz = polsiz;
@@ -1340,7 +1447,13 @@ neigh__.doulst = doulst;
 
 nonpol_st nonpol__;
 
-void set_nonpol_data_ (double* solvprs, double* surften, double* spcut, double* spoff, double* stcut, double* stoff, double* rcav, double* rdisp, double* cdisp) {
+void set_nonpol_data_ (double* epso, double* epsh, double* rmino, double* rminh, double* awater, double* slevy, double* solvprs, double* surften, double* spcut, double* spoff, double* stcut, double* stoff, double* rcav, double* rdisp, double* cdisp) {
+nonpol__.epso = *epso;
+nonpol__.epsh = *epsh;
+nonpol__.rmino = *rmino;
+nonpol__.rminh = *rminh;
+nonpol__.awater = *awater;
+nonpol__.slevy = *slevy;
 nonpol__.solvprs = solvprs;
 nonpol__.surften = surften;
 nonpol__.spcut = spcut;
@@ -1388,6 +1501,15 @@ opdist__.iopd = iopd;
 opdist__.opdk = opdk;
 }
 
+openmm_st openmm__;
+
+void set_openmm_data_ (unsigned long long* ommhandle, char* cudaprecision, char* ommplatform, char* cudadevice) {
+openmm__.ommhandle = ommhandle;
+openmm__.cudaprecision = cudaprecision;
+openmm__.ommplatform = ommplatform;
+openmm__.cudadevice = cudadevice;
+}
+
 openmp_st openmp__;
 
 void set_openmp_data_ (int* nproc, int* nthread) {
@@ -1418,7 +1540,8 @@ output__.coordtype = coordtype;
 
 params_st params__;
 
-void set_params_data_ (int* nprm, char* prmline) {
+void set_params_data_ (int* maxprm, int* nprm, char* prmline) {
+params__.maxprm = *maxprm;
 params__.nprm = nprm;
 params__.prmline = prmline;
 }
@@ -1438,7 +1561,8 @@ paths__.gc = gc;
 
 pbstuf_st pbstuf__;
 
-void set_pbstuf_data_ (int* ionn, int* dime, int* ionq, double* pbe, double* pdie, double* sdie, double* srad, double* swin, double* sdens, double* smin, double* grid, double* gcent, double* cgrid, double* cgcent, double* fgrid, double* fgcent, double* ionr, double* ionc, double* apbe, double* pbr, double* pbep, double* pbfp, double* pbtp, double* pbeuind, double* pbeuinp, char* pbtyp, char* pbsoln, char* bcfl, char* chgm, char* srfm) {
+void set_pbstuf_data_ (int* maxion, int* ionn, int* dime, int* ionq, double* pbe, double* pdie, double* sdie, double* srad, double* swin, double* sdens, double* smin, double* grid, double* gcent, double* cgrid, double* cgcent, double* fgrid, double* fgcent, double* ionr, double* ionc, double* apbe, double* pbr, double* pbep, double* pbfp, double* pbtp, double* pbeuind, double* pbeuinp, char* pbtyp, char* pbsoln, char* bcfl, char* chgm, char* srfm) {
+pbstuf__.maxion = *maxion;
 pbstuf__.ionn = ionn;
 pbstuf__.dime = dime;
 pbstuf__.ionq = ionq;
@@ -1591,7 +1715,11 @@ polar__.douind = douind;
 
 polgrp_st polgrp__;
 
-void set_polgrp_data_ (int* np11, int* np12, int* np13, int* np14, int* ip11, int* ip12, int* ip13, int* ip14) {
+void set_polgrp_data_ (int* maxp11, int* maxp12, int* maxp13, int* maxp14, int* np11, int* np12, int* np13, int* np14, int* ip11, int* ip12, int* ip13, int* ip14) {
+polgrp__.maxp11 = *maxp11;
+polgrp__.maxp12 = *maxp12;
+polgrp__.maxp13 = *maxp13;
+polgrp__.maxp14 = *maxp14;
 polgrp__.np11 = np11;
 polgrp__.np12 = np12;
 polgrp__.np13 = np13;
@@ -1604,7 +1732,8 @@ polgrp__.ip14 = ip14;
 
 polopt_st polopt__;
 
-void set_polopt_data_ (int* optorder, int* optlevel, double* copt, double* copm, double* uopt, double* uoptp, double* uopts, double* uoptps, double* fopt, double* foptp) {
+void set_polopt_data_ (int* maxopt, int* optorder, int* optlevel, double* copt, double* copm, double* uopt, double* uoptp, double* uopts, double* uoptps, double* fopt, double* foptp) {
+polopt__.maxopt = *maxopt;
 polopt__.optorder = optorder;
 polopt__.optlevel = optlevel;
 polopt__.copt = copt;
@@ -1744,7 +1873,8 @@ potfit__.fatm = fatm;
 
 ptable_st ptable__;
 
-void set_ptable_data_ (double* atmass, double* vdwrad, double* covrad, char* elemnt) {
+void set_ptable_data_ (int* maxele, double* atmass, double* vdwrad, double* covrad, char* elemnt) {
+ptable__.maxele = *maxele;
 ptable__.atmass = atmass;
 ptable__.vdwrad = vdwrad;
 ptable__.covrad = covrad;
@@ -1807,7 +1937,9 @@ reppot__.r5scale = r5scale;
 
 resdue_st resdue__;
 
-void set_resdue_data_ (int* ntyp, int* catyp, int* ctyp, int* hntyp, int* otyp, int* hatyp, int* cbtyp, int* nntyp, int* cantyp, int* cntyp, int* hnntyp, int* ontyp, int* hantyp, int* nctyp, int* cactyp, int* cctyp, int* hnctyp, int* octyp, int* hactyp, int* o5typ, int* c5typ, int* h51typ, int* h52typ, int* c4typ, int* h4typ, int* o4typ, int* c1typ, int* h1typ, int* c3typ, int* h3typ, int* c2typ, int* h21typ, int* o2typ, int* h22typ, int* o3typ, int* ptyp, int* optyp, int* h5ttyp, int* h3ttyp, char* amino1, char* nuclz1, char* amino, char* nuclz) {
+void set_resdue_data_ (int* maxamino, int* maxnuc, int* ntyp, int* catyp, int* ctyp, int* hntyp, int* otyp, int* hatyp, int* cbtyp, int* nntyp, int* cantyp, int* cntyp, int* hnntyp, int* ontyp, int* hantyp, int* nctyp, int* cactyp, int* cctyp, int* hnctyp, int* octyp, int* hactyp, int* o5typ, int* c5typ, int* h51typ, int* h52typ, int* c4typ, int* h4typ, int* o4typ, int* c1typ, int* h1typ, int* c3typ, int* h3typ, int* c2typ, int* h21typ, int* o2typ, int* h22typ, int* o3typ, int* ptyp, int* optyp, int* h5ttyp, int* h3ttyp, char* amino1, char* nuclz1, char* amino, char* nuclz) {
+resdue__.maxamino = *maxamino;
+resdue__.maxnuc = *maxnuc;
 resdue__.ntyp = ntyp;
 resdue__.catyp = catyp;
 resdue__.ctyp = ctyp;
@@ -1990,6 +2122,19 @@ shunt__.f6 = f6;
 shunt__.f7 = f7;
 }
 
+sizes_st sizes__;
+
+void set_sizes_data_ (int* maxatm, int* maxtyp, int* maxclass, int* maxval, int* maxref, int* maxgrp, int* maxres, int* maxfix) {
+sizes__.maxatm = *maxatm;
+sizes__.maxtyp = *maxtyp;
+sizes__.maxclass = *maxclass;
+sizes__.maxval = *maxval;
+sizes__.maxref = *maxref;
+sizes__.maxgrp = *maxgrp;
+sizes__.maxres = *maxres;
+sizes__.maxfix = *maxfix;
+}
+
 socket_st socket__;
 
 void set_socket_data_ (int* skttyp, int* cstep, double* cdt, double* cenergy, int* sktstart, int* sktstop, int* use_socket) {
@@ -2113,15 +2258,39 @@ tortor__.itt = itt;
 
 tree_st tree__;
 
-void set_tree_data_ (int* nlevel, double* etree, double* ilevel) {
+void set_tree_data_ (int* maxpss, int* nlevel, double* etree, double* ilevel) {
+tree__.maxpss = *maxpss;
 tree__.nlevel = nlevel;
 tree__.etree = etree;
 tree__.ilevel = ilevel;
 }
 
+units_st units__;
+
+void set_units_data_ (double* avogadro, double* lightspd, double* boltzmann, double* gasconst, double* elemchg, double* vacperm, double* emass, double* planck, double* joule, double* ekcal, double* bohr, double* hartree, double* evolt, double* efreq, double* coulomb, double* debye, double* prescon) {
+units__.avogadro = *avogadro;
+units__.lightspd = *lightspd;
+units__.boltzmann = *boltzmann;
+units__.gasconst = *gasconst;
+units__.elemchg = *elemchg;
+units__.vacperm = *vacperm;
+units__.emass = *emass;
+units__.planck = *planck;
+units__.joule = *joule;
+units__.ekcal = *ekcal;
+units__.bohr = *bohr;
+units__.hartree = *hartree;
+units__.evolt = *evolt;
+units__.efreq = *efreq;
+units__.coulomb = *coulomb;
+units__.debye = *debye;
+units__.prescon = *prescon;
+}
+
 uprior_st uprior__;
 
-void set_uprior_data_ (int* nualt, int* maxualt, double* gear, double* aspc, double* bpred, double* bpredp, double* bpreds, double* bpredps, double* udalt, double* upalt, double* usalt, double* upsalt, int* use_pred, char* polpred) {
+void set_uprior_data_ (int* maxpred, int* nualt, int* maxualt, double* gear, double* aspc, double* bpred, double* bpredp, double* bpreds, double* bpredps, double* udalt, double* upalt, double* usalt, double* upsalt, int* use_pred, char* polpred) {
+uprior__.maxpred = *maxpred;
 uprior__.nualt = nualt;
 uprior__.maxualt = maxualt;
 uprior__.gear = gear;
@@ -2197,7 +2366,8 @@ vdw__.epshbnd = epshbnd;
 
 vdwpot_st vdwpot__;
 
-void set_vdwpot_data_ (int* ngauss, double* igauss, double* abuck, double* bbuck, double* cbuck, double* ghal, double* dhal, double* v2scale, double* v3scale, double* v4scale, double* v5scale, int* use_vcorr, char* vdwindex, char* radtyp, char* radsiz, char* gausstyp, char* radrule, char* epsrule, char* vdwtyp) {
+void set_vdwpot_data_ (int* maxgauss, int* ngauss, double* igauss, double* abuck, double* bbuck, double* cbuck, double* ghal, double* dhal, double* v2scale, double* v3scale, double* v4scale, double* v5scale, int* use_vcorr, char* vdwindex, char* radtyp, char* radsiz, char* gausstyp, char* radrule, char* epsrule, char* vdwtyp) {
+vdwpot__.maxgauss = *maxgauss;
 vdwpot__.ngauss = ngauss;
 vdwpot__.igauss = igauss;
 vdwpot__.abuck = abuck;
@@ -2251,7 +2421,9 @@ warp__.use_stophat = use_stophat;
 
 xtals_st xtals__;
 
-void set_xtals_data_ (int* nxtal, int* nvary, int* ivary, int* iresid, int* vary, double* e0_lattice, char* vartyp, char* rsdtyp) {
+void set_xtals_data_ (int* maxlsq, int* maxrsd, int* nxtal, int* nvary, int* ivary, int* iresid, int* vary, double* e0_lattice, char* vartyp, char* rsdtyp) {
+xtals__.maxlsq = *maxlsq;
+xtals__.maxrsd = *maxrsd;
 xtals__.nxtal = nxtal;
 xtals__.nvary = nvary;
 xtals__.ivary = ivary;
