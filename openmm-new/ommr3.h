@@ -114,50 +114,6 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
 
    OpenMM_DoubleArray_destroy (dipoles);
    OpenMM_DoubleArray_destroy (quadrupoles);
-      // pass parameters to OpenMM
-      // OpenMM_HippoNonbondedForce_addMultipole (hippoForce, charge, dipoles, quadrupoles,
-      //                          axisType, atomz, atomx, atomy);
-      // OpenMM_HippoNonbondedForce_addCTSite (hippoForce, ct_alpha, ct_chgval);
-      // OpenMM_HippoNonbondedForce_addDispSite (hippoForce, csixval, dispclass);
-      // OpenMM_HippoNonbondedForce_addRepelSite (hippoForce, sizpr, dmppr, elepr);
-      // OpenMM_HippoNonbondedForce_addCPMultipoleSite (hippoForce, pcore, pval, palpha, polarity);
-
-
-   // Chg trans cutoff
-   double ct_cutoffdistance = 0.001;
-   double ct_taperdistance = 0.0001;
-
-   if (potent__.use_chgtrn) {
-       ct_cutoffdistance = *limits__.ctrncut*OpenMM_NmPerAngstrom;
-       ct_taperdistance = *limits__.ctrntaper*OpenMM_NmPerAngstrom;
-      }
-   
-   // Dispersion
-   double disp_cutoffdistance = 0.001;
-   double disp_taperdistance = 0.0001;
-   if (potent__.use_disp) {
-       disp_cutoffdistance = *limits__.dispcut*OpenMM_NmPerAngstrom;
-       disp_taperdistance  = *limits__.disptaper*OpenMM_NmPerAngstrom;
-   }
-   // Repulsion cutoff
-   double repel_cutoffdistance = 0.001;
-   double repel_taperdistance = 0.0001;
-   if (potent__.use_repuls) {
-        repel_cutoffdistance = *limits__.repcut*OpenMM_NmPerAngstrom;
-        repel_taperdistance = *limits__.reptaper*OpenMM_NmPerAngstrom;
-   }
-   // Chg pen cutoff
-   double chgpen_cutoffdistance = 0.001;
-   if (mplpot__.use_chgpen) {
-      chgpen_cutoffdistance = *limits__.mpolecut*OpenMM_NmPerAngstrom;
-   }
-   // OpenMM_HippoNonbondedForce_setCTCutoffDistance (hippoForce, ct_taperdistance, ct_cutoffdistance);
-   // OpenMM_HippoNonbondedForce_setDispCutoffDistance (hippoForce, disp_taperdistance, disp_cutoffdistance);
-   // OpenMM_HippoNonbondedForce_setRepelCutoffDistance (hippoForce, repel_taperdistance, repel_cutoffdistance);
-   // OpenMM_HippoNonbondedForce_setCPMultipoleCutoffDistance (hippoForce, chgpen_cutoffdistance);
-   // OpenMM_HippoNonbondedForce_setCPMultipoleCutoffDistance (hippoForce, chgpen_cutoffdistance);
-  
-   // PME
 
    double pme_cutoffdistance = 0.001;
    double dpme_cutoffdistance = 0.001;
@@ -180,6 +136,13 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
 
        dpme_cutoffdistance = *limits__.dewaldcut*OpenMM_NmPerAngstrom;
    }
+   
+   double cutoffdistance = *limits__.ewaldcut*OpenMM_NmPerAngstrom;
+   double taperdistance = *limits__.mpoletaper*OpenMM_NmPerAngstrom;
+
+   OpenMM_HippoNonbondedForce_setCutoffDistance (hippoForce, cutoffdistance);
+                                   
+   OpenMM_HippoNonbondedForce_setSwitchingDistance(hippoForce, taperdistance);
 
    OpenMM_Boolean useCorrection;
    useCorrection = OpenMM_False;
@@ -192,25 +155,6 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
     OpenMM_System_addForce(system, (OpenMM_Force*) dispCorrectionForce);
     OpenMM_NonbondedForce_setUseDispersionCorrection(dispCorrectionForce, useCorrection);
    }
-    
-   // how to chose one cutoff/taper distance? -- max of all cutoffs?
-   // cutoff -> chgcut, repcut, dispcut, dplcut, ewaldcut, dewaldcut
-   // taper  -> chgtaper, reptaper, disptaper, dpltaper, mpoletaper
-
-   double cutoffdistance = *limits__.ewaldcut*OpenMM_NmPerAngstrom;
-   double taperdistance = *limits__.mpoletaper*OpenMM_NmPerAngstrom;
-
-   OpenMM_HippoNonbondedForce_setCutoffDistance (hippoForce, cutoffdistance);
-                                   
-   OpenMM_HippoNonbondedForce_setSwitchingDistance(hippoForce, taperdistance);
-
-
-   // Setup exclusion rules
-
-   // OpenMM_HippoNonbondedForce_addException(hippoForce, atom1, atom2, 
-   //       double multipoleMultipoleScale, double dipoleMultipoleScale, 
-   //       double dipoleDipoleScale, double dispersionScale, 
-   //       double repulsionScale, double chargeTransferScale, OpenMM_Boolean replace);
 
    int maxn13 = 3*sizes__.maxval;
    int maxn14 = 9*sizes__.maxval;
