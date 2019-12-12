@@ -553,7 +553,7 @@ ewald__.boundary = boundary;
 
 faces_st faces__;
 
-void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxep, int* maxfs, int* maxcy, int* mxcyep, int* maxfp, int* mxfpcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* nep, int* epc, int* epv, int* afe, int* ale, int* epnext, int* nfs, int* fsen, int* fsep, int* ncy, int* cynep, int* cyep, int* nfp, int* fpa, int* fpncy, int* fpcy) {
+void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxep, int* maxfs, int* maxfq, int* maxcy, int* mxcyeq, int* mxfqcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* neq, int* eqc, int* eqv, int* afe, int* ale, int* eqnext, int* nfs, int* fsen, int* fseq, int* ncy, int* cyneq, int* cyeq, int* nfq, int* fqa, int* fqncy, int* fqcy) {
 faces__.maxcls = maxcls;
 faces__.maxtt = maxtt;
 faces__.maxt = maxt;
@@ -562,12 +562,12 @@ faces__.maxv = maxv;
 faces__.maxen = maxen;
 faces__.maxfn = maxfn;
 faces__.maxc = maxc;
-faces__.maxep = maxep;
+faces__.maxeq = maxeq;
 faces__.maxfs = maxfs;
+faces__.maxfq = maxfq;
 faces__.maxcy = maxcy;
-faces__.mxcyep = mxcyep;
-faces__.maxfp = maxfp;
-faces__.mxfpcy = mxfpcy;
+faces__.mxcyeq = mxcyeq;
+faces__.mxfqcy = mxfqcy;
 faces__.na = na;
 faces__.pr = pr;
 faces__.ar = ar;
@@ -609,22 +609,22 @@ faces__.ca = ca;
 faces__.ct = ct;
 faces__.cr = cr;
 faces__.c = c;
-faces__.nep = nep;
-faces__.epc = epc;
-faces__.epv = epv;
+faces__.neq = neq;
+faces__.eqc = eqc;
+faces__.eqv = eqv;
 faces__.afe = afe;
 faces__.ale = ale;
-faces__.epnext = epnext;
+faces__.eqnext = eqnext;
 faces__.nfs = nfs;
 faces__.fsen = fsen;
-faces__.fsep = fsep;
+faces__.fseq = fseq;
 faces__.ncy = ncy;
-faces__.cynep = cynep;
-faces__.cyep = cyep;
-faces__.nfp = nfp;
-faces__.fpa = fpa;
-faces__.fpncy = fpncy;
-faces__.fpcy = fpcy;
+faces__.cyneq = cyneq;
+faces__.cyeq = cyeq;
+faces__.nfq = nfq;
+faces__.fqa = fqa;
+faces__.fqncy = fqncy;
+faces__.fqcy = fqcy;
 }
 
 fft_st fft__;
@@ -715,7 +715,7 @@ hessn__.hessz = hessz;
 
 hpmf_st hpmf__;
 
-void set_hpmf_data_ (double* rcarbon, double* rwater, double* acsurf, double* safact, double* tslope, double* toffset, double* hpmfcut, double* h1, double* h2, double* h3, double* c1, double* c2, double* c3, double* w1, double* w2, double* w3, int* npmf, int* ipmf, double* rpmf, double* acsa) {
+void set_hpmf_data_ (double* rcarbon, double* rwater, double* acsurf, double* safact, double* tslope, double* toffset, double* hpmfcut, double* hd1, double* hd2, double* hd3, double* hc1, double* hc2, double* hc3, double* hw1, double* hw2, double* hw3, int* npmf, int* ipmf, double* rpmf, double* acsa) {
 hpmf__.rcarbon = *rcarbon;
 hpmf__.rwater = *rwater;
 hpmf__.acsurf = *acsurf;
@@ -723,15 +723,15 @@ hpmf__.safact = *safact;
 hpmf__.tslope = *tslope;
 hpmf__.toffset = *toffset;
 hpmf__.hpmfcut = *hpmfcut;
-hpmf__.h1 = *h1;
-hpmf__.h2 = *h2;
-hpmf__.h3 = *h3;
-hpmf__.c1 = *c1;
-hpmf__.c2 = *c2;
-hpmf__.c3 = *c3;
-hpmf__.w1 = *w1;
-hpmf__.w2 = *w2;
-hpmf__.w3 = *w3;
+hpmf__.hd1 = *hd1;
+hpmf__.hd2 = *hd2;
+hpmf__.hd3 = *hd3;
+hpmf__.hc1 = *hc1;
+hpmf__.hc2 = *hc2;
+hpmf__.hc3 = *hc3;
+hpmf__.hw1 = *hw1;
+hpmf__.hw2 = *hw2;
+hpmf__.hw3 = *hw3;
 hpmf__.npmf = npmf;
 hpmf__.ipmf = ipmf;
 hpmf__.rpmf = rpmf;
@@ -1618,12 +1618,12 @@ pdb__.instyp = instyp;
 
 phipsi_st phipsi__;
 
-void set_phipsi_data_ (int* chiral, int* disulf, double* phi, double* psi, double* omega, double* chi) {
+void set_phipsi_data_ (int* chiral, int* disulf, double* phi, double* psi, double* omg, double* chi) {
 phipsi__.chiral = chiral;
 phipsi__.disulf = disulf;
 phipsi__.phi = phi;
 phipsi__.psi = psi;
-phipsi__.omega = omega;
+phipsi__.omg = omg;
 phipsi__.chi = chi;
 }
 
@@ -2391,10 +2391,10 @@ vdwpot__.vdwtyp = vdwtyp;
 
 vibs_st vibs__;
 
-void set_vibs_data_ (double* phi, double* phik, double* pwork) {
-vibs__.phi = phi;
-vibs__.phik = phik;
-vibs__.pwork = pwork;
+void set_vibs_data_ (double* rho, double* rhok, double* rwork) {
+vibs__.rho = rho;
+vibs__.rhok = rhok;
+vibs__.rwork = rwork;
 }
 
 virial_st virial__;
