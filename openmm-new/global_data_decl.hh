@@ -562,10 +562,10 @@ int* maxfn;
 int* maxc;
 int* maxep;
 int* maxfs;
+int* maxfq;
 int* maxcy;
-int* mxcyep;
-int* maxfp;
-int* mxfpcy;
+int* mxcyeq;
+int* mxfqcy;
 int* na;
 double* pr;
 double* ar;
@@ -607,25 +607,25 @@ int* ca;
 int* ct;
 double* cr;
 double* c;
-int* nep;
-int* epc;
-int* epv;
+int* neq;
+int* eqc;
+int* eqv;
 int* afe;
 int* ale;
-int* epnext;
+int* eqnext;
 int* nfs;
 int* fsen;
-int* fsep;
+int* fseq;
 int* ncy;
-int* cynep;
-int* cyep;
-int* nfp;
-int* fpa;
-int* fpncy;
-int* fpcy;
+int* cyneq;
+int* cyeq;
+int* nfq;
+int* fqa;
+int* fqncy;
+int* fqcy;
 } faces__;
 
-extern "C" void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxep, int* maxfs, int* maxcy, int* mxcyep, int* maxfp, int* mxfpcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* nep, int* epc, int* epv, int* afe, int* ale, int* epnext, int* nfs, int* fsen, int* fsep, int* ncy, int* cynep, int* cyep, int* nfp, int* fpa, int* fpncy, int* fpcy);
+extern "C" void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxep, int* maxfs, int* maxfq, int* maxcy, int* mxcyeq, int* mxfqcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* neq, int* eqc, int* eqv, int* afe, int* ale, int* eqnext, int* nfs, int* fsen, int* fseq, int* ncy, int* cyneq, int* cyeq, int* nfq, int* fqa, int* fqncy, int* fqcy);
 
 extern struct fft_st {
 int maxprime;
@@ -721,22 +721,22 @@ double safact;
 double tslope;
 double toffset;
 double hpmfcut;
-double h1;
-double h2;
-double h3;
-double c1;
-double c2;
-double c3;
-double w1;
-double w2;
-double w3;
+double hd1;
+double hd2;
+double hd3;
+double hc1;
+double hc2;
+double hc3;
+double hw1;
+double hw2;
+double hw3;
 int* npmf;
 int* ipmf;
 double* rpmf;
 double* acsa;
 } hpmf__;
 
-extern "C" void set_hpmf_data_ (double* rcarbon, double* rwater, double* acsurf, double* safact, double* tslope, double* toffset, double* hpmfcut, double* h1, double* h2, double* h3, double* c1, double* c2, double* c3, double* w1, double* w2, double* w3, int* npmf, int* ipmf, double* rpmf, double* acsa);
+extern "C" void set_hpmf_data_ (double* rcarbon, double* rwater, double* acsurf, double* safact, double* tslope, double* toffset, double* hpmfcut, double* hd1, double* hd2, double* hd3, double* hc1, double* hc2, double* hc3, double* hw1, double* hw2, double* hw3, int* npmf, int* ipmf, double* rpmf, double* acsa);
 
 extern struct ielscf_st {
 int* nfree_aux;
@@ -1621,11 +1621,11 @@ int* chiral;
 int* disulf;
 double* phi;
 double* psi;
-double* omega;
+double* omg;
 double* chi;
 } phipsi__;
 
-extern "C" void set_phipsi_data_ (int* chiral, int* disulf, double* phi, double* psi, double* omega, double* chi);
+extern "C" void set_phipsi_data_ (int* chiral, int* disulf, double* phi, double* psi, double* omg, double* chi);
 
 extern struct piorbs_st {
 int* norbit;
@@ -2390,12 +2390,12 @@ char* vdwtyp;
 extern "C" void set_vdwpot_data_ (int* maxgauss, int* ngauss, double* igauss, double* abuck, double* bbuck, double* cbuck, double* ghal, double* dhal, double* v2scale, double* v3scale, double* v4scale, double* v5scale, int* use_vcorr, char* vdwindex, char* radtyp, char* radsiz, char* gausstyp, char* radrule, char* epsrule, char* vdwtyp);
 
 extern struct vibs_st {
-double* phi;
-double* phik;
-double* pwork;
+double* rho;
+double* rhok;
+double* rwork;
 } vibs__;
 
-extern "C" void set_vibs_data_ (double* phi, double* phik, double* pwork);
+extern "C" void set_vibs_data_ (double* rho, double* rhok, double* rwork);
 
 extern struct virial_st {
 double* vir;

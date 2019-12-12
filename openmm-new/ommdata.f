@@ -1,3 +1,21 @@
+c
+c
+c     ###################################################
+c     ##  COPYRIGHT (C)  2017  by  Jay William Ponder  ##
+c     ##              All Rights Reserved              ##
+c     ###################################################
+c
+c     ##############################################################
+c     ##                                                          ##
+c     ##  subroutine ommdata  --  transfer Tinker data to OpenMM  ##
+c     ##                                                          ##
+c     ##############################################################
+c
+c
+c     "ommdata" uses calls to the OpenMM interface to copy data
+c     from Tinker modules to the corresponding OpenMM structures
+c
+c
       subroutine ommdata ()
       use action
       use align
@@ -236,13 +254,13 @@
      &                      ect,erxf,es,elf,eg,ex)
       call set_ewald_data (aewald,aeewald,apewald,adewald,boundary)
       call set_faces_data (maxcls,maxtt,maxt,maxp,maxv,maxen,maxfn,maxc,
-     &                     maxep,maxfs,maxcy,mxcyep,maxfp,mxfpcy,na,pr,
+     &                     maxep,maxfs,maxfq,maxcy,mxcyeq,mxfqcy,na,pr,
      &                     ar,axyz,skip,nosurf,afree,abur,cls,clst,acls,
      &                     ntt,ttfe,ttle,enext,tta,ttbur,ttfree,nt,tfe,
      &                     ta,tr,t,tax,tfree,np,pa,p,nv,va,vp,vxyz,nen,
-     &                     nfn,env,fnen,nc,ca,ct,cr,c,nep,epc,epv,afe,
-     &                     ale,epnext,nfs,fsen,fsep,ncy,cynep,cyep,nfp,
-     &                     fpa,fpncy,fpcy)
+     &                     nfn,env,fnen,nc,ca,ct,cr,c,neq,eqc,eqv,afe,
+     &                     ale,eqnext,nfs,fsen,fseq,ncy,cyneq,cyeq,nfq,
+     &                     fqa,fqncy,fqcy)
       call set_fft_data (maxprime,iprime,planf,planb,ffttable,ffttyp)
       call set_fields_data (maxbio,biotyp,forcefield)
       call set_files_data (nprior,ldir,leng,filename,outfile)
@@ -255,8 +273,8 @@
       call set_hescut_data (hesscut)
       call set_hessn_data (hessx,hessy,hessz)
       call set_hpmf_data (rcarbon,rwater,acsurf,safact,tslope,toffset,
-     &                    hpmfcut,h1,h2,h3,c1,c2,c3,w1,w2,w3,npmf,ipmf,
-     &                    rpmf,acsa)
+     &                    hpmfcut,hd1,hd2,hd3,hc1,hc2,hc3,hw1,hw2,hw3,
+     &                    npmf,ipmf,rpmf,acsa)
       call set_ielscf_data (nfree_aux,tautemp_aux,kelvin_aux,uaux,upaux,
      &                      vaux,vpaux,aaux,apaux,use_ielscf)
       call set_improp_data (niprop,iiprop,kprop,vprop)
@@ -376,7 +394,7 @@
       call set_pdb_data (npdb,nres,resnum,resatm,npdb12,ipdb12,pdblist,
      &                   xpdb,ypdb,zpdb,altsym,pdbres,pdbatm,pdbtyp,
      &                   chnsym,instyp)
-      call set_phipsi_data (chiral,disulf,phi,psi,omega,chi)
+      call set_phipsi_data (chiral,disulf,phi,psi,omg,chi)
       call set_piorbs_data (norbit,nconj,reorbit,nbpi,ntpi,iorbit,iconj,
      &                      kconj,piperp,ibpi,itpi,pbpl,pnpl,listpi)
       call set_pistuf_data (bkpi,blpi,kslope,lslope,torsp2)
@@ -480,7 +498,7 @@
      &                      ghal,dhal,v2scale,v3scale,v4scale,v5scale,
      &                      use_vcorr,vdwindex,radtyp,radsiz,gausstyp,
      &                      radrule,epsrule,vdwtyp)
-      call set_vibs_data (phi,phik,pwork)
+      call set_vibs_data (rho,rhok,rwork)
       call set_virial_data (vir,use_virial)
       call set_warp_data (deform,difft,diffv,diffc,m2,use_smooth,
      &                    use_dem,use_gda,use_tophat,use_stophat)
