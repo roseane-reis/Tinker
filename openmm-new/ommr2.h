@@ -384,3 +384,181 @@ void setupCentroidRestraints (OpenMM_System* system, FILE* log) {
    OpenMM_CustomCentroidBondForce_setUsesPeriodicBoundaryConditions (force, OpenMM_True);
    OpenMM_System_addForce (system, (OpenMM_Force*) force);
 }
+/*
+ *    ############################################################
+ *          Create Standalone Thermotat and Barostat Methods
+ *    ############################################################
+ */
+
+void setupAndersenThermostat (OpenMM_System* system, FILE* log) {
+
+   OpenMM_AndersenThermostat* andersenThermostat;
+
+   andersenThermostat = OpenMM_AndersenThermostat_create (*bath__.kelvin,
+                                                          *bath__.collide);
+   OpenMM_System_addForce (system, (OpenMM_Force*) andersenThermostat);
+
+   if (log) {
+      (void) fprintf (log, "\n Andersen Thermostat:\n" );
+      (void) fprintf (log, "\n Target Temperature   %15.2f K",
+                      OpenMM_AndersenThermostat_getDefaultTemperature
+                      (andersenThermostat));
+      (void) fprintf (log, "\n Collision Frequency  %15.7e ps^(-1)",
+                      OpenMM_AndersenThermostat_getDefaultCollisionFrequency
+                      (andersenThermostat));
+      (void) fprintf (log, "\n Random Number Seed                 %d\n",
+                      OpenMM_AndersenThermostat_getRandomNumberSeed
+                      (andersenThermostat));
+   }
+}
+
+void setupMonteCarloBarostat (OpenMM_System* system, FILE* log) {
+
+   OpenMM_MonteCarloBarostat* monteCarloBarostat;
+
+   int frequency = *bath__.voltrial;
+   monteCarloBarostat = OpenMM_MonteCarloBarostat_create
+                            (*bath__.atmsph*1.01325, *bath__.kelvin, frequency);
+   OpenMM_System_addForce (system, (OpenMM_Force*) monteCarloBarostat);
+
+   if (log) {
+      (void) fprintf (log, "\n MonteCarlo Barostat :\n");
+      (void) fprintf (log, "\n Target Temperature   %15.2f K",
+                      OpenMM_MonteCarloBarostat_getDefaultTemperature
+                      (monteCarloBarostat));
+
+      //
+      // Change needed for latest Stanford OpenMM update (M. Harger)
+      //
+      // (void) fprintf (log, "\n Target Temperature   %15.2f K",
+      //                 OpenMM_MonteCarloBarostat_getDefaultTemperature
+      //                 (monteCarloBarostat));
+
+      (void) fprintf (log, "\n Target Pressure      %15.4f atm",
+                      OpenMM_MonteCarloBarostat_getDefaultPressure
+                      (monteCarloBarostat) / 1.01325);
+      (void) fprintf (log, "\n Trial Frequency                   %d",
+                      OpenMM_MonteCarloBarostat_getFrequency
+                      (monteCarloBarostat));
+      (void) fprintf (log, "\n Random Number Seed                 %d\n",
+                      OpenMM_MonteCarloBarostat_getRandomNumberSeed
+                      (monteCarloBarostat));
+   }
+}
+
+/*
+ *    ############################################################
+ *         Setup Positions, Velocities and Rattle Constraints
+ *    ############################################################
+ */
+
+void setupPositions (OpenMM_Vec3Array* initialPosInNm, FILE* log) {
+
+   int ii;
+   for (ii = 0; ii < *atoms__.n; ii++) {
+      OpenMM_Vec3 posInNm;
+      posInNm.x = atoms__.x[ii]*OpenMM_NmPerAngstrom;
+      posInNm.y = atoms__.y[ii]*OpenMM_NmPerAngstrom;
+      posInNm.z = atoms__.z[ii]*OpenMM_NmPerAngstrom;
+      OpenMM_Vec3Array_append (initialPosInNm, posInNm);
+   }
+}
+
+void setupVelocities (OpenMM_Vec3Array* initialVelInNm, FILE* log) {
+
+   int ii;
+   for (ii = 0; ii < *atoms__.n; ii++) {
+      OpenMM_Vec3 velInNm;
+      int offset;
+      offset = 3*ii;
+      velInNm.x = moldyn__.v[offset]*OpenMM_NmPerAngstrom;
+      velInNm.y = moldyn__.v[offset+1]*OpenMM_NmPerAngstrom;
+      velInNm.z = moldyn__.v[offset+2]*OpenMM_NmPerAngstrom;
+      OpenMM_Vec3Array_append (initialVelInNm, velInNm);
+   }
+}
+
+void setupConstraints (OpenMM_System* system, FILE* log) {
+
+   int ii;
+   for (ii = 0; ii < *freeze__.nrat; ii++) {
+      OpenMM_System_addConstraint (system, *(freeze__.irat+2*ii) -1,
+                                   *(freeze__.irat + 2*ii +1)-1,
+                          (*(freeze__.krat +ii))*OpenMM_NmPerAngstrom);
+   }
+}
+
+/*
+ *    ############################################################
+ *           Set Calculation Platform to Reference or CUDA
+ *    ############################################################
+ */
+
+#include "gpu_cards.h"
+
+static OpenMM_Platform* getReferencePlatform (FILE* log) {
+
+   OpenMM_Platform* platform = OpenMM_Platform_getPlatformByName ("Reference");
+   if (platform == NULL) {
+      if (log) {
+         (void) fprintf (log, "Reference Platform Unavailable\n");
+      }
+      return platform;
+   }
+   return platform;
+}
+
+static OpenMM_Platform* getCUDAPlatform (FILE* log) {
+
+   char buffer[8];
+   char* deviceId;
+   int device_number;
+   bool device_key = false;
+   OpenMM_Platform* platform = OpenMM_Platform_getPlatformByName ("CUDA");
+   if (platform == NULL) {
+      if (log) {
+         (void) fprintf (log, "\n CUDA Platform Unavailable\n");
+      }
+      return platform;
+   }
+
+   if (openmm__.cudadevice[0] != 0) {
+      deviceId = &openmm__.cudadevice[0];
+      device_key = true;
+   } else {
+      device_number = findBestCUDACard();
+      if (device_number < 0) {
+         deviceId = NULL;
+      } else {
+         deviceId = buffer;
+         sprintf(deviceId, "%d", device_number);
+      }
+   }
+
+   if (device_key) {
+      OpenMM_Platform_setPropertyDefaultValue (platform, "cudadeviceIndex",
+                                               deviceId);
+      if (log) {
+         (void) fprintf (log, "\n Platform CUDA :  Setting Device ID to %s from CUDA-DEVICE keyword\n", deviceId);
+      }
+   } else if (log && inform__.verbose) {
+      (void) fprintf (log, "\n Platform CUDA :  Setting Device ID to %s \n", deviceId);
+   }
+
+   if (strncmp(openmm__.cudaprecision,"DOUBLE",6) == 0) {
+      OpenMM_Platform_setPropertyDefaultValue (platform, "Precision",
+                                               "double" );
+   } else if (strncmp(openmm__.cudaprecision,"SINGLE",6) == 0) {
+      OpenMM_Platform_setPropertyDefaultValue (platform, "Precision",
+                                               "single" );
+   } else {
+      OpenMM_Platform_setPropertyDefaultValue (platform, "Precision",
+                                               "mixed" );
+   }
+
+   if (log) {
+      (void) fprintf (log, "\n Platform CUDA :  Setting Precision to %s via CUDA-PRECISION\n", openmm__.cudaprecision);
+   }
+
+   return platform;
+}
