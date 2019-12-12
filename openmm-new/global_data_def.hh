@@ -553,7 +553,7 @@ ewald__.boundary = boundary;
 
 faces_st faces__;
 
-void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxep, int* maxfs, int* maxfq, int* maxcy, int* mxcyeq, int* mxfqcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* neq, int* eqc, int* eqv, int* afe, int* ale, int* eqnext, int* nfs, int* fsen, int* fseq, int* ncy, int* cyneq, int* cyeq, int* nfq, int* fqa, int* fqncy, int* fqcy) {
+void set_faces_data_ (int* maxcls, int* maxtt, int* maxt, int* maxp, int* maxv, int* maxen, int* maxfn, int* maxc, int* maxeq, int* maxfs, int* maxfq, int* maxcy, int* mxcyeq, int* mxfqcy, int* na, double* pr, double* ar, double* axyz, int* skip, int* nosurf, int* afree, int* abur, int* cls, int* clst, int* acls, int* ntt, int* ttfe, int* ttle, int* enext, int* tta, int* ttbur, int* ttfree, int* nt, int* tfe, int* ta, double* tr, double* t, double* tax, int* tfree, int* np, int* pa, double* p, int* nv, int* va, int* vp, double* vxyz, int* nen, int* nfn, int* env, int* fnen, int* nc, int* ca, int* ct, double* cr, double* c, int* neq, int* eqc, int* eqv, int* afe, int* ale, int* eqnext, int* nfs, int* fsen, int* fseq, int* ncy, int* cyneq, int* cyeq, int* nfq, int* fqa, int* fqncy, int* fqcy) {
 faces__.maxcls = maxcls;
 faces__.maxtt = maxtt;
 faces__.maxt = maxt;

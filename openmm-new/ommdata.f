@@ -254,7 +254,7 @@ c
      &                      ect,erxf,es,elf,eg,ex)
       call set_ewald_data (aewald,aeewald,apewald,adewald,boundary)
       call set_faces_data (maxcls,maxtt,maxt,maxp,maxv,maxen,maxfn,maxc,
-     &                     maxep,maxfs,maxfq,maxcy,mxcyeq,mxfqcy,na,pr,
+     &                     maxeq,maxfs,maxfq,maxcy,mxcyeq,mxfqcy,na,pr,
      &                     ar,axyz,skip,nosurf,afree,abur,cls,clst,acls,
      &                     ntt,ttfe,ttle,enext,tta,ttbur,ttfree,nt,tfe,
      &                     ta,tr,t,tax,tfree,np,pa,p,nv,va,vp,vxyz,nen,
