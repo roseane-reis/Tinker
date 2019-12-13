@@ -282,8 +282,8 @@ void openmm_init_ (void** ommHandle, double* dt) {
 
    // modification of context creation to avoid bug on large systems
 
-   //omm->context = OpenMM_Context_create_2 (omm->system, omm->integrator,
-   //                                        platform);
+   omm->context = OpenMM_Context_create_2 (omm->system, omm->integrator,
+                                           platform);
    /*
    OpenMM_PropertyArray* properties = OpenMM_PropertyArray_create ();
    OpenMM_PropertyArray_add (properties, "DisablePmeStream", "true");
