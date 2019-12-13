@@ -39,7 +39,7 @@ void openmm_init_ (void** ommHandle, double* dt) {
    pluginList = OpenMM_Platform_loadPluginsFromDirectory
                     (OpenMM_Platform_getDefaultPluginsDirectory());
 
-   if (inform__.verbose) {
+   if (*inform__.verbose) {
       (void) fprintf (stderr, "\n Default OpenMM Plugin Directory :  %s\n\n",
                           OpenMM_Platform_getDefaultPluginsDirectory());
       for (ii = 0; ii < OpenMM_StringArray_getSize(pluginList); ii++) {
@@ -58,73 +58,76 @@ void openmm_init_ (void** ommHandle, double* dt) {
    omm->system = OpenMM_System_create ();
    setupSystemParticles (omm->system, log);
    setupCMMotionRemover (omm->system, log);
-
-   if (potent__.use_bond) {
+   
+   if (*potent__.use_bond) {
       setupAmoebaBondForce (omm->system,
                             removeConstrainedCovalentIxns, log);
    }
 
-   if (potent__.use_angle) {
+   if (*potent__.use_angle) {
       setupAmoebaAngleForce (omm->system,
                              removeConstrainedCovalentIxns, log);
       setupAmoebaInPlaneAngleForce (omm->system,
                                     removeConstrainedCovalentIxns, log);
    }
-
-   if (potent__.use_strbnd) {
+   
+   if (*potent__.use_strbnd) {
       setupAmoebaStretchBendForce (omm->system,
                                    removeConstrainedCovalentIxns, log);
    }
 
-   if (potent__.use_urey) {
+   if (*potent__.use_urey) {
       setupAmoebaUreyBradleyForce (omm->system,
                                    removeConstrainedCovalentIxns, log);
    }
 
-   if (potent__.use_opbend) {
+   if (*potent__.use_opbend) {
       setupAmoebaOutOfPlaneBendForce (omm->system, log);
    }
 
-   if (potent__.use_improp) {
+   if (*potent__.use_improp) {
       setupAmoebaImproperTorsionForce (omm->system, log);
    }
 
-   if (potent__.use_tors) {
+   if (*potent__.use_tors) {
       setupAmoebaTorsionForce (omm->system, log);
    }
 
-   if (potent__.use_pitors) {
+   if (*potent__.use_pitors) {
       setupAmoebaPiTorsionForce (omm->system, log);
    }
 
-   if (potent__.use_tortor) {
+   if (*potent__.use_tortor) {
       setupAmoebaTorsionTorsionForce (omm->system, log);
    }
-
-   if (potent__.use_charge) {
+   
+   if (*potent__.use_charge) {
       setupAmoebaChargeForce (omm->system, log);
    }
-
-   if (potent__.use_chgtrn || potent__.use_repuls) {
+   
+   if (*potent__.use_chgtrn || *potent__.use_repuls) {
       setupHippoNonbondedForce (omm->system, log);
    }
-
-   if (potent__.use_mpole && !mplpot__.use_chgpen) {
+   
+   if (*potent__.use_mpole && ! *mplpot__.use_chgpen) {
       setupAmoebaMultipoleForce (omm->system, log);
-      if (potent__.use_solv) {
+      
+      if (*potent__.use_solv) {
          setupAmoebaGeneralizedKirkwoodForce (omm->system, 1, log);
       }
+      
    }
-
-   if (potent__.use_solv) {
+  
+   if (*potent__.use_solv) {
       setupAmoebaWcaDispersionForce (omm->system, log);
    }
-
-   if (bath__.isobaric && *bath__.atmsph > 0.0) {
+    
+   if (*bath__.isobaric && *bath__.atmsph > 0.0) {
       mdMode = 4;
       setupMonteCarloBarostat (omm->system, log);
    }
 
+   
    // setup of constraints, restraints, positions and velocities
    setupConstraints (omm->system, log);
 
@@ -135,11 +138,15 @@ void openmm_init_ (void** ommHandle, double* dt) {
    setupAngleRestraints (omm->system, log);
    setupCentroidRestraints (omm->system, log);
 
+   
+
    initialPosInNm = OpenMM_Vec3Array_create (0);
    setupPositions (initialPosInNm, log);
 
    initialVelInNm = OpenMM_Vec3Array_create (0);
    setupVelocities (initialVelInNm, log);
+
+   
 
    // choose an Integrator, and a Context connecting the System with the
    // Integrator; let the Context choose the best available Platform;
@@ -282,8 +289,8 @@ void openmm_init_ (void** ommHandle, double* dt) {
 
    // modification of context creation to avoid bug on large systems
 
-   //omm->context = OpenMM_Context_create_2 (omm->system, omm->integrator,
-   //                                        platform);
+   omm->context = OpenMM_Context_create_2 (omm->system, omm->integrator,
+                                           platform);
    /*
    OpenMM_PropertyArray* properties = OpenMM_PropertyArray_create ();
    OpenMM_PropertyArray_add (properties, "DisablePmeStream", "true");
@@ -294,7 +301,7 @@ void openmm_init_ (void** ommHandle, double* dt) {
    OpenMM_Platform_setPropertyValue(platform, omm->context, "DisablePmeStream", "true");
 
 
-   if (inform__.debug) {
+   if (*inform__.debug) {
       (void) fprintf (log, "\n OpenMMDataHandle:  %x\n", (void*)(omm));
       (void) fprintf (log, "\n Integrator:  %x\n", (void*)(omm->integrator));
    }
@@ -302,7 +309,7 @@ void openmm_init_ (void** ommHandle, double* dt) {
    OpenMM_Context_setPositions (omm->context, initialPosInNm);
    OpenMM_Context_setVelocities (omm->context, initialVelInNm);
 
-   if (inform__.verbose) {
+   if (*inform__.verbose) {
       int arraySz;
       int maxPrint;
       double x1, x2, x3;
@@ -662,33 +669,33 @@ void openmm_test_ (void) {
    setupSystemParticles (system, log);
 
    countActiveForces = 0;
-   if (potent__.use_bond)  countActiveForces++;
-   if (potent__.use_angle)  countActiveForces++;
-   if (potent__.use_strbnd)  countActiveForces++;
-   if (potent__.use_urey)  countActiveForces++;
-   if (potent__.use_angang)  countActiveForces++;
-   if (potent__.use_opbend)  countActiveForces++;
-   if (potent__.use_opdist)  countActiveForces++;
-   if (potent__.use_improp)  countActiveForces++;
-   if (potent__.use_imptor)  countActiveForces++;
-   if (potent__.use_tors)  countActiveForces++;
-   if (potent__.use_pitors)  countActiveForces++;
-   if (potent__.use_strtor)  countActiveForces++;
-   if (potent__.use_angtor)  countActiveForces++;
-   if (potent__.use_tortor)  countActiveForces++;
-   if (potent__.use_vdw)  countActiveForces++;
-   if (potent__.use_charge)  countActiveForces++;
-   if (potent__.use_chgdpl)  countActiveForces++;
-   if (potent__.use_dipole)  countActiveForces++;
-   if (potent__.use_chgtrn)  countActiveForces++;
-   if (potent__.use_repuls)  countActiveForces++;
-   if (potent__.use_disp)  countActiveForces++;
-   if (potent__.use_mpole)  countActiveForces++;
-   if (potent__.use_polar)  countActiveForces++;
-   if (potent__.use_rxnfld)  countActiveForces++;
-   if (potent__.use_solv)  countActiveForces++;
-   if (potent__.use_metal)  countActiveForces++;
-   if (potent__.use_geom)  countActiveForces++;
+   if (*potent__.use_bond)  countActiveForces++;
+   if (*potent__.use_angle)  countActiveForces++;
+   if (*potent__.use_strbnd)  countActiveForces++;
+   if (*potent__.use_urey)  countActiveForces++;
+   if (*potent__.use_angang)  countActiveForces++;
+   if (*potent__.use_opbend)  countActiveForces++;
+   if (*potent__.use_opdist)  countActiveForces++;
+   if (*potent__.use_improp)  countActiveForces++;
+   if (*potent__.use_imptor)  countActiveForces++;
+   if (*potent__.use_tors)  countActiveForces++;
+   if (*potent__.use_pitors)  countActiveForces++;
+   if (*potent__.use_strtor)  countActiveForces++;
+   if (*potent__.use_angtor)  countActiveForces++;
+   if (*potent__.use_tortor)  countActiveForces++;
+   if (*potent__.use_vdw)  countActiveForces++;
+   if (*potent__.use_charge)  countActiveForces++;
+   if (*potent__.use_chgdpl)  countActiveForces++;
+   if (*potent__.use_dipole)  countActiveForces++;
+   if (*potent__.use_chgtrn)  countActiveForces++;
+   if (*potent__.use_repuls)  countActiveForces++;
+   if (*potent__.use_disp)  countActiveForces++;
+   if (*potent__.use_mpole)  countActiveForces++;
+   if (*potent__.use_polar)  countActiveForces++;
+   if (*potent__.use_rxnfld)  countActiveForces++;
+   if (*potent__.use_solv)  countActiveForces++;
+   if (*potent__.use_metal)  countActiveForces++;
+   if (*potent__.use_geom)  countActiveForces++;
 
    if (log) {
       (void) fprintf (log, "\n Potential Terms Used in Tinker :\n" );
@@ -718,57 +725,63 @@ void openmm_test_ (void) {
       (void) fprintf (log, "    Restrn=  %d", abs(*potent__.use_geom));
       (void) fprintf (log, "    Extra=   %d\n", abs(*potent__.use_extra));
       (void) fprintf (log, "\n    Repel=   %d\n", abs(*potent__.use_repuls));
-      (void) fprintf (log, "    Disp=    %d\n", abs(*potent__.use_disp));      
+      (void) fprintf (log, "    Disp=    %d\n", abs(*potent__.use_disp));  
+      (void) fprintf (log, "    Chgtrn=   %d\n", abs(*potent__.use_chgtrn));
+      (void) fprintf (log, "    Chgpen=    %d\n", abs(*mplpot__.use_chgpen));    
    }
 
    if (countActiveForces > 1) {
 
-      if (potent__.use_bond) {
+      if (*potent__.use_bond) {
          setupAmoebaBondForce (system, removeConstrainedCovalentIxns, log);
       }
-      if (potent__.use_angle) {
+      if (*potent__.use_angle) {
          setupAmoebaAngleForce (system, removeConstrainedCovalentIxns, log);
          setupAmoebaInPlaneAngleForce (system, removeConstrainedCovalentIxns,
                                        log);
       }
-      if (potent__.use_strbnd) {
+      if (*potent__.use_strbnd) {
          setupAmoebaStretchBendForce (system, removeConstrainedCovalentIxns,
                                       log);
       }
-      if (potent__.use_urey) {
+      if (*potent__.use_urey) {
          setupAmoebaUreyBradleyForce (system, removeConstrainedCovalentIxns,
                                       log);
       }
-      if (potent__.use_opbend) {
+      if (*potent__.use_opbend) {
          setupAmoebaOutOfPlaneBendForce (system, log);
       }
-      if (potent__.use_imptor) {
+      if (*potent__.use_imptor) {
          setupAmoebaImproperTorsionForce (system, log);
       }
-      if (potent__.use_tors) {
+      if (*potent__.use_tors) {
          setupAmoebaTorsionForce (system, log);
       }
-      if (potent__.use_pitors) {
+      if (*potent__.use_pitors) {
          setupAmoebaPiTorsionForce (system, log);
       }
-      if (potent__.use_tortor) {
+      if (*potent__.use_tortor) {
          setupAmoebaTorsionTorsionForce (system, log);
       }
       
-      if (potent__.use_charge) {
+      if (*potent__.use_charge) {
          setupAmoebaChargeForce (system, log);
       }
-      if (potent__.use_chgtrn || potent__.use_repuls || potent__.use_disp) {
+      
+      if (*potent__.use_chgtrn || *potent__.use_repuls || *potent__.use_disp) {
          setupHippoNonbondedForce (system, log);
       }
-      if (potent__.use_mpole && !mplpot__.use_chgpen) {
+      
+      if (*potent__.use_mpole && ! *mplpot__.use_chgpen) {
          setupAmoebaMultipoleForce (system, log);
       }
-      if (potent__.use_solv) {
+      
+      if (*potent__.use_solv) {
          setupAmoebaWcaDispersionForce (system, log);
          setupAmoebaGeneralizedKirkwoodForce (system, 1, log);
       }
-      if (potent__.use_geom) {
+      
+      if (*potent__.use_geom) {
          setupTorsionRestraints (system, log);
          setupDistanceRestraints (system, log);
          setupPositionalRestraints (system, log);
@@ -791,7 +804,7 @@ void openmm_test_ (void) {
                     "    EC=  %15.7e   ECD= %15.7e   ED=  %15.7e\n"
                     "    EM=  %15.7e   EP=  %15.7e   ER=  %15.7e\n"
                     "    ES=  %15.7e   ELF= %15.7e   EG=  %15.7e\n"
-                    "    EX=  %15.7e\n",
+                    "    EDSP=%15.7e   ECT= %15.7e   EX=  %15.7e\n",
                     *energi__.eb,   *energi__.ea,  *energi__.eba,
                     *energi__.eub,  *energi__.eaa, *energi__.eopb,
                     *energi__.eopd, *energi__.eid, *energi__.eit,
@@ -800,18 +813,19 @@ void openmm_test_ (void) {
                     *energi__.ec,   *energi__.ecd, *energi__.ed,
                     *energi__.em,   *energi__.ep,  *energi__.er,
                     *energi__.es,   *energi__.elf, *energi__.eg,
-                    *energi__.ed,   *energi__.ex );
+                    *energi__.edsp, *energi__.ect, *energi__.ex );
+                    
          (void) fflush (log);
       }
 
-   } else if (potent__.use_bond) {
+   } else if (*potent__.use_bond) {
 
       setupAmoebaBondForce (system, removeConstrainedCovalentIxns, log);
       loadTinkerForce (deriv__.deb, 0, tinkerForce);
       tinkerEnergy = *energi__.eb;
       testName = "AmoebaHarmonicBondTest";
 
-   } else if (potent__.use_angle) {
+   } else if (*potent__.use_angle) {
 
       // note Tinker angle = OpenMM (Angle + InPlaneAngle)
 
@@ -822,7 +836,7 @@ void openmm_test_ (void) {
       tinkerEnergy = *energi__.ea;
       testName = "AmoebaHarmonicAngleTest";
 
-   } else if (potent__.use_strbnd) {
+   } else if (*potent__.use_strbnd) {
 
       setupAmoebaStretchBendForce (system, removeConstrainedCovalentIxns,
                                    log);
@@ -830,7 +844,7 @@ void openmm_test_ (void) {
       tinkerEnergy = *energi__.eba;
       testName = "AmoebaStretchBendTest";
 
-   } else if (potent__.use_urey) {
+   } else if (*potent__.use_urey) {
 
       setupAmoebaUreyBradleyForce (system, removeConstrainedCovalentIxns,
                                    log);
@@ -838,35 +852,35 @@ void openmm_test_ (void) {
       tinkerEnergy = *energi__.eub;
       testName = "AmoebaUreyBradleyForceTest";
 
-   } else if (potent__.use_opbend) {
+   } else if (*potent__.use_opbend) {
 
       setupAmoebaOutOfPlaneBendForce (system, log);
       loadTinkerForce (deriv__.deopb, 0, tinkerForce);
       tinkerEnergy = *energi__.eopb;
       testName = "AmoebaOutOfPlaneBendTest";
 
-   } else if (potent__.use_imptor) {
+   } else if (*potent__.use_imptor) {
 
       setupAmoebaImproperTorsionForce (system, log);
       loadTinkerForce (deriv__.deit, 0, tinkerForce);
       tinkerEnergy = *energi__.eit;
       testName = "AmoebaImproperTorsionForce";
 
-   } else if (potent__.use_tors) {
+   } else if (*potent__.use_tors) {
 
       setupAmoebaTorsionForce (system, log);
       loadTinkerForce (deriv__.det, 0, tinkerForce);
       tinkerEnergy = *energi__.et;
       testName = "AmoebaTorsionTest";
 
-   } else if (potent__.use_pitors) {
+   } else if (*potent__.use_pitors) {
 
       setupAmoebaPiTorsionForce (system, log);
       loadTinkerForce (deriv__.dept, 0, tinkerForce);
       tinkerEnergy = *energi__.ept;
       testName = "AmoebaPiTorsionTest";
 
-   } else if (potent__.use_geom) {
+   } else if (*potent__.use_geom) {
 
       setupTorsionRestraints (system, log);
       setupDistanceRestraints (system, log);
@@ -877,21 +891,21 @@ void openmm_test_ (void) {
       tinkerEnergy = *energi__.eg;
       testName = "AmoebaRestraintTest";
 
-   } else if (potent__.use_charge) {
+   } else if (*potent__.use_charge) {
 
       setupAmoebaChargeForce (system, log);
       loadTinkerForce (deriv__.dec, 0, tinkerForce);
       tinkerEnergy = *energi__.ec;
       testName = "AmoebaChargeTest";
 
-   } else if (potent__.use_chgtrn || potent__.use_repuls || potent__.use_disp) {
+   } else if (*potent__.use_chgtrn || *potent__.use_repuls || *potent__.use_disp) {
 
       setupHippoNonbondedForce (system, log);
       loadTinkerForce (deriv__.dect, 0, tinkerForce);
       tinkerEnergy = *energi__.ect;
       testName = "HippoChargeTransferTest";
 
-   } else if (potent__.use_mpole && !potent__.use_solv && !mplpot__.use_chgpen) {
+   } else if (*potent__.use_mpole && ! *potent__.use_solv && ! *mplpot__.use_chgpen) {
 
       if (log) {
          (void) fprintf (log, "ImplicitSolventActive=%d\n",
@@ -916,8 +930,8 @@ void openmm_test_ (void) {
          testName = "AmoebaMultipoleMutualTest";
       }
 
-   } else if (potent__.use_solv && implicitSolventActive > 0 &&
-              !potent__.use_mpole) {
+   } else if (*potent__.use_solv && implicitSolventActive > 0 &&
+              ! *potent__.use_mpole) {
 
       // to get Tinker WCA, zero deriv__.des, then call ewca1
 
@@ -927,7 +941,7 @@ void openmm_test_ (void) {
       setupAmoebaWcaDispersionForce (system, log);
       testName = "AmoebaWcaDispersionTest";
 
-   } else if (implicitSolventActive > 0 && potent__.use_mpole) {
+   } else if (implicitSolventActive > 0 && *potent__.use_mpole) {
 
       // generalized Kirkwood; OpenMM should have cavity term turned off
 
@@ -1015,24 +1029,26 @@ void openmm_test_ (void) {
    // Zhi's new fix to avoid using "PropertyArray"
    OpenMM_Platform_setPropertyValue(platform, context, "DisablePmeStream", "true");
 
+   OpenMM_Context_setPositions (context, initialPosInNm);
+
    infoMask = OpenMM_State_Positions;
    infoMask += OpenMM_State_Forces;
    infoMask += OpenMM_State_Energy;
-
+   
    state = OpenMM_Context_getState (context, infoMask, 0);
-
+   
    openMMForces = OpenMM_State_getForces (state);
    openMMPotentialEnergy = OpenMM_State_getPotentialEnergy(state)
                               / OpenMM_KJPerKcal;
 
    conversion = -OpenMM_NmPerAngstrom / OpenMM_KJPerKcal;
-
+   
    setDefaultPeriodicBoxVectors (system, log);
    if (log) {
       printDefaultPeriodicBoxVectors (system, log);
       (void) fflush (log);
    }
-
+   
    // find differences in Tinker and OpenMM energies and forces
 
    maxFDelta = 0.0;
@@ -1097,7 +1113,7 @@ void openmm_test_ (void) {
          }
       }
 
-      if (atoms__.n) {
+      if (*atoms__.n) {
          avgDot /= (double)(*atoms__.n);
       }
 
