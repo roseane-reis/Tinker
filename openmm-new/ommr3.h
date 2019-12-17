@@ -338,4 +338,34 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
    if (*limits__.use_ewald) {
       setDefaultPeriodicBoxVectors (system, log);
    }
+
+   //set Opt coefficients
+   OpenMM_DoubleArray* exptCoefficients;
+
+   if (polopt__.copt[4] != 0.0) {
+   exptCoefficients = OpenMM_DoubleArray_create (5);
+   OpenMM_DoubleArray_set (exptCoefficients, 0, polopt__.copt[0]);
+   OpenMM_DoubleArray_set (exptCoefficients, 1, polopt__.copt[1]);
+   OpenMM_DoubleArray_set (exptCoefficients, 2, polopt__.copt[2]);
+   OpenMM_DoubleArray_set (exptCoefficients, 3, polopt__.copt[3]);
+   OpenMM_DoubleArray_set (exptCoefficients, 4, polopt__.copt[4]);
+   } else if (polopt__.copt[3] != 0.0) {
+   exptCoefficients = OpenMM_DoubleArray_create (4);
+   OpenMM_DoubleArray_set (exptCoefficients, 0, polopt__.copt[0]);
+   OpenMM_DoubleArray_set (exptCoefficients, 1, polopt__.copt[1]);
+   OpenMM_DoubleArray_set (exptCoefficients, 2, polopt__.copt[2]);
+   OpenMM_DoubleArray_set (exptCoefficients, 3, polopt__.copt[3]);
+   } else if (polopt__.copt[2] != 0.0) {
+   exptCoefficients = OpenMM_DoubleArray_create (3);
+   OpenMM_DoubleArray_set (exptCoefficients, 0, polopt__.copt[0]);
+   OpenMM_DoubleArray_set (exptCoefficients, 1, polopt__.copt[1]);
+   OpenMM_DoubleArray_set (exptCoefficients, 2, polopt__.copt[2]);
+  } else if (polopt__.copt[1] != 0.0) {
+   exptCoefficients = OpenMM_DoubleArray_create (2);
+   OpenMM_DoubleArray_set (exptCoefficients, 0, polopt__.copt[0]);
+   OpenMM_DoubleArray_set (exptCoefficients, 1, polopt__.copt[1]);
+   }
+   OpenMM_HippoNonbondedForce_setExtrapolationCoefficients(hippoForce,
+                                                    exptCoefficients);
+
 }
