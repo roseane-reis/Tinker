@@ -453,7 +453,7 @@ void openmm_update_ (void** omm, double* dt, int* istep,
                        * OpenMM_KcalPerKJ;
    totalEnergy = potentialEnergy + kineticEnergy;
 
-   if (inform__.debug) {
+   if (*inform__.debug) {
 
       double eksum, temp, pres;
       double ekin[3][3];

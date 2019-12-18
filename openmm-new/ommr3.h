@@ -69,8 +69,11 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
       double ct_chgval = 0.0;
        
       if (*potent__.use_chgtrn) {
+        if (chgtrn__.dmpct[ii] == 0.0)
+          ct_alpha = 1e8;
+        else
          ct_alpha = chgtrn__.dmpct[ii] / OpenMM_NmPerAngstrom; // Tinker unit: 1/angstrom
-         ct_chgval = chgtrn__.chgct[ii] * 4.184 * 332.063713; // Tinker unit: kcal/mol 332.063713
+        ct_chgval = chgtrn__.chgct[ii] * 4.184 * 332.063713; // Tinker unit: kcal/mol 332.063713
          // printf("%4.1f\n", ct_chgval / 4.184);
       }
       
@@ -139,6 +142,7 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
                                                   *pme__.ndfft1, *pme__.ndfft2, *pme__.ndfft3);
 
        dpme_cutoffdistance = *limits__.dewaldcut*OpenMM_NmPerAngstrom;
+
    }
 
    double cutoffdistance = *limits__.ewaldcut*OpenMM_NmPerAngstrom;
@@ -151,13 +155,13 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
    OpenMM_Boolean useCorrection;
    useCorrection = OpenMM_False;
    if (*dsppot__.use_dcorr)  {
-    useCorrection = OpenMM_True;
+    printf("Dispersion correction not supported with HIPPO\n");
+    printf("Using Dipersion Ewald instead\n");
 
- // OpenMM_NonbondedForce_setUseDispersionCorrection(hippoForce, useCorrection);
-    OpenMM_NonbondedForce* dispCorrectionForce;
-    dispCorrectionForce = OpenMM_NonbondedForce_create();
-    OpenMM_System_addForce(system, (OpenMM_Force*) dispCorrectionForce);
-    OpenMM_NonbondedForce_setUseDispersionCorrection(dispCorrectionForce, useCorrection);
+    OpenMM_HippoNonbondedForce_setDPMEParameters(hippoForce, *ewald__.adewald/OpenMM_NmPerAngstrom, 
+                                                  *pme__.ndfft1, *pme__.ndfft2, *pme__.ndfft3);
+    //useCorrection = OpenMM_True;
+    //OpenMM_NonbondedForce_setUseDispersionCorrection(hippoForce, useCorrection);
    }
 
    int maxn12 = sizes__.maxval;
@@ -173,7 +177,6 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
    double dispersionScale = 1.0;         // the factor by which to scale the dispersion interaction
    double repulsionScale = 1.0;          // the factor by which to scale the Pauli repulsion
    double chargeTransferScale = 1.0;     // the factor by which to scale the charge transfer interaction
-   
    
    for (int ii = 0; ii < *atoms__.n; ++ii) {
 
@@ -210,6 +213,8 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
             dipoleMultipoleScale = *polpot__.p2scale;
           }
           //*/
+          //repulsionScale = 0.0;
+          dipoleMultipoleScale = *polpot__.p2scale;
           OpenMM_HippoNonbondedForce_addException(hippoForce, ii, k, 
             multipoleMultipoleScale, dipoleMultipoleScale, 
             dipoleDipoleScale, dispersionScale, 
@@ -248,7 +253,7 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
             // inter-group
             dipoleMultipoleScale = *polpot__.p3scale;
           }  
-
+         
           OpenMM_HippoNonbondedForce_addException(hippoForce, ii, k, 
             multipoleMultipoleScale, dipoleMultipoleScale, 
             dipoleDipoleScale, dispersionScale, 
@@ -303,6 +308,7 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
         int k = couple__.i15[j + ptratm] - 1;
         if (k > ii) {
           multipoleMultipoleScale = *mplpot__.m5scale;
+          dipoleDipoleScale = *polpot__.w5scale;
           dispersionScale = *dsppot__.dsp5scale;
           repulsionScale = *reppot__.r5scale;
           chargeTransferScale = *mplpot__.m5scale;  
@@ -367,5 +373,4 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
    }
    OpenMM_HippoNonbondedForce_setExtrapolationCoefficients(hippoForce,
                                                     exptCoefficients);
-
 }
