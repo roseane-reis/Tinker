@@ -263,7 +263,7 @@ void openmm_init_ (void** ommHandle, double* dt) {
       if (log) {
          (void) fprintf (log, "\n Stochastic Integrator:\n");
          (void) fprintf (log, "\n Temperature          %15.4f K",
-                             bath__.kelvin );
+                             *bath__.kelvin );
          (void) fprintf (log, "\n Friction             %15.4f ps^(-1)",
                              stodyn__.friction );
          (void) fprintf (log, "\n TimeStep             %15.4f ps\n",
@@ -463,7 +463,7 @@ void openmm_update_ (void** omm, double* dt, int* istep,
       (void) fprintf (stderr, "\n State: E=%15.7e [%15.7e %15.7e]\n",
                       totalEnergy, potentialEnergy, kineticEnergy);
       (void) fprintf (stderr, "        t=%15.7e ps T=%12.5e InitT=%12.3f\n\n",
-                      (*dt)*(*istep), temp, bath__.kelvin );
+                      (*dt)*(*istep), temp, *bath__.kelvin );
 
       for (ii = 0; ii < *atoms__.n; ii++) {
          (void) fprintf (stderr, "%7d   POS   %17.8e %17.8e %17.8e\n", ii+1,
@@ -497,7 +497,7 @@ void openmm_update_ (void** omm, double* dt, int* istep,
 
       if (*callMdStat) {
          pres = 0.0;
-         if (bath__.isobaric) {
+         if (*bath__.isobaric) {
             lattice_ ();
          }
          mdstat_ (istep,dt,&totalEnergy,&potentialEnergy,&eksum,&temp,&pres);

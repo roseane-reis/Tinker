@@ -536,12 +536,12 @@ static OpenMM_Platform* getCUDAPlatform (FILE* log) {
    }
 
    if (device_key) {
-      OpenMM_Platform_setPropertyDefaultValue (platform, "cudadeviceIndex",
+      OpenMM_Platform_setPropertyDefaultValue (platform, "CudaDeviceIndex",
                                                deviceId);
       if (log) {
          (void) fprintf (log, "\n Platform CUDA :  Setting Device ID to %s from CUDA-DEVICE keyword\n", deviceId);
       }
-   } else if (log && inform__.verbose) {
+   } else if (log && *inform__.verbose) {
       (void) fprintf (log, "\n Platform CUDA :  Setting Device ID to %s \n", deviceId);
    }
 

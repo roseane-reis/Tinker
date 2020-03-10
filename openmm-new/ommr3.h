@@ -70,9 +70,9 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
        
       if (*potent__.use_chgtrn) {
         if (chgtrn__.dmpct[ii] == 0.0)
-          ct_alpha = 1e8;
+          ct_alpha = 100.0;
         else
-         ct_alpha = chgtrn__.dmpct[ii] / OpenMM_NmPerAngstrom; // Tinker unit: 1/angstrom
+          ct_alpha = chgtrn__.dmpct[ii] / OpenMM_NmPerAngstrom; // Tinker unit: 1/angstrom
         ct_chgval = chgtrn__.chgct[ii] * 4.184 * 332.063713; // Tinker unit: kcal/mol 332.063713
          // printf("%4.1f\n", ct_chgval / 4.184);
       }
@@ -80,6 +80,7 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
       // Dispersion 
       double csixval = 0.0;
       int dispclass = 1;
+      
       
       if (*potent__.use_disp) {
          csixval = disp__.csix[ii] * sqrt(4.184)*OpenMM_NmPerAngstrom*OpenMM_NmPerAngstrom*OpenMM_NmPerAngstrom; // Tinker unit: sqrt(ang^6*kcal/mol)
@@ -187,6 +188,13 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
 
       // covalent12 scale factors
       for (int j = 0; j < couple__.n12[ii]; ++j) {
+        multipoleMultipoleScale = 1.0; 
+        dipoleMultipoleScale = 1.0;    
+        dipoleDipoleScale = 1.0;       
+        dispersionScale = 1.0;         
+        repulsionScale = 1.0;          
+        chargeTransferScale = 1.0;     
+
         int k = couple__.i12[j+ptratm] - 1;
         if (k > ii) {
           multipoleMultipoleScale = *mplpot__.m2scale;
@@ -194,27 +202,20 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
           dispersionScale = *dsppot__.dsp2scale;
           repulsionScale = *reppot__.r2scale;
           chargeTransferScale = *mplpot__.m2scale;
+          dipoleMultipoleScale = *polpot__.p2scale;
           
           // check if atoms belong to the same group
-          //*
           samegrp = false;
           for (int l = 0; l < polgrp__.np11[ii]; ++l) {
             testAtom = polgrp__.ip11[l + ptrpol] - 1;  
             if (k == testAtom) {
               samegrp = true;
+              dipoleMultipoleScale = *polpot__.p2iscale;
               break;  
             }
           }
-          if (samegrp) {
-            // intra-group
-            dipoleMultipoleScale = *polpot__.p2iscale;           
-          } else {
-            // inter-group
-            dipoleMultipoleScale = *polpot__.p2scale;
-          }
-          //*/
+          
           //repulsionScale = 0.0;
-          dipoleMultipoleScale = *polpot__.p2scale;
           OpenMM_HippoNonbondedForce_addException(hippoForce, ii, k, 
             multipoleMultipoleScale, dipoleMultipoleScale, 
             dipoleDipoleScale, dispersionScale, 
@@ -228,6 +229,13 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
       ptratm = ii * maxn13;
 
       for (int j = 0; j < nn; ++j) {
+        multipoleMultipoleScale = 1.0; 
+        dipoleMultipoleScale = 1.0;    
+        dipoleDipoleScale = 1.0;       
+        dispersionScale = 1.0;         
+        repulsionScale = 1.0;          
+        chargeTransferScale = 1.0; 
+
         int k = couple__.i13[j + ptratm] - 1;
         if (k > ii) {
           multipoleMultipoleScale = *mplpot__.m3scale;
@@ -235,6 +243,7 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
           dispersionScale = *dsppot__.dsp3scale;
           repulsionScale = *reppot__.r3scale;
           chargeTransferScale = *mplpot__.m3scale;  
+          dipoleMultipoleScale = *polpot__.p3scale;
 
           // check if atoms belong to the same group
           samegrp = false;
@@ -243,17 +252,11 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
 
             if (k == testAtom) {
               samegrp = true;
+              dipoleMultipoleScale = *polpot__.p3iscale; 
               break;  
             }
           }
-          if (samegrp) {
-            // intra-group
-            dipoleMultipoleScale = *polpot__.p3iscale;           
-          } else {
-            // inter-group
-            dipoleMultipoleScale = *polpot__.p3scale;
-          }  
-         
+          
           OpenMM_HippoNonbondedForce_addException(hippoForce, ii, k, 
             multipoleMultipoleScale, dipoleMultipoleScale, 
             dipoleDipoleScale, dispersionScale, 
@@ -266,13 +269,21 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
       ptratm = ii * maxn14;
 
       for (int j = 0; j < nn; ++j) {
+        multipoleMultipoleScale = 1.0; 
+        dipoleMultipoleScale = 1.0;    
+        dipoleDipoleScale = 1.0;       
+        dispersionScale = 1.0;         
+        repulsionScale = 1.0;          
+        chargeTransferScale = 1.0; 
+
         int k = couple__.i14[j + ptratm] - 1;
         if (k > ii) {
           multipoleMultipoleScale = *mplpot__.m4scale;
           dipoleDipoleScale = *polpot__.w4scale;
           dispersionScale = *dsppot__.dsp4scale;
           repulsionScale = *reppot__.r4scale;
-          chargeTransferScale = *mplpot__.m4scale;  
+          chargeTransferScale = *mplpot__.m4scale; 
+          dipoleMultipoleScale = *polpot__.p4scale; 
 
           // check if atoms belong to the same group
           samegrp = false;
@@ -281,18 +292,11 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
 
             if (k == testAtom) {
               samegrp = true;
+              dipoleMultipoleScale = *polpot__.p4iscale;
               break;  
             }
           }  
-
-          if (samegrp) {
-            // intra-group
-            dipoleMultipoleScale = *polpot__.p4iscale;           
-          } else {
-            // inter-group
-            dipoleMultipoleScale = *polpot__.p4scale;
-          }  
-
+          
           OpenMM_HippoNonbondedForce_addException(hippoForce, ii, k, 
             multipoleMultipoleScale, dipoleMultipoleScale, 
             dipoleDipoleScale, dispersionScale, 
@@ -305,6 +309,13 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
       ptratm = ii * maxn15;
 
       for (int j = 0; j < nn; ++j) {
+        multipoleMultipoleScale = 1.0; 
+        dipoleMultipoleScale = 1.0;    
+        dipoleDipoleScale = 1.0;       
+        dispersionScale = 1.0;         
+        repulsionScale = 1.0;          
+        chargeTransferScale = 1.0; 
+
         int k = couple__.i15[j + ptratm] - 1;
         if (k > ii) {
           multipoleMultipoleScale = *mplpot__.m5scale;
@@ -312,6 +323,7 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
           dispersionScale = *dsppot__.dsp5scale;
           repulsionScale = *reppot__.r5scale;
           chargeTransferScale = *mplpot__.m5scale;  
+          dipoleMultipoleScale = *polpot__.p5scale;
 
           // check if atoms belong to the same group
           samegrp = false;
@@ -320,18 +332,11 @@ void setupHippoNonbondedForce (OpenMM_System* system, FILE* log) {
 
             if (k == testAtom) {
               samegrp = true;
+              dipoleMultipoleScale = *polpot__.p5iscale;
               break;
             }
           }  
-
-          if (samegrp) {
-            // intra-group
-            dipoleMultipoleScale = *polpot__.p5iscale;           
-          } else {
-            // inter-group
-            dipoleMultipoleScale = *polpot__.p5scale;
-          }  
-
+          
           OpenMM_HippoNonbondedForce_addException(hippoForce, ii, k, 
             multipoleMultipoleScale, dipoleMultipoleScale, 
             dipoleDipoleScale, dispersionScale, 
